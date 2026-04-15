@@ -1,0 +1,335 @@
+#!/usr/bin/env python3
+"""marathon.py — interview prep exercise runner.
+
+Usage:
+    python marathon.py status                 # Progress + next unsolved
+    python marathon.py run 001                # Run tests for exercise 001
+    python marathon.py run --current          # Rerun last-run exercise
+    python marathon.py next                   # Run next unsolved
+    python marathon.py watch [NNN]            # Re-run on file save
+    python marathon.py hint 001 --level 1     # Show hint level 1-3
+    python marathon.py reveal 001             # Print solution (gated)
+    python marathon.py reset 001              # Restore stub, clear progress
+    python marathon.py list [--tier N]        # List all exercises
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import shutil
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+PROGRESS_FILE = ROOT / ".marathon_progress.json"
+TIER_DIRS = ["tier1_fluency", "tier2_patterns", "tier3_canonical", "tier4_async"]
+EX_RE = re.compile(r"^(\d{3})_")
+
+
+def _pytest_cmd() -> list[str]:
+    """Prefer local .venv/bin/python -m pytest, fall back to `pytest` in PATH."""
+    venv_py = ROOT / ".venv" / "bin" / "python"
+    if venv_py.exists():
+        return [str(venv_py), "-m", "pytest"]
+    return ["pytest"]
+
+MARK = {"passed": "✓", "failed": "✗", "untouched": "·", "revealed": "!"}
+
+
+def list_exercises() -> list[tuple[str, Path]]:
+    out: list[tuple[str, Path]] = []
+    for tier in TIER_DIRS:
+        tier_dir = ROOT / tier
+        if not tier_dir.is_dir():
+            continue
+        for child in sorted(tier_dir.iterdir()):
+            if not child.is_dir():
+                continue
+            m = EX_RE.match(child.name)
+            if m:
+                out.append((m.group(1), child))
+    return out
+
+
+def find_exercise(ex_id: str) -> Path | None:
+    for eid, path in list_exercises():
+        if eid == ex_id:
+            return path
+    return None
+
+
+def load_progress() -> dict:
+    if PROGRESS_FILE.exists():
+        return json.loads(PROGRESS_FILE.read_text())
+    return {}
+
+
+def save_progress(prog: dict) -> None:
+    PROGRESS_FILE.write_text(json.dumps(prog, indent=2, sort_keys=True))
+
+
+def tier_of(path: Path) -> str:
+    return path.parent.name
+
+
+def _run_pytest(path: Path) -> int:
+    cmd = _pytest_cmd() + [str(path), "-q", "--tb=short", "--no-header"]
+    result = subprocess.run(cmd, cwd=ROOT)
+    return result.returncode
+
+
+def _record_run(ex_id: str, passed: bool) -> None:
+    prog = load_progress()
+    entry = prog.get(ex_id, {})
+    entry["status"] = "passed" if passed else "failed"
+    now = datetime.now(timezone.utc).isoformat()
+    if passed and "first_solved" not in entry:
+        entry["first_solved"] = now
+    entry["last_run"] = now
+    prog[ex_id] = entry
+    prog["_last_run"] = ex_id
+    save_progress(prog)
+
+
+def _run_exercise(ex_id: str, path: Path) -> int:
+    print(f"\n▶ Running {path.name}...\n")
+    rc = _run_pytest(path)
+    _record_run(ex_id, rc == 0)
+    if rc == 0:
+        print(f"\n✓ {path.name} passed")
+    else:
+        print(f"\n✗ {path.name} failed — fix and rerun")
+    return rc
+
+
+def cmd_status(args: argparse.Namespace) -> int:
+    exs = list_exercises()
+    prog = load_progress()
+    if not exs:
+        print("No exercises found under tier dirs — did the converter run?")
+        return 0
+
+    total_passed = 0
+    by_tier: dict[str, list[tuple[str, Path]]] = {}
+    for eid, path in exs:
+        by_tier.setdefault(tier_of(path), []).append((eid, path))
+
+    for tier in TIER_DIRS:
+        items = by_tier.get(tier, [])
+        if not items:
+            continue
+        passed = sum(1 for eid, _ in items if prog.get(eid, {}).get("status") == "passed")
+        total_passed += passed
+        print(f"\n[{tier}]  {passed}/{len(items)}")
+        for eid, path in items:
+            status = prog.get(eid, {}).get("status", "untouched")
+            marker = MARK.get(status, "?")
+            hints = prog.get(eid, {}).get("hints_used", 0)
+            hint_tag = f" (hints: {hints})" if hints else ""
+            print(f"  {marker} {eid}  {path.name}{hint_tag}")
+
+    print(f"\nTotal: {total_passed}/{len(exs)} passed")
+    for eid, path in exs:
+        if prog.get(eid, {}).get("status") != "passed":
+            print(f"Next unsolved: {eid}  ({path.name})")
+            break
+    else:
+        print("All clear — you're done!")
+    return 0
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    ex_id = args.id
+    if ex_id is None and args.current:
+        ex_id = load_progress().get("_last_run")
+        if not ex_id:
+            print("No recent run. Use: marathon.py run NNN")
+            return 1
+    if ex_id is None:
+        print("Usage: marathon.py run NNN  (or --current)")
+        return 1
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    return _run_exercise(ex_id, path)
+
+
+def cmd_next(args: argparse.Namespace) -> int:
+    prog = load_progress()
+    for eid, path in list_exercises():
+        if prog.get(eid, {}).get("status") != "passed":
+            return _run_exercise(eid, path)
+    print("All exercises passed — you're done!")
+    return 0
+
+
+def cmd_watch(args: argparse.Namespace) -> int:
+    ex_id = args.id
+    prog = load_progress()
+    if ex_id is None:
+        ex_id = prog.get("_last_run")
+    if ex_id is None:
+        for eid, _ in list_exercises():
+            if prog.get(eid, {}).get("status") != "passed":
+                ex_id = eid
+                break
+    path = find_exercise(ex_id) if ex_id else None
+    if not path:
+        print("No exercise to watch — pass an id or run one first")
+        return 1
+
+    watched = [p for p in (path / "problem.py", path / "test_problem.py") if p.exists()]
+    if not watched:
+        print(f"Nothing to watch in {path}")
+        return 1
+
+    print(f"Watching {path.name} (Ctrl-C to stop)...")
+    _run_exercise(ex_id, path)
+    mtimes = {p: p.stat().st_mtime for p in watched}
+    try:
+        while True:
+            time.sleep(1)
+            changed = False
+            for p in watched:
+                m = p.stat().st_mtime
+                if m != mtimes[p]:
+                    mtimes[p] = m
+                    changed = True
+            if changed:
+                print(f"\n--- re-running {path.name} ---")
+                _run_exercise(ex_id, path)
+    except KeyboardInterrupt:
+        print("\nstopped watching")
+        return 0
+
+
+def cmd_hint(args: argparse.Namespace) -> int:
+    path = find_exercise(args.id)
+    if not path:
+        print(f"Exercise {args.id} not found")
+        return 1
+    hints = path / ".meta" / "hints.md"
+    if not hints.exists():
+        print(f"No hints for {path.name}")
+        return 1
+    text = hints.read_text()
+    parts = re.split(r"^## Hint (\d+)\s*$", text, flags=re.M)
+    hint_map: dict[int, str] = {}
+    for i in range(1, len(parts), 2):
+        hint_map[int(parts[i])] = parts[i + 1].strip()
+    if args.level not in hint_map:
+        print(f"Hint level {args.level} not available. Available: {sorted(hint_map)}")
+        return 1
+    print(f"\n=== Hint {args.level} for {path.name} ===\n")
+    print(hint_map[args.level])
+    print()
+    prog = load_progress()
+    entry = prog.setdefault(args.id, {})
+    entry["hints_used"] = max(entry.get("hints_used", 0), args.level)
+    save_progress(prog)
+    return 0
+
+
+def cmd_reveal(args: argparse.Namespace) -> int:
+    path = find_exercise(args.id)
+    if not path:
+        print(f"Exercise {args.id} not found")
+        return 1
+    solution = path / ".meta" / "solution.py"
+    if not solution.exists():
+        print(f"No solution file at {solution}")
+        return 1
+    print(f"⚠ This will print the reference solution for {path.name}.")
+    print(f"Type 'REVEAL {args.id}' to confirm:")
+    try:
+        confirm = input("> ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print("\ncancelled")
+        return 1
+    if confirm != f"REVEAL {args.id}":
+        print("cancelled (confirmation did not match)")
+        return 1
+    print(f"\n=== Solution for {path.name} ===\n")
+    print(solution.read_text())
+    prog = load_progress()
+    entry = prog.setdefault(args.id, {})
+    entry["revealed"] = True
+    save_progress(prog)
+    return 0
+
+
+def cmd_reset(args: argparse.Namespace) -> int:
+    path = find_exercise(args.id)
+    if not path:
+        print(f"Exercise {args.id} not found")
+        return 1
+    stub = path / ".meta" / "stub.py"
+    problem = path / "problem.py"
+    if not stub.exists():
+        print(f"No stub snapshot at {stub} — can't reset")
+        return 1
+    shutil.copy(stub, problem)
+    prog = load_progress()
+    prog.pop(args.id, None)
+    save_progress(prog)
+    print(f"Reset {path.name} — progress cleared")
+    return 0
+
+
+def cmd_list(args: argparse.Namespace) -> int:
+    exs = list_exercises()
+    prog = load_progress()
+    for eid, path in exs:
+        tier = tier_of(path)
+        if args.tier is not None and f"tier{args.tier}" not in tier:
+            continue
+        status = prog.get(eid, {}).get("status", "untouched")
+        print(f"{eid}  [{tier:16s}]  {status:10s}  {path.name}")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(prog="marathon", description="Interview prep exercise runner")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("status", help="Show tier progress + next unsolved")
+    pr = sub.add_parser("run", help="Run tests for an exercise")
+    pr.add_argument("id", nargs="?", default=None)
+    pr.add_argument("--current", action="store_true")
+    sub.add_parser("next", help="Run the next unsolved exercise")
+    pw = sub.add_parser("watch", help="Watch mode (polls file mtimes)")
+    pw.add_argument("id", nargs="?", default=None)
+    ph = sub.add_parser("hint", help="Show a hint")
+    ph.add_argument("id")
+    ph.add_argument("--level", type=int, default=1)
+    prv = sub.add_parser("reveal", help="Reveal the reference solution (gated)")
+    prv.add_argument("id")
+    prs = sub.add_parser("reset", help="Reset an exercise to its original stub")
+    prs.add_argument("id")
+    pl = sub.add_parser("list", help="List all exercises")
+    pl.add_argument("--tier", type=int, default=None)
+    return p
+
+
+def main() -> int:
+    args = build_parser().parse_args()
+    cmds = {
+        "status": cmd_status,
+        "run": cmd_run,
+        "next": cmd_next,
+        "watch": cmd_watch,
+        "hint": cmd_hint,
+        "reveal": cmd_reveal,
+        "reset": cmd_reset,
+        "list": cmd_list,
+    }
+    return cmds[args.cmd](args) or 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

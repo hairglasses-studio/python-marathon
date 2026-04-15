@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Marathon progress cache (per-user state)
+.marathon_progress.json
+**/.marathon_progress.json
+
+# Editor state
+.vscode/
+.idea/
+*.swp
+.DS_Store
