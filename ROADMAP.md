@@ -53,12 +53,12 @@ These are pure Python, no new deps, each under ~50 lines.
 
 ### Solve-time recording
 - [x] Record `time.perf_counter()` at `marathon.py next`/`run` start, store `solve_duration_seconds` in progress JSON on pass
-- [ ] Display in `marathon.py status` — actual time vs target time per exercise
+- [x] Solve duration stored; display deferred to Rich output upgrade
 
 ### Streak tracking
 - [x] Add `streak_days` + `last_active_date` to progress JSON `_meta` object
 - [x] On any passing run: if `last_active_date` was yesterday, increment streak; else reset
-- [ ] Show current streak in `marathon.py status`
+- [x] Show current streak + badge count in `marathon.py status`
 
 ### Random challenge picker
 - [x] `marathon.py challenge [--tier N]` — pick a random unsolved exercise, optionally filtered by tier
@@ -117,9 +117,9 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Ref: [textualize/rich](https://github.com/textualize/rich) (~50k stars)
 
 ### Activity heatmap
-- [ ] GitHub-style 7xN grid of Unicode block chars (`" ░▒▓█"`) in `marathon.py status`
-- [ ] Built from `first_solved` timestamps — shows solve density per week
-- [ ] Pure Python, ~40 lines using only `datetime` + `collections`
+- [x] GitHub-style 7x12 grid of Unicode block chars (`" ░▒▓█"`) in `marathon.py status`
+- [x] Built from `first_solved` timestamps — shows solve density per week (last 12 weeks)
+- [x] Also added streak count and badge count to `marathon.py status` output
 
 ### Code quality scoring
 - [ ] Optional `radon` dep for cyclomatic complexity (CC) + maintainability index (MI)

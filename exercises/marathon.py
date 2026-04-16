@@ -182,6 +182,49 @@ def _run_exercise(ex_id: str, path: Path) -> int:
     return rc
 
 
+def _render_heatmap(prog: dict) -> str:
+    """Render a Unicode block heatmap from solve timestamps (last 12 weeks)."""
+    from collections import defaultdict
+    BLOCKS = " ░▒▓█"
+    today = datetime.now(timezone.utc).date()
+    # Collect solve dates
+    solves_per_day: dict = defaultdict(int)
+    for eid, entry in prog.items():
+        if eid.startswith("_") or not isinstance(entry, dict):
+            continue
+        first = entry.get("first_solved")
+        if first:
+            try:
+                d = datetime.fromisoformat(first).date()
+                solves_per_day[d] += 1
+            except (ValueError, TypeError):
+                pass
+    if not solves_per_day:
+        return ""
+    # Build 12-week grid (84 days), rows = weekdays (Mon-Sun), cols = weeks
+    weeks = 12
+    start = today - __import__("datetime").timedelta(days=(weeks * 7) - 1 + today.weekday())
+    grid: list[list[int]] = [[0] * weeks for _ in range(7)]
+    max_solves = max(solves_per_day.values()) if solves_per_day else 1
+    for day_offset in range(weeks * 7):
+        d = start + __import__("datetime").timedelta(days=day_offset)
+        if d > today:
+            break
+        weekday = d.weekday()  # 0=Mon
+        week = day_offset // 7
+        count = solves_per_day.get(d, 0)
+        level = min(4, int(count / max(1, max_solves) * 4)) if count > 0 else 0
+        grid[weekday][week] = level
+    # Render
+    day_labels = ["M", " ", "W", " ", "F", " ", "S"]
+    lines = []
+    for row in range(7):
+        label = day_labels[row]
+        chars = "".join(BLOCKS[grid[row][col]] for col in range(weeks))
+        lines.append(f"  {label} {chars}")
+    return "\n".join(lines)
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     exs = list_exercises()
     prog = load_progress()
@@ -209,12 +252,25 @@ def cmd_status(args: argparse.Namespace) -> int:
             print(f"  {marker} {eid}  {path.name}{hint_tag}")
 
     print(f"\nTotal: {total_passed}/{len(exs)} passed")
+    # Streak
+    meta = prog.get("_meta", {})
+    streak = meta.get("streak_days", 0)
+    badges = meta.get("badges", [])
+    if streak > 0:
+        print(f"Streak: {streak} day{'s' if streak != 1 else ''}")
+    if badges:
+        print(f"Badges: {len(badges)} earned")
     for eid, path in exs:
         if prog.get(eid, {}).get("status") != "passed":
             print(f"Next unsolved: {eid}  ({path.name})")
             break
     else:
         print("All clear — you're done!")
+    # Activity heatmap
+    heatmap = _render_heatmap(prog)
+    if heatmap:
+        print(f"\nActivity (last 12 weeks):")
+        print(heatmap)
     return 0
 
 
