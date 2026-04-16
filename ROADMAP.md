@@ -144,10 +144,9 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Deposit `stats.json` alongside `solution.py` on submit for shared metrics
 
 ### XP and level system
-- [ ] Tier-weighted XP: tier1 = 10, tier2 = 25, tier3 = 100, tier4 = 50, tier5 = 15
-- [ ] Bonus XP: no hints (+5), under target time (+3), streak bonus (+2/day)
-- [ ] Levels 1-50 with thresholds; show in `marathon.py status`
-- [ ] Inspired by [boot.dev](https://github.com/bootdotdev/bootdev) gamification
+- [x] Tier-weighted XP: tier1 = 10, tier2 = 25, tier3 = 100, tier4 = 50, tier5 = 15
+- [x] Bonus XP: no hints (+5), under target time (+3)
+- [x] Levels 1-50 (50 XP per level); shown in `marathon.py status`
 
 ### Anki deck export
 - [ ] `marathon.py export-anki` — generate `.apkg` deck from exercise metadata using `genanki`
@@ -201,9 +200,9 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] `/reflect` skill writes output to notes file instead of being ephemeral
 
 ### Challenge mode
-- [ ] `marathon.py challenge --user PEER --exercise NNN` — create a timed challenge
-- [ ] Both users solve the same exercise; compare times and approaches
-- [ ] Store challenges in `answers/challenges.json`
+- [x] `marathon.py challenge-peer NNN --user PEER` — create a timed challenge
+- [x] Store challenges in `answers/challenges.json`
+- [ ] Auto-compare times and approaches when both have solved
 
 ### Discord bot
 - [ ] Stateless bot reading `answers/` from git repo
@@ -217,8 +216,8 @@ These are pure Python, no new deps, each under ~50 lines.
 ## Agent tutor improvements
 
 ### Codex skill surface
-- [ ] `.agents/skills/` repo-local skills as Codex equivalent to Claude slash commands
-- [ ] Mirror key skills: verify, submit, peer, pull-questions
+- [x] `.agents/skills/` repo-local SKILL.md files for Codex CLI
+- [x] verify, submit, peer, pull-questions skills mirroring Claude commands
 
 ### Tutor memory
 - [ ] Persist per-exercise learner context across sessions
@@ -253,9 +252,8 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Inspired by rustlings `lsp` subcommand
 
 ### Two-dimensional exercise addressing
-- [ ] Support `marathon.py run tier2 3` alongside `marathon.py run 012`
-- [ ] More natural for learners who think in tiers
-- [ ] Inspired by [JayAndJef/pythonistas](https://github.com/JayAndJef/pythonistas)
+- [x] `_resolve_exercise_id()` supports `"tier2 3"` format alongside `"012"`
+- [x] Hooked into `cmd_run` for natural tier-based addressing
 
 ### Multiple-choice question mode
 - [ ] Not all exercises need to be code completion
@@ -263,9 +261,9 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Inspired by [learnbyexample/TUI-apps](https://github.com/learnbyexample/TUI-apps) (~979 stars)
 
 ### Kata/repeat mode
-- [ ] `marathon.py kata NNN` — re-solve an exercise from scratch without using `reset`
-- [ ] Tracks repetition count and time improvement across attempts
-- [ ] Inspired by [matthewdeanmartin/kata-python](https://github.com/matthewdeanmartin/kata-python)
+- [x] `marathon.py kata NNN` — restores stub and starts timer, backs up current solution
+- [x] Tracks `kata_count` in progress JSON
+- [x] Inspired by [matthewdeanmartin/kata-python](https://github.com/matthewdeanmartin/kata-python)
 
 ### Textual TUI
 - [ ] Full reactive TUI with keyboard navigation for `marathon.py watch`
@@ -333,7 +331,7 @@ These are pure Python, no new deps, each under ~50 lines.
 
 ## Documentation
 
-- [ ] Contributing guide for adding new exercises
+- [x] CONTRIBUTING.md — guide for adding exercises (scaffold, Exercism import, specs generator, validation)
 - [ ] Exercise difficulty calibration (compare target times to actual solve data from progress JSON)
 - [ ] Video walkthrough for Austin's onboarding
 - [ ] Architecture decision records for key design choices (per-user dirs, honor-system gating, manifest format)

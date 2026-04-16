@@ -92,6 +92,25 @@ def find_exercise(ex_id: str) -> Path | None:
     return None
 
 
+def _resolve_exercise_id(raw: str) -> str | None:
+    """Resolve exercise ID from various formats: '012', 'tier2 3', etc."""
+    if raw and raw[0].isdigit() and len(raw) == 3:
+        return raw
+    # Try tier+index: "tier2 3" -> find 3rd exercise in tier2
+    parts = raw.split()
+    if len(parts) == 2 and parts[0].startswith("tier"):
+        tier_prefix = parts[0]
+        try:
+            idx = int(parts[1]) - 1  # 1-based
+        except ValueError:
+            return None
+        exs = [(eid, path) for eid, path in list_exercises()
+               if tier_prefix in tier_of(path)]
+        if 0 <= idx < len(exs):
+            return exs[idx][0]
+    return None
+
+
 def _load_progress_raw() -> dict:
     if PROGRESS_FILE.exists():
         return json.loads(PROGRESS_FILE.read_text())
@@ -266,6 +285,28 @@ def cmd_status(args: argparse.Namespace) -> int:
             break
     else:
         print("All clear — you're done!")
+    # XP calculation
+    xp = 0
+    manifest = _load_manifest()
+    tier_xp = {"tier1": 10, "tier2": 25, "tier3": 100, "tier4": 50, "tier5": 15}
+    for eid_x, entry_x in prog.items():
+        if eid_x.startswith("_") or not isinstance(entry_x, dict):
+            continue
+        if entry_x.get("status") != "passed":
+            continue
+        info = manifest.get(eid_x, {})
+        tier_key = info.get("tier", "")[:5]
+        base = tier_xp.get(tier_key, 10)
+        bonus = 0
+        if entry_x.get("hints_used", 0) == 0:
+            bonus += 5
+        if entry_x.get("solve_duration_seconds") and info.get("target_minutes"):
+            if entry_x["solve_duration_seconds"] < info["target_minutes"] * 60:
+                bonus += 3
+        xp += base + bonus
+    level = min(50, xp // 50 + 1) if xp > 0 else 0
+    if xp > 0:
+        print(f"XP: {xp}  Level: {level}")
     # Activity heatmap
     heatmap = _render_heatmap(prog)
     if heatmap:
@@ -284,6 +325,11 @@ def cmd_run(args: argparse.Namespace) -> int:
     if ex_id is None:
         print("Usage: marathon.py run NNN  (or --current)")
         return 1
+    # Support 2D addressing: "tier2 3"
+    if ex_id and not find_exercise(ex_id):
+        resolved = _resolve_exercise_id(ex_id)
+        if resolved:
+            ex_id = resolved
     path = find_exercise(ex_id)
     if not path:
         print(f"Exercise {ex_id} not found")
@@ -984,6 +1030,65 @@ def cmd_import(args: argparse.Namespace) -> int:
     return subprocess.run(cmd).returncode
 
 
+def cmd_kata(args: argparse.Namespace) -> int:
+    """Re-solve an exercise from scratch, tracking repetition count and improvement."""
+    ex_id = args.id
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    stub = path / ".meta" / "stub.py"
+    problem = path / "problem.py"
+    if not stub.exists():
+        print(f"No stub for {path.name}")
+        return 1
+    # Save current solution if it exists and differs from stub
+    current = problem.read_text()
+    stub_text = stub.read_text()
+    if current != stub_text:
+        backup = path / ".meta" / "kata_backup.py"
+        shutil.copy(problem, backup)
+    # Restore stub
+    shutil.copy(stub, problem)
+    # Track kata count
+    prog = load_progress()
+    entry = prog.setdefault(ex_id, {})
+    entry["kata_count"] = entry.get("kata_count", 0) + 1
+    save_progress(prog)
+    print(f"Kata #{entry['kata_count']} for {path.name} — stub restored, timer started")
+    return _run_exercise(ex_id, path)
+
+
+
+def cmd_challenge_peer(args: argparse.Namespace) -> int:
+    """Create a timed challenge with a peer."""
+    ex_id = args.id
+    peer = args.user
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    me = _whoami()
+    if me == "default":
+        print("Set your identity first: echo 'yourname' > .marathon_user")
+        return 1
+    challenges_file = ANSWERS_DIR / "challenges.json"
+    challenges = json.loads(challenges_file.read_text()) if challenges_file.exists() else []
+    challenge = {
+        "exercise": ex_id,
+        "challenger": me,
+        "challenged": peer,
+        "created": datetime.now(timezone.utc).isoformat(),
+        "status": "open",
+    }
+    challenges.append(challenge)
+    challenges_file.parent.mkdir(parents=True, exist_ok=True)
+    challenges_file.write_text(json.dumps(challenges, indent=2) + chr(10))
+    print(f"Challenge created: {me} vs {peer} on {path.name}")
+    print(f"Both solve it, then: marathon.py peer {ex_id} --user {peer}")
+    return 0
+
+
 def cmd_lint_exercises(args: argparse.Namespace) -> int:
     """Validate all exercises have the required file layout."""
     exs = list_exercises()
@@ -1085,6 +1190,11 @@ def build_parser() -> argparse.ArgumentParser:
     pi.add_argument("--slugs", required=True, help="Comma-separated exercise slugs")
     pi.add_argument("--tier", default="tier5_exercism_easy", help="Target tier directory")
     pi.add_argument("--dry-run", action="store_true", help="Preview without writing")
+    pk = sub.add_parser("kata", help="Re-solve exercise from scratch (kata mode)")
+    pk.add_argument("id")
+    pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
+    pchal.add_argument("id")
+    pchal.add_argument("--user", required=True, help="Peer to challenge")
     sub.add_parser("lint-exercises", help="Validate exercise file layout")
     pc = sub.add_parser("completion", help="Generate shell completion script")
     pc.add_argument("shell", choices=["bash", "zsh"], help="Shell type")
@@ -1115,6 +1225,8 @@ def main() -> int:
         "verify": cmd_verify,
         "review": cmd_review,
         "import": cmd_import,
+        "kata": cmd_kata,
+        "challenge-peer": cmd_challenge_peer,
         "lint-exercises": cmd_lint_exercises,
         "completion": cmd_completion,
     }
