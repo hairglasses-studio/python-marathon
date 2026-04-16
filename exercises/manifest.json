@@ -1,5 +1,10 @@
 {
   "001": {
+    "companies": [
+      "Google",
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 1,
     "pattern": "basics",
     "slug": "001_fizzbuzz",
@@ -15,6 +20,10 @@
     "tier": "tier1_fluency"
   },
   "002": {
+    "companies": [
+      "Google",
+      "Amazon"
+    ],
     "difficulty": 2,
     "pattern": "counting",
     "slug": "002_word_frequency",
@@ -30,6 +39,9 @@
     "tier": "tier1_fluency"
   },
   "003": {
+    "companies": [
+      "Google"
+    ],
     "difficulty": 3,
     "pattern": "sliding-window",
     "slug": "003_windowed_generator",
@@ -90,6 +102,10 @@
     "tier": "tier1_fluency"
   },
   "007": {
+    "companies": [
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 3,
     "pattern": "heap",
     "slug": "007_topn_tracker",
@@ -135,6 +151,11 @@
     "tier": "tier1_fluency"
   },
   "010": {
+    "companies": [
+      "Google",
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 4,
     "pattern": "dfs",
     "prereqs": [
@@ -153,6 +174,10 @@
     "tier": "tier2_patterns"
   },
   "011": {
+    "companies": [
+      "Google",
+      "Amazon"
+    ],
     "difficulty": 5,
     "pattern": "topological-sort",
     "prereqs": [
@@ -209,6 +234,9 @@
     "tier": "tier2_patterns"
   },
   "014": {
+    "companies": [
+      "Google"
+    ],
     "difficulty": 4,
     "pattern": "hashing",
     "prereqs": [
@@ -245,6 +273,10 @@
     "tier": "tier2_patterns"
   },
   "016": {
+    "companies": [
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 6,
     "pattern": "concurrency",
     "prereqs": [
@@ -263,6 +295,9 @@
     "tier": "tier2_patterns"
   },
   "017": {
+    "companies": [
+      "Amazon"
+    ],
     "difficulty": 5,
     "pattern": "retry-backoff",
     "prereqs": [
@@ -337,6 +372,9 @@
     "tier": "tier2_patterns"
   },
   "021": {
+    "companies": [
+      "Google"
+    ],
     "difficulty": 8,
     "pattern": "recursive-evaluation",
     "prereqs": [
@@ -357,6 +395,10 @@
     "tier": "tier3_canonical"
   },
   "022": {
+    "companies": [
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 8,
     "pattern": "bfs",
     "prereqs": [
@@ -377,6 +419,10 @@
     "tier": "tier3_canonical"
   },
   "023": {
+    "companies": [
+      "Google",
+      "Meta"
+    ],
     "difficulty": 9,
     "pattern": "parsing",
     "prereqs": [
@@ -709,6 +755,10 @@
     "tier": "tier5_exercism_easy"
   },
   "042": {
+    "companies": [
+      "Google",
+      "Amazon"
+    ],
     "difficulty": 4,
     "exercism_difficulty": 0,
     "pattern": "sorting",
@@ -725,6 +775,11 @@
     "tier": "tier5_exercism_medium"
   },
   "043": {
+    "companies": [
+      "Google",
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 4,
     "exercism_difficulty": 0,
     "pattern": "binary-search",
@@ -741,6 +796,10 @@
     "tier": "tier5_exercism_medium"
   },
   "044": {
+    "companies": [
+      "Amazon",
+      "Meta"
+    ],
     "difficulty": 5,
     "exercism_difficulty": 0,
     "pattern": "linked-list",
@@ -805,6 +864,9 @@
     "tier": "tier5_exercism_medium"
   },
   "048": {
+    "companies": [
+      "Google"
+    ],
     "difficulty": 4,
     "exercism_difficulty": 0,
     "pattern": "counting",
@@ -853,6 +915,9 @@
     "tier": "tier5_exercism_medium"
   },
   "051": {
+    "companies": [
+      "Google"
+    ],
     "difficulty": 4,
     "exercism_difficulty": 0,
     "pattern": "dunder-methods",
@@ -902,6 +967,9 @@
     "tier": "tier5_exercism_medium"
   },
   "054": {
+    "companies": [
+      "Amazon"
+    ],
     "difficulty": 3,
     "exercism_difficulty": 0,
     "pattern": "recursion",
@@ -934,6 +1002,9 @@
     "tier": "tier5_exercism_medium"
   },
   "056": {
+    "companies": [
+      "Amazon"
+    ],
     "difficulty": 3,
     "exercism_difficulty": 0,
     "pattern": "math",
@@ -950,6 +1021,10 @@
     "tier": "tier5_exercism_medium"
   },
   "057": {
+    "companies": [
+      "Amazon",
+      "Google"
+    ],
     "difficulty": 4,
     "exercism_difficulty": 0,
     "pattern": "validation",

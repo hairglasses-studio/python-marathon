@@ -261,8 +261,49 @@ def _render_heatmap(prog: dict) -> str:
     return "\n".join(lines)
 
 
+def _status_all(exs: list) -> int:
+    """Combined progress view across all users."""
+    data = _load_progress_raw()
+    manifest = _load_manifest()
+    tier_xp = {"tier1": 10, "tier2": 25, "tier3": 100, "tier4": 50, "tier5": 15}
+    users: list[tuple[int, int, str]] = []
+    for user, prog in sorted(data.items()):
+        if user.startswith("_") or not isinstance(prog, dict):
+            continue
+        solved = sum(1 for eid, e in prog.items()
+                     if not eid.startswith("_") and isinstance(e, dict) and e.get("status") == "passed")
+        xp = 0
+        for eid, e in prog.items():
+            if eid.startswith("_") or not isinstance(e, dict) or e.get("status") != "passed":
+                continue
+            info = manifest.get(eid, {})
+            xp += tier_xp.get(info.get("tier", "")[:5], 10)
+        streak = prog.get("_meta", {}).get("streak_days", 0)
+        badges = len(prog.get("_meta", {}).get("badges", []))
+        users.append((xp, solved, user))
+        print(f"\n[{user}]  {solved}/{len(exs)} solved  XP: {xp}  Streak: {streak}d  Badges: {badges}")
+    if not users:
+        print("No user progress found.")
+    # Peer notifications
+    for xp_val, solved_val, user in users:
+        peer_answers = ANSWERS_DIR
+        if peer_answers.is_dir():
+            for peer_dir in peer_answers.iterdir():
+                if peer_dir.is_dir() and peer_dir.name != user and not peer_dir.name.startswith("."):
+                    peer_exs = {d.name for d in peer_dir.iterdir() if d.is_dir() and (d / "solution.py").exists()}
+                    user_prog = data.get(user, {})
+                    viewable = [eid for eid in peer_exs
+                                if isinstance(user_prog.get(eid), dict) and user_prog[eid].get("status") == "passed"]
+                    if viewable:
+                        print(f"  {peer_dir.name} has {len(viewable)} answer(s) you can view: marathon.py peer <NNN> --user {peer_dir.name}")
+    return 0
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     exs = list_exercises()
+    # Multi-user view
+    if getattr(args, "all", False):
+        return _status_all(exs)
     prog = load_progress()
     if not exs:
         print("No exercises found under tier dirs — did the converter run?")
@@ -544,10 +585,15 @@ def cmd_list(args: argparse.Namespace) -> int:
     exs = list_exercises()
     prog = load_progress()
     found = False
+    manifest = _load_manifest()
     for eid, path in exs:
         tier = tier_of(path)
         if args.tier is not None and f"tier{args.tier}" not in tier:
             continue
+        if getattr(args, "company", None):
+            companies = [c.lower() for c in manifest.get(eid, {}).get("companies", [])]
+            if args.company.lower() not in companies:
+                continue
         status = prog.get(eid, {}).get("status", "untouched")
         print(f"{eid}  [{tier:16s}]  {status:10s}  {path.name}")
     return 0
@@ -1658,7 +1704,8 @@ def cmd_completion(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="marathon", description="Interview prep exercise runner")
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("status", help="Show tier progress + next unsolved")
+    pst_cmd = sub.add_parser("status", help="Show tier progress + next unsolved")
+    pst_cmd.add_argument("--all", action="store_true", help="Show all users")
     pr = sub.add_parser("run", help="Run tests for an exercise")
     pr.add_argument("id", nargs="?", default=None)
     pr.add_argument("--current", action="store_true")
@@ -1676,6 +1723,7 @@ def build_parser() -> argparse.ArgumentParser:
     prs.add_argument("id")
     pl = sub.add_parser("list", help="List all exercises")
     pl.add_argument("--tier", type=int, default=None)
+    pl.add_argument("--company", default=None, help="Filter by company tag (e.g. google)")
     ps = sub.add_parser("submit", help="Save your passing solution to answers/")
     ps.add_argument("id")
     ps.add_argument("--git", action="store_true", help="Auto git-add and commit")

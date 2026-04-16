@@ -68,11 +68,11 @@ Each item is shippable in one dev-loop iteration.
 - [x] **Pattern taxonomy** — `"pattern"` field on all 61 manifest entries; `marathon.py pattern` shows solved/total per pattern; `next --pattern X` filters
 - [x] **Named curated shortlists** — `curations.json` with 7 tracks; `marathon.py curated [NAME]`; `next --curated NAME`
 - [x] **Concept prerequisite DAG** — `"prereqs"` on 22 exercises; `recommend` gates on prereqs; `marathon.py map NNN` prints tree
-- [ ] **Company tags** — add `"companies"` to manifest; `list --company google`
+- [x] **Company tags** — `"companies"` on 20 exercises; `list --company google` filters
 - [x] **LSP config generation** — `marathon.py lsp NNN` generates `pyrightconfig.json` per exercise
 - [x] **Shared exercise notes** — `marathon.py notes NNN` opens `answers/<user>/NNN/notes.md` in `$EDITOR`
-- [ ] **`status --all`** — combined multi-user progress view
-- [ ] **Peer notification** — flag in `status` when partner has new viewable answers
+- [x] **`status --all`** — combined multi-user progress view with XP, streak, badges per user
+- [x] **Peer notification** — `status --all` flags when partner has viewable answers you can peer
 - [ ] **stats NNN** — per-exercise aggregate from peer `answers/` files
 - [ ] **shields.io badge** — CI writes `stats --json` to gist; badge in README
 - [ ] **Linter improvements** — check hints.md sections, notes.md exists, README sections, manifest completeness, test function count
