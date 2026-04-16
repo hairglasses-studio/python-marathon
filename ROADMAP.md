@@ -120,9 +120,9 @@
 - [x] Zero deps; source: `rustup doctor`, `brew doctor`
 
 ### `marathon.py deps` — optional dependency table
-- [ ] Print feature→package table with installed/missing status for: `rich`, `radon`, `watchdog`, `genanki`, `py-fsrs`, `hypothesis`, `shtab`, `watchdog`
-- [ ] `marathon.py deps install rich radon` — runs `pip install` for named optional deps
-- [ ] Makes the implicit optional-dep system explicit and self-documenting
+- [x] Print feature→package table with installed/missing status for 7 optional deps
+- [x] `marathon.py deps --install rich radon` — runs pip install for named packages
+- [x] Makes the implicit optional-dep system explicit and self-documenting
 
 ### `marathon.py stats [NNN]` + shields.io badge
 - [x] `marathon.py stats --json` — emit JSON with solved/total/pct/xp/level/streak/badges

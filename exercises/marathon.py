@@ -1106,6 +1106,39 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_deps(args: argparse.Namespace) -> int:
+    """Show optional dependency status and install helpers."""
+    OPT_DEPS = [
+        ("rich", "Rich terminal output (colored tables, progress bars, syntax highlighting)"),
+        ("radon", "Code quality scoring (cyclomatic complexity, maintainability index)"),
+        ("watchdog", "Filesystem watcher (replaces mtime polling in watch mode)"),
+        ("genanki", "Anki deck export (spaced repetition flashcards)"),
+        ("fsrs", "FSRS scheduler (upgrade from SM-2 for review command)"),
+        ("hypothesis", "Property-based testing (fuzz exercise solutions)"),
+        ("shtab", "Shell completion generation (zsh/bash)"),
+    ]
+    if args.install:
+        pkgs = args.install
+        print(f"Installing: {', '.join(pkgs)}")
+        cmd = [sys.executable, "-m", "pip", "install"] + pkgs
+        return subprocess.run(cmd).returncode
+
+    print()
+    print(f"  {'Package':15s}  {'Status':10s}  Description")
+    print(f"  {'-------':15s}  {'------':10s}  -----------")
+    for pkg, desc in OPT_DEPS:
+        try:
+            __import__(pkg)
+            status = "installed"
+        except ImportError:
+            status = "missing"
+        marker = "✓" if status == "installed" else "·"
+        print(f"  {marker} {pkg:13s}  {status:10s}  {desc}")
+    print()
+    print("Install with: marathon.py deps --install rich radon")
+    return 0
+
+
 def cmd_stats(args: argparse.Namespace) -> int:
     """Show progress statistics, optionally as JSON for CI."""
     prog = load_progress()
@@ -1390,6 +1423,8 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    pdp = sub.add_parser("deps", help="Show optional dependency status")
+    pdp.add_argument("--install", nargs="+", help="Install named packages")
     pst = sub.add_parser("stats", help="Show progress statistics")
     pst.add_argument("--json", action="store_true", help="JSON output for CI")
     sub.add_parser("migrate", help="Apply progress file migrations")
@@ -1428,6 +1463,7 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "deps": cmd_deps,
         "stats": cmd_stats,
         "migrate": cmd_migrate,
         "doctor": cmd_doctor,
