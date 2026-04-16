@@ -86,7 +86,7 @@
 - [x] **Manifest backfill for 042-061** — all 20 medium Exercism exercises now have `difficulty`, `tags`, and `target_minutes`
 - [ ] **Hints backfill for Exercism exercises (032-061)** — all 30 Exercism exercises have generic 3-line boilerplate hints; replace with substantive 3-level authored hints (can use LLM-assisted generation from README + test content)
 - [x] **Tier5-clear badges** — `badges.json` now has tier5-easy-clear and tier5-medium-clear (16 badges total)
-- [ ] **Peer challenge resolution** — `challenge-peer` creates the JSON record but there is no auto-compare, notification, or resolution flow; add `marathon.py peer-status` to show open challenges and winner when both solve
+- [x] **Peer challenge resolution** — `marathon.py peer-status` shows open challenges, who's solved, and prompts `peer` comparison when both done
 
 ---
 
@@ -163,8 +163,8 @@
 - [ ] Enhancement: AST-normalized diff — normalize variable names before diffing; source: [exercism/python-representer](https://github.com/exercism/python-representer)
 
 ### Leaderboard
-- [ ] `marathon.py leaderboard [--tier N]` — reads all `answers/<user>/` dirs, aggregates solve count + XP per user
-- [ ] Sort by: tier completion, total solved, average quality score
+- [x] `marathon.py leaderboard` — reads `answers/<user>/` dirs, shows solve count + XP + progress bar per user
+- [x] Sorted by XP descending
 - [ ] Deposit `stats.json` alongside `solution.py` on submit for shared metrics
 
 ### Anki deck export

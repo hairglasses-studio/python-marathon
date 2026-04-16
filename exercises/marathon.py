@@ -1106,6 +1106,84 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_leaderboard(args: argparse.Namespace) -> int:
+    """Show leaderboard from submitted answers across all users."""
+    if not ANSWERS_DIR.is_dir():
+        print("No answers directory yet.")
+        return 0
+    manifest = _load_manifest()
+    total = len(manifest)
+    tier_xp = {"tier1": 10, "tier2": 25, "tier3": 100, "tier4": 50, "tier5": 15}
+    users: list[tuple[int, int, str]] = []
+    for user_dir in sorted(ANSWERS_DIR.iterdir()):
+        if not user_dir.is_dir() or user_dir.name.startswith("."):
+            continue
+        solved = 0
+        xp = 0
+        for ex_dir in user_dir.iterdir():
+            if not ex_dir.is_dir():
+                continue
+            sol = ex_dir / "solution.py"
+            if sol.exists():
+                solved += 1
+                eid = ex_dir.name
+                info = manifest.get(eid, {})
+                tier_key = info.get("tier", "")[:5]
+                xp += tier_xp.get(tier_key, 10)
+        if solved > 0:
+            users.append((xp, solved, user_dir.name))
+    if not users:
+        print("No submitted answers yet. Use: marathon.py submit NNN")
+        return 0
+    users.sort(reverse=True)
+    print()
+    print(f"  {'User':15s}  {'Solved':>6s}  {'XP':>5s}  {'Progress':>8s}")
+    print(f"  {'----':15s}  {'------':>6s}  {'--':>5s}  {'--------':>8s}")
+    for xp, solved, name in users:
+        pct = round(solved / total * 100) if total else 0
+        bar_len = min(20, solved * 20 // max(1, total))
+        bar = "█" * bar_len + "░" * (20 - bar_len)
+        print(f"  {name:15s}  {solved:6d}  {xp:5d}  {bar} {pct}%")
+    return 0
+
+
+
+def cmd_peer_status(args: argparse.Namespace) -> int:
+    """Show open peer challenges and their resolution status."""
+    challenges_file = ANSWERS_DIR / "challenges.json"
+    if not challenges_file.exists():
+        print("No challenges yet. Create one with: marathon.py challenge-peer NNN --user NAME")
+        return 0
+    challenges = json.loads(challenges_file.read_text())
+    if not challenges:
+        print("No challenges recorded.")
+        return 0
+    manifest = _load_manifest()
+    print()
+    for i, ch in enumerate(challenges):
+        eid = ch["exercise"]
+        info = manifest.get(eid, {})
+        slug = info.get("slug", eid)
+        challenger = ch["challenger"]
+        challenged = ch["challenged"]
+        # Check if both have submitted
+        c1_solved = (ANSWERS_DIR / challenger / eid / "solution.py").exists()
+        c2_solved = (ANSWERS_DIR / challenged / eid / "solution.py").exists()
+        if c1_solved and c2_solved:
+            status = "both solved"
+        elif c1_solved:
+            status = f"{challenger} solved, waiting on {challenged}"
+        elif c2_solved:
+            status = f"{challenged} solved, waiting on {challenger}"
+        else:
+            status = "neither solved yet"
+        created = ch.get("created", "?")[:10]
+        print(f"  [{created}] {slug}: {challenger} vs {challenged} — {status}")
+        if c1_solved and c2_solved:
+            print(f"    Compare: marathon.py peer {eid} --user {challenged}")
+    return 0
+
+
 def cmd_deps(args: argparse.Namespace) -> int:
     """Show optional dependency status and install helpers."""
     OPT_DEPS = [
@@ -1423,6 +1501,8 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    sub.add_parser("leaderboard", help="Show leaderboard from submitted answers")
+    sub.add_parser("peer-status", help="Show open peer challenges")
     pdp = sub.add_parser("deps", help="Show optional dependency status")
     pdp.add_argument("--install", nargs="+", help="Install named packages")
     pst = sub.add_parser("stats", help="Show progress statistics")
@@ -1463,6 +1543,8 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "leaderboard": cmd_leaderboard,
+        "peer-status": cmd_peer_status,
         "deps": cmd_deps,
         "stats": cmd_stats,
         "migrate": cmd_migrate,
