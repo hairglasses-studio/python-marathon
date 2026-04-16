@@ -787,10 +787,14 @@ def cmd_recommend(args: argparse.Namespace) -> int:
             solved_ids.add(eid)
             for t in manifest.get(eid, {}).get("tags", []):
                 solved_tags.add(t)
-    # Score unsolved exercises by new-tag coverage
+    # Score unsolved exercises by new-tag coverage + prereq readiness
     candidates: list[tuple[int, int, str, str, list[str]]] = []
     for eid, info in sorted(manifest.items()):
         if eid in solved_ids:
+            continue
+        # Check prereqs are satisfied
+        prereqs = info.get("prereqs", [])
+        if prereqs and not all(p in solved_ids for p in prereqs):
             continue
         tags = info.get("tags", [])
         new_tags = [t for t in tags if t not in solved_tags]
@@ -1139,6 +1143,54 @@ def _load_curations() -> dict:
     if CURATIONS_FILE.exists():
         return json.loads(CURATIONS_FILE.read_text())
     return {}
+
+
+def cmd_notes(args: argparse.Namespace) -> int:
+    """Open or create personal notes for an exercise."""
+    import os
+    ex_id = args.id
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    user = _whoami()
+    if user == "default":
+        print("Set your identity first: echo 'yourname' > .marathon_user")
+        return 1
+    notes_dir = ANSWERS_DIR / user / ex_id
+    notes_dir.mkdir(parents=True, exist_ok=True)
+    notes_file = notes_dir / "notes.md"
+    if not notes_file.exists():
+        notes_file.write_text(f"# Notes for {path.name}\n\n")
+    editor = os.environ.get("EDITOR", "nano")
+    return subprocess.run([editor, str(notes_file)]).returncode
+
+
+def cmd_map(args: argparse.Namespace) -> int:
+    """Print the prerequisite chain for an exercise as a tree."""
+    manifest = _load_manifest()
+    ex_id = args.id
+    if ex_id not in manifest:
+        print(f"Exercise {ex_id} not found in manifest")
+        return 1
+
+    def _tree(eid: str, indent: int = 0, visited: set | None = None) -> None:
+        if visited is None:
+            visited = set()
+        info = manifest.get(eid, {})
+        slug = info.get("slug", eid)
+        prefix = "  " * indent + ("\u2514\u2500 " if indent > 0 else "")
+        marker = " (circular)" if eid in visited else ""
+        print(f"{prefix}{eid} {slug}{marker}")
+        if eid in visited:
+            return
+        visited.add(eid)
+        for dep in info.get("prereqs", []):
+            _tree(dep, indent + 1, visited.copy())
+
+    print()
+    _tree(ex_id)
+    return 0
 
 
 def cmd_curated(args: argparse.Namespace) -> int:
@@ -1659,6 +1711,10 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    pno = sub.add_parser("notes", help="Open personal notes for an exercise")
+    pno.add_argument("id")
+    pma = sub.add_parser("map", help="Show prerequisite chain for an exercise")
+    pma.add_argument("id")
     pcu = sub.add_parser("curated", help="List or show curated exercise tracks")
     pcu.add_argument("name", nargs="?", default=None, help="Track name")
     sub.add_parser("pattern", help="Show all patterns with solved/total")
@@ -1709,6 +1765,8 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "notes": cmd_notes,
+        "map": cmd_map,
         "curated": cmd_curated,
         "pattern": cmd_pattern,
         "diff": cmd_diff,

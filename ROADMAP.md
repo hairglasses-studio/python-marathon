@@ -11,8 +11,9 @@
 - [x] `scripts/generate_from_specs.py` — auto-generate tests from `canonical-data.json`
 - [x] `scripts/backfill_manifest.py` — one-shot manifest generator
 - [x] All 61 exercises verified passing under Python 3.10
+- [x] `openai-interview` curated track preserving the original 26 OpenAI prep exercises
 
-### CLI runner (33 subcommands)
+### CLI runner (38 subcommands)
 - [x] Core: `status`, `run`, `next`, `list`, `watch`, `hint`, `reveal`, `reset`
 - [x] Collaboration: `submit [--git]`, `peer`, `challenge-peer`, `peer-status`, `diff`, `leaderboard`
 - [x] Discovery: `tag [--filter]`, `recommend`, `challenge [--tier]`, `badges`
@@ -66,10 +67,10 @@ Each item is shippable in one dev-loop iteration.
 - [ ] **Self-report quality rating** — after review solve, prompt `[0=forgot 1=hard 2=ok 3=easy]` via `termios`; feed into SM-2 quality
 - [x] **Pattern taxonomy** — `"pattern"` field on all 61 manifest entries; `marathon.py pattern` shows solved/total per pattern; `next --pattern X` filters
 - [x] **Named curated shortlists** — `curations.json` with 7 tracks; `marathon.py curated [NAME]`; `next --curated NAME`
-- [ ] **Concept prerequisite DAG** — `"prereqs"` in manifest; `recommend` upgrades to topo-sort; `marathon.py map NNN` prints chain
+- [x] **Concept prerequisite DAG** — `"prereqs"` on 22 exercises; `recommend` gates on prereqs; `marathon.py map NNN` prints tree
 - [ ] **Company tags** — add `"companies"` to manifest; `list --company google`
 - [x] **LSP config generation** — `marathon.py lsp NNN` generates `pyrightconfig.json` per exercise
-- [ ] **Shared exercise notes** — `answers/<user>/NNN/notes.md`; `marathon.py notes NNN` opens in `$EDITOR`; `/reflect` writes to it
+- [x] **Shared exercise notes** — `marathon.py notes NNN` opens `answers/<user>/NNN/notes.md` in `$EDITOR`
 - [ ] **`status --all`** — combined multi-user progress view
 - [ ] **Peer notification** — flag in `status` when partner has new viewable answers
 - [ ] **stats NNN** — per-exercise aggregate from peer `answers/` files

@@ -137,6 +137,9 @@
   "010": {
     "difficulty": 4,
     "pattern": "dfs",
+    "prereqs": [
+      "001"
+    ],
     "slug": "010_dfs_traversal",
     "source": "openai-prep",
     "source_id": null,
@@ -152,6 +155,9 @@
   "011": {
     "difficulty": 5,
     "pattern": "topological-sort",
+    "prereqs": [
+      "010"
+    ],
     "slug": "011_topo_sort_kahn",
     "source": "openai-prep",
     "source_id": null,
@@ -168,6 +174,9 @@
   "012": {
     "difficulty": 5,
     "pattern": "cycle-detection",
+    "prereqs": [
+      "010"
+    ],
     "slug": "012_three_color_cycle",
     "source": "openai-prep",
     "source_id": null,
@@ -183,6 +192,10 @@
   "013": {
     "difficulty": 5,
     "pattern": "dfs",
+    "prereqs": [
+      "010",
+      "011"
+    ],
     "slug": "013_transitive_dependents",
     "source": "openai-prep",
     "source_id": null,
@@ -198,6 +211,9 @@
   "014": {
     "difficulty": 4,
     "pattern": "hashing",
+    "prereqs": [
+      "002"
+    ],
     "slug": "014_content_addressed_cache",
     "source": "openai-prep",
     "source_id": null,
@@ -213,6 +229,9 @@
   "015": {
     "difficulty": 5,
     "pattern": "versioned-data-structure",
+    "prereqs": [
+      "005"
+    ],
     "slug": "015_time_travel_ledger",
     "source": "openai-prep",
     "source_id": null,
@@ -228,6 +247,9 @@
   "016": {
     "difficulty": 6,
     "pattern": "concurrency",
+    "prereqs": [
+      "009"
+    ],
     "slug": "016_per_key_locking",
     "source": "openai-prep",
     "source_id": null,
@@ -243,6 +265,9 @@
   "017": {
     "difficulty": 5,
     "pattern": "retry-backoff",
+    "prereqs": [
+      "001"
+    ],
     "slug": "017_budget_retry",
     "source": "openai-prep",
     "source_id": null,
@@ -258,6 +283,10 @@
   "018": {
     "difficulty": 5,
     "pattern": "concurrency",
+    "prereqs": [
+      "009",
+      "016"
+    ],
     "slug": "018_gpu_credit_manager",
     "source": "openai-prep",
     "source_id": null,
@@ -273,6 +302,9 @@
   "019": {
     "difficulty": 4,
     "pattern": "parsing",
+    "prereqs": [
+      "006"
+    ],
     "slug": "019_path_normalize",
     "source": "openai-prep",
     "source_id": null,
@@ -288,6 +320,10 @@
   "020": {
     "difficulty": 5,
     "pattern": "iterator-protocol",
+    "prereqs": [
+      "003",
+      "005"
+    ],
     "slug": "020_resumable_iterator",
     "source": "openai-prep",
     "source_id": null,
@@ -303,6 +339,10 @@
   "021": {
     "difficulty": 8,
     "pattern": "recursive-evaluation",
+    "prereqs": [
+      "006",
+      "010"
+    ],
     "slug": "021_spreadsheet_formula",
     "source": "openai-prep",
     "source_id": null,
@@ -319,6 +359,10 @@
   "022": {
     "difficulty": 8,
     "pattern": "bfs",
+    "prereqs": [
+      "009",
+      "010"
+    ],
     "slug": "022_multithreaded_crawler",
     "source": "openai-prep",
     "source_id": null,
@@ -335,6 +379,10 @@
   "023": {
     "difficulty": 9,
     "pattern": "parsing",
+    "prereqs": [
+      "006",
+      "014"
+    ],
     "slug": "023_in_memory_sql",
     "source": "openai-prep",
     "source_id": null,
@@ -351,6 +399,10 @@
   "024": {
     "difficulty": 7,
     "pattern": "topological-sort",
+    "prereqs": [
+      "011",
+      "013"
+    ],
     "slug": "024_dep_graph_warmup",
     "source": "openai-prep",
     "source_id": null,
@@ -366,6 +418,9 @@
   "025": {
     "difficulty": 7,
     "pattern": "versioned-data-structure",
+    "prereqs": [
+      "015"
+    ],
     "slug": "025_versioned_kv_warmup",
     "source": "openai-prep",
     "source_id": null,
@@ -381,6 +436,9 @@
   "026": {
     "difficulty": 7,
     "pattern": "retry-backoff",
+    "prereqs": [
+      "017"
+    ],
     "slug": "026_tool_retry_warmup",
     "source": "openai-prep",
     "source_id": null,
@@ -397,6 +455,9 @@
   "027": {
     "difficulty": 5,
     "pattern": "concurrency",
+    "prereqs": [
+      "009"
+    ],
     "slug": "027_async_gather",
     "source": "hand-written",
     "source_id": null,
@@ -413,6 +474,10 @@
   "028": {
     "difficulty": 5,
     "pattern": "retry-backoff",
+    "prereqs": [
+      "017",
+      "027"
+    ],
     "slug": "028_async_retry",
     "source": "hand-written",
     "source_id": null,
@@ -428,6 +493,9 @@
   "029": {
     "difficulty": 6,
     "pattern": "producer-consumer",
+    "prereqs": [
+      "027"
+    ],
     "slug": "029_async_queue",
     "source": "hand-written",
     "source_id": null,
@@ -444,6 +512,10 @@
   "030": {
     "difficulty": 6,
     "pattern": "iterator-protocol",
+    "prereqs": [
+      "003",
+      "027"
+    ],
     "slug": "030_async_iterator",
     "source": "hand-written",
     "source_id": null,
@@ -459,6 +531,10 @@
   "031": {
     "difficulty": 7,
     "pattern": "concurrency",
+    "prereqs": [
+      "026",
+      "027"
+    ],
     "slug": "031_async_tool_loop",
     "source": "hand-written",
     "source_id": null,
