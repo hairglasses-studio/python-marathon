@@ -1,6 +1,6 @@
-# Marathon Exercise Bank — OpenAI Interview Prep
+# Marathon Exercise Bank
 
-Standalone pytest-checkable Python exercises extracted from the interview-prep notebooks. Designed to be marathoned in order of increasing complexity without touching a Jupyter kernel.
+Standalone pytest-checkable Python exercises designed to be marathoned in order of increasing complexity. Rustlings-for-Python, focused on the patterns that show up in senior-level Python interviews.
 
 ## The 90-second pitch
 
@@ -71,17 +71,6 @@ pytest                                    # Everything (47 exercises, ~45 will f
 
 Pytest finds `test_problem.py` via `pytest.ini`, and each exercise's directory is auto-added to `sys.path` so `from problem import foo` works without an `__init__.py`.
 
-## Notebooks this replaces
+## Origin
 
-These exercises are extracted from the Jupyter notebooks in `docs/interview-prep/` — the notebooks stay in place as reference. Each exercise's `README.md` links back to the source cell range.
-
-- `openai-python-refresher.ipynb` → Tier 1 (mostly) + some Tier 2
-- `openai-primitives-refresher.ipynb` → Tier 2 (patterns)
-- `openai-devprod-2026-04-16.ipynb` → Tier 2 + Tier 3 (warm-ups as multi-gate)
-- `openai-extra-problems.ipynb` → Tier 3 (canonical 4-gate problems)
-
-Tier 4 async is new content, not in the notebooks — fills the gap `openai.md` §12.4 flags as interview-fair-game.
-
-## Future: extraction to a public repo
-
-Post-interview, the harness (`marathon.py` + exercise template + converter script) could be extracted to a generic public repo like `python-marathon`. The OpenAI-specific exercise bank stays private in `docs/interview-prep/`.
+Tiers 1-3 were bootstrapped from private Jupyter notebooks via `scripts/build_exercises.py` — each exercise's `README.md` retains the source cell range as metadata. Tier 4 async is new hand-written content; all 5 reference solutions were validated against their own tests before being committed.

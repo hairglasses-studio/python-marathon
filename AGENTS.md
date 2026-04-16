@@ -115,14 +115,13 @@ If you're adding exercises to a public repo, **don't check in solutions to the p
 
 ## Sensitivity rules
 
-- **No personal paths or identifiers** in exercise content. Original OpenAI-specific README text was preserved in some exercise READMEs — if publishing, run a grep pass for `openai`, `anthropic`, specific dates, or interviewer names and replace with generic language.
+- **No personal paths or identifiers** in exercise content. A scrub pass was done on the initial commit to remove interviewer names and overly-specific framing. When adding new content, keep the tone generic — refer to "interview prep" rather than any specific company/panel/date.
 - **No `.env` files** — nothing here needs secrets.
-- **No pushing to GitHub without explicit user approval.** The repo is currently local-only.
+- **Mirror conventions**: `AGENTS.md` is canonical; `CLAUDE.md` and `GEMINI.md` are thin mirrors. Don't duplicate content across them.
 
 ## Repo status
 
 - Created: 2026-04-15
-- Origin: extracted from `~/hairglasses-studio/jobb/docs/interview-prep/` on the day before an OpenAI SWE interview
+- Origin: extracted from a private interview-prep directory on the day before a senior Python interview; the exercise bank and harness are generic and reusable.
 - Current exercise count: 31 (9 tier1 + 11 tier2 + 6 tier3 + 5 tier4)
 - All Tier 4 async solutions validated against their own tests
-- Not yet pushed to GitHub — local only
