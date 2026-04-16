@@ -9,22 +9,35 @@ _shtab_marathon_commands() {
     "challenge:"
     "challenge-peer:"
     "completion:"
+    "curated:"
+    "deps:"
+    "diff:"
+    "doctor:"
     "export:"
     "export-obsidian:"
     "hint:"
     "import:"
     "import-progress:"
     "kata:"
+    "leaderboard:"
     "lint-exercises:"
     "list:"
+    "lsp:"
+    "map:"
+    "migrate:"
     "new:"
     "next:"
+    "notes:"
+    "pattern:"
     "peer:"
+    "peer-status:"
     "recommend:"
     "reset:"
     "reveal:"
     "review:"
     "run:"
+    "shell:"
+    "stats:"
     "status:"
     "submit:"
     "tag:"
@@ -74,6 +87,38 @@ _shtab_marathon_completion_options=(
 # guard to ensure default positional specs are added only once per session
 _shtab_marathon_completion_defaults_added=0
 
+_shtab_marathon_curated_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  ":Track name:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_curated_defaults_added=0
+
+_shtab_marathon_deps_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--install[Install named packages]:install:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_deps_defaults_added=0
+
+_shtab_marathon_diff_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--user[Peer to diff against]:user:"
+  ":id:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_diff_defaults_added=0
+
+_shtab_marathon_doctor_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_doctor_defaults_added=0
+
 _shtab_marathon_export_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
 )
@@ -119,11 +164,19 @@ _shtab_marathon_import_progress_defaults_added=0
 
 _shtab_marathon_kata_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--history[Show kata attempt history]"
   ":id:"
 )
 
 # guard to ensure default positional specs are added only once per session
 _shtab_marathon_kata_defaults_added=0
+
+_shtab_marathon_leaderboard_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_leaderboard_defaults_added=0
 
 _shtab_marathon_lint_exercises_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
@@ -135,10 +188,34 @@ _shtab_marathon_lint_exercises_defaults_added=0
 _shtab_marathon_list_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
   "--tier[]:tier:"
+  "--company[Filter by company tag (e.g. google)]:company:"
 )
 
 # guard to ensure default positional specs are added only once per session
 _shtab_marathon_list_defaults_added=0
+
+_shtab_marathon_lsp_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  ":id:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_lsp_defaults_added=0
+
+_shtab_marathon_map_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  ":id:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_map_defaults_added=0
+
+_shtab_marathon_migrate_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_migrate_defaults_added=0
 
 _shtab_marathon_new_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
@@ -153,10 +230,27 @@ _shtab_marathon_new_defaults_added=0
 
 _shtab_marathon_next_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--pattern[Filter by pattern]:pattern:"
+  "--curated[Follow a curated track]:curated:"
 )
 
 # guard to ensure default positional specs are added only once per session
 _shtab_marathon_next_defaults_added=0
+
+_shtab_marathon_notes_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  ":id:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_notes_defaults_added=0
+
+_shtab_marathon_pattern_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_pattern_defaults_added=0
 
 _shtab_marathon_peer_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
@@ -166,6 +260,13 @@ _shtab_marathon_peer_options=(
 
 # guard to ensure default positional specs are added only once per session
 _shtab_marathon_peer_defaults_added=0
+
+_shtab_marathon_peer_status_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_peer_status_defaults_added=0
 
 _shtab_marathon_recommend_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
@@ -206,8 +307,25 @@ _shtab_marathon_run_options=(
 # guard to ensure default positional specs are added only once per session
 _shtab_marathon_run_defaults_added=0
 
+_shtab_marathon_shell_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  ":id:"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_shell_defaults_added=0
+
+_shtab_marathon_stats_options=(
+  "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--json[JSON output for CI]"
+)
+
+# guard to ensure default positional specs are added only once per session
+_shtab_marathon_stats_defaults_added=0
+
 _shtab_marathon_status_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--all[Show all users]"
 )
 
 # guard to ensure default positional specs are added only once per session
@@ -232,6 +350,7 @@ _shtab_marathon_tag_defaults_added=0
 
 _shtab_marathon_verify_options=(
   "(- : *)"{-h,--help}"[show this help message and exit]"
+  "--changed-only[Only verify exercises with changed files]"
 )
 
 # guard to ensure default positional specs are added only once per session
@@ -268,22 +387,35 @@ _shtab_marathon() {
         challenge) _arguments -C -s $_shtab_marathon_challenge_options ;;
         challenge-peer) _arguments -C -s $_shtab_marathon_challenge_peer_options ;;
         completion) _arguments -C -s $_shtab_marathon_completion_options ;;
+        curated) _arguments -C -s $_shtab_marathon_curated_options ;;
+        deps) _arguments -C -s $_shtab_marathon_deps_options ;;
+        diff) _arguments -C -s $_shtab_marathon_diff_options ;;
+        doctor) _arguments -C -s $_shtab_marathon_doctor_options ;;
         export) _arguments -C -s $_shtab_marathon_export_options ;;
         export-obsidian) _arguments -C -s $_shtab_marathon_export_obsidian_options ;;
         hint) _arguments -C -s $_shtab_marathon_hint_options ;;
         import) _arguments -C -s $_shtab_marathon_import_options ;;
         import-progress) _arguments -C -s $_shtab_marathon_import_progress_options ;;
         kata) _arguments -C -s $_shtab_marathon_kata_options ;;
+        leaderboard) _arguments -C -s $_shtab_marathon_leaderboard_options ;;
         lint-exercises) _arguments -C -s $_shtab_marathon_lint_exercises_options ;;
         list) _arguments -C -s $_shtab_marathon_list_options ;;
+        lsp) _arguments -C -s $_shtab_marathon_lsp_options ;;
+        map) _arguments -C -s $_shtab_marathon_map_options ;;
+        migrate) _arguments -C -s $_shtab_marathon_migrate_options ;;
         new) _arguments -C -s $_shtab_marathon_new_options ;;
         next) _arguments -C -s $_shtab_marathon_next_options ;;
+        notes) _arguments -C -s $_shtab_marathon_notes_options ;;
+        pattern) _arguments -C -s $_shtab_marathon_pattern_options ;;
         peer) _arguments -C -s $_shtab_marathon_peer_options ;;
+        peer-status) _arguments -C -s $_shtab_marathon_peer_status_options ;;
         recommend) _arguments -C -s $_shtab_marathon_recommend_options ;;
         reset) _arguments -C -s $_shtab_marathon_reset_options ;;
         reveal) _arguments -C -s $_shtab_marathon_reveal_options ;;
         review) _arguments -C -s $_shtab_marathon_review_options ;;
         run) _arguments -C -s $_shtab_marathon_run_options ;;
+        shell) _arguments -C -s $_shtab_marathon_shell_options ;;
+        stats) _arguments -C -s $_shtab_marathon_stats_options ;;
         status) _arguments -C -s $_shtab_marathon_status_options ;;
         submit) _arguments -C -s $_shtab_marathon_submit_options ;;
         tag) _arguments -C -s $_shtab_marathon_tag_options ;;

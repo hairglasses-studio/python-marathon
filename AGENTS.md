@@ -86,7 +86,7 @@ NNN_slug/
 
 ### marathon.py design
 
-Single file, no external deps, 25 subcommands. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
+Single file, no external deps, 38 subcommands. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
 
 - `status` — tier progress table, XP, streak, badges, activity heatmap
 - `run NNN [--current]` — run tests for one exercise (supports 2D addressing: `tier2 3`)
@@ -109,7 +109,18 @@ Single file, no external deps, 25 subcommands. Uses `subprocess.run` to invoke p
 - `import-progress FILE` — merge progress from another machine
 - `export-obsidian --vault PATH` — export solved exercises to Obsidian markdown
 - `new --name SLUG --tier T` — scaffold a new exercise directory
-- `verify` — run all reference solutions against tests
+- `pattern` — show all patterns with solved/total counts
+- `curated [NAME]` — list or show curated exercise tracks (openai-interview, async-mastery, etc.)
+- `map NNN` — print prerequisite chain as a tree
+- `notes NNN` — open personal notes in $EDITOR
+- `diff NNN --user NAME` — unified diff of your answer vs peer's
+- `leaderboard` — show all users' solve counts and XP
+- `peer-status` — show open peer challenges and resolution
+- `deps` — show optional dependency status; `--install PKG` to install
+- `lsp NNN` — generate pyrightconfig.json for one exercise
+- `doctor` — self-diagnostics for environment and data
+- `shell NNN` — REPL with problem.py pre-imported
+- `verify [--changed-only]` — run all reference solutions against tests
 - `lint-exercises` — validate 7-file layout for all exercises
 - `import --slugs S [--tier T] [--dry-run]` — import Exercism exercises
 - `completion {bash,zsh}` — generate shell completion script

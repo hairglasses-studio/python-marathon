@@ -78,7 +78,7 @@ python marathon.py next        # auto-advances to the next unsolved exercise
 
 That's the whole loop: **read the problem, write the code, run the tests, move on.**
 
-No other dependencies. `marathon.py` is a single-file CLI (25 subcommands) that wraps pytest.
+No other dependencies. `marathon.py` is a single-file CLI (38 subcommands) that wraps pytest.
 
 ## The golden rule
 
@@ -129,11 +129,20 @@ python marathon.py export                # Export progress JSON to stdout
 python marathon.py import-progress FILE  # Merge progress from another machine
 python marathon.py export-obsidian --vault PATH  # Export to Obsidian markdown
 
+# Discovery
+python marathon.py pattern               # Show patterns with solved/total
+python marathon.py curated               # List curated tracks (openai-interview, etc.)
+python marathon.py curated openai-interview  # Show exercises in a track
+python marathon.py map NNN               # Show prerequisite chain as tree
+python marathon.py notes NNN             # Open personal notes in $EDITOR
+
 # Admin
 python marathon.py verify                # Run all reference solutions — health check
 python marathon.py lint-exercises        # Validate exercise file layout
+python marathon.py doctor                # Self-diagnostics
 python marathon.py new --name SLUG       # Scaffold a new exercise
 python marathon.py import --slugs S      # Import Exercism exercises
+python marathon.py deps                  # Show optional dependency status
 python marathon.py completion zsh        # Generate shell completion
 ```
 

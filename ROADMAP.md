@@ -13,13 +13,14 @@
 - [x] All 61 exercises verified passing under Python 3.10
 - [x] `openai-interview` curated track preserving the original 26 OpenAI prep exercises
 
-### CLI runner (38 subcommands)
+### CLI runner (38 subcommands, ~1600 lines)
 - [x] Core: `status`, `run`, `next`, `list`, `watch`, `hint`, `reveal`, `reset`
 - [x] Collaboration: `submit [--git]`, `peer`, `challenge-peer`, `peer-status`, `diff`, `leaderboard`
-- [x] Discovery: `tag [--filter]`, `recommend`, `challenge [--tier]`, `badges`
-- [x] Gamification: `kata`, SM-2 `review`, `stats [--json]`
-- [x] Export: `export`, `import-progress`, `export-obsidian`
-- [x] Admin: `verify [--changed-only]`, `lint-exercises`, `new`, `import`, `completion`, `doctor`, `shell`, `deps`, `migrate`
+- [x] Discovery: `tag [--filter]`, `recommend`, `challenge [--tier]`, `badges`, `pattern`, `curated`, `map`
+- [x] Gamification: `kata [--history]`, SM-2 `review`, `stats [--json]`, hot streak XP
+- [x] Export: `export`, `import-progress`, `export-obsidian`, `notes`
+- [x] Admin: `verify [--changed-only]`, `lint-exercises`, `new`, `import`, `completion`, `doctor`, `shell`, `deps`, `migrate`, `lsp`
+- [x] Multi-user: `diff`, `leaderboard`, `peer-status`, `status --all`
 
 ### Multi-user collaborative learning
 - [x] Per-user identity (`.marathon_user`), namespaced progress JSON
