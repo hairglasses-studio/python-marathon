@@ -17,6 +17,7 @@ env/
 
 # Cloned exercise sources (used by import scripts)
 exercism-python/
+problem-specifications/
 
 # Editor state
 .vscode/

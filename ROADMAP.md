@@ -164,9 +164,10 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Backfill hand-written `.meta/hints.md` for imported exercises (current ones are placeholder templates)
 
 ### Exercism problem-specifications
-- [ ] `scripts/generate_from_specs.py` — auto-generate `test_problem.py` from `canonical-data.json`
-- [ ] 200+ language-agnostic exercise specs with structured test cases
-- [ ] Ref: [exercism/problem-specifications](https://github.com/exercism/problem-specifications) (~900 stars)
+- [x] `scripts/generate_from_specs.py` — auto-generate `test_problem.py` from `canonical-data.json`
+- [x] Handles nested case groups, error expectations, multiple properties
+- [x] `problem-specifications/` clone gitignored
+- [x] Ref: [exercism/problem-specifications](https://github.com/exercism/problem-specifications) (~900 stars)
 
 ### LeetCode integration
 - [ ] `scripts/import_leetcode.py` — generate stubs + pytest from LeetCode via [LeetScrape](https://github.com/nikhil-ravi/LeetScrape) (needs session cookie)
