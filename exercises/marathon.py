@@ -1649,39 +1649,47 @@ def cmd_shell(args: argparse.Namespace) -> int:
 
 
 def cmd_lint_exercises(args: argparse.Namespace) -> int:
-    """Validate all exercises have the required file layout."""
+    """Validate all exercises have the required file layout and content."""
     exs = list_exercises()
+    manifest = _load_manifest()
     required = ["problem.py", "test_problem.py", "README.md"]
     meta_required = ["stub.py", "solution.py", "hints.md"]
     errors = 0
     for eid, path in exs:
-        missing = []
+        issues: list[str] = []
         for f in required:
             if not (path / f).exists():
-                missing.append(f)
+                issues.append(f"missing {f}")
         meta = path / ".meta"
         if not meta.is_dir():
-            missing.append(".meta/")
+            issues.append("missing .meta/")
         else:
             for f in meta_required:
                 if not (meta / f).exists():
-                    missing.append(f".meta/{f}")
-        # Check test imports
+                    issues.append(f"missing .meta/{f}")
+            hints_file = meta / "hints.md"
+            if hints_file.exists():
+                hints_text = hints_file.read_text()
+                for level in [1, 2, 3]:
+                    if f"## Hint {level}" not in hints_text:
+                        issues.append(f"hints.md missing ## Hint {level}")
+            if not (meta / "notes.md").exists():
+                issues.append("missing .meta/notes.md")
         test_file = path / "test_problem.py"
         if test_file.exists():
             content = test_file.read_text()
             if "from problem import" not in content and "import problem" not in content:
-                missing.append("test: missing 'from problem import'")
-        # Check stub has NotImplementedError
-        problem_file = path / "problem.py"
-        if problem_file.exists():
-            stub = (meta / "stub.py") if meta.is_dir() else None
-            if stub and stub.exists():
-                stub_content = stub.read_text()
-                if "NotImplementedError" not in stub_content and "pass" not in stub_content:
-                    missing.append("stub: no NotImplementedError or pass")
-        if missing:
-            print(f"  WARN {eid} {path.name}: {', '.join(missing)}")
+                issues.append("test: no problem import")
+            if "def test_" not in content:
+                issues.append("test: no test_ function")
+        if eid not in manifest:
+            issues.append("not in manifest")
+        else:
+            for field in ["tags", "difficulty", "target_minutes", "pattern"]:
+                if field not in manifest[eid]:
+                    issues.append(f"manifest: no {field}")
+        if issues:
+            print(f"  WARN {eid} {path.name}: {'; '.join(issues)}")
             errors += 1
         else:
             print(f"  OK   {eid} {path.name}")

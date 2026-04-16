@@ -84,7 +84,19 @@ NNN_slug/
 ```bash
 python marathon.py verify     # Runs all 61+ reference solutions
 python marathon.py lint-exercises  # Validates file layout
+python marathon.py verify --changed-only  # Only exercises with changed files
 ```
+
+## Pre-commit hook
+
+Install the pre-commit hook to verify changed exercises before every commit:
+
+```bash
+cp scripts/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+This runs `marathon.py verify --changed-only` automatically.
 
 ## Multi-user workflow
 

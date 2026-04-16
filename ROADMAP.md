@@ -75,13 +75,13 @@ Each item is shippable in one dev-loop iteration.
 - [x] **Peer notification** — `status --all` flags when partner has viewable answers you can peer
 - [ ] **stats NNN** — per-exercise aggregate from peer `answers/` files
 - [ ] **shields.io badge** — CI writes `stats --json` to gist; badge in README
-- [ ] **Linter improvements** — check hints.md sections, notes.md exists, README sections, manifest completeness, test function count
+- [x] **Linter improvements** — checks hints.md sections, notes.md, manifest fields (tags/difficulty/target_minutes/pattern), test functions
 - [ ] **Tier certificate** — `marathon.py certificate --tier N` generates SVG via `xml.etree.ElementTree`
 - [ ] **Power tokens** — streak reward; bypass XP penalty on reveal/hint
 - [ ] **Kata history sparkline** — `kata_history` array in progress; `kata NNN --history` shows improvement
 - [ ] **Hot streak XP multiplier** — 1.5x XP if ≥5 solves in <30 min session
 - [ ] **Structured Socratic hint protocol** — update `hint.md` skill: L1=question, L2=statement, L3=code fragment
-- [ ] **Document pre-commit in CONTRIBUTING.md**
+- [x] **Document pre-commit in CONTRIBUTING.md**
 
 ---
 
