@@ -6,8 +6,8 @@ argument-hint: "NNN [--user NAME]"
 View another user's submitted answer for exercise $ARGUMENTS.
 
 1. Run `python marathon.py peer $ARGUMENTS` from `exercises/`.
-   If `--user` was not provided in the arguments, use `--user austin`
-   if the current user is mitch, or `--user mitch` if current user is austin.
+   If `--user` was not provided, check `exercises/answers/` for other
+   user directories and use the first one that isn't the current user.
 2. If the gate passes (you've solved it, they've submitted), display their
    solution and offer brief Socratic comparison: what's similar, what's
    different, any interesting trade-offs.

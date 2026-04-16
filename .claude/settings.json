@@ -38,7 +38,23 @@
       "Bash(python marathon.py hint:*)",
       "Bash(python marathon.py reset:*)",
       "Bash(python marathon.py submit:*)",
-      "Bash(python marathon.py peer:*)"
+      "Bash(python marathon.py peer:*)",
+      "Bash(python marathon.py watch:*)",
+      "Bash(python marathon.py verify)",
+      "Bash(python marathon.py review)",
+      "Bash(python marathon.py challenge:*)",
+      "Bash(python marathon.py challenge-peer:*)",
+      "Bash(python marathon.py kata:*)",
+      "Bash(python marathon.py tag:*)",
+      "Bash(python marathon.py recommend)",
+      "Bash(python marathon.py badges)",
+      "Bash(python marathon.py export)",
+      "Bash(python marathon.py import-progress:*)",
+      "Bash(python marathon.py export-obsidian:*)",
+      "Bash(python marathon.py new:*)",
+      "Bash(python marathon.py import:*)",
+      "Bash(python marathon.py lint-exercises)",
+      "Bash(python marathon.py completion:*)"
     ],
     "ask": [
       "Bash(python marathon.py reveal:*)"

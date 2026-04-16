@@ -86,20 +86,31 @@ NNN_slug/
 
 ### marathon.py design
 
-Single file, no external deps. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
+Single file, no external deps, 25 subcommands. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
 
-- `status` — tier progress table + next unsolved
-- `list [--tier N]` — flat list with status
-- `run NNN [--current]` — run tests for one exercise
+- `status` — tier progress table, XP, streak, badges, activity heatmap
+- `run NNN [--current]` — run tests for one exercise (supports 2D addressing: `tier2 3`)
 - `next` — auto-find and run next unsolved
-- `watch [NNN]` — poll mtime, re-run on change (no watchdog dep)
+- `list [--tier N]` — flat list with status
+- `watch [NNN]` — poll mtime, re-run on change
+- `challenge [--tier N]` — pick a random unsolved exercise
+- `kata NNN` — re-solve from scratch (backs up current, tracks repetitions)
 - `hint NNN --level N` — print hint level N (1-3), records usage
 - `reveal NNN` — print solution (gated on typing `REVEAL NNN`)
 - `reset NNN` — restore problem.py from `.meta/stub.py`, clear progress
 - `submit NNN [--git]` — copy passing solution to `answers/<user>/NNN/`, optionally git commit
 - `peer NNN --user NAME` — view peer's solution (gated on own solve)
-- `verify` — run all reference solutions against tests, report pass/fail
-- `review` — algorithmic spaced-repetition suggestions from progress data
+- `challenge-peer NNN --user NAME` — create a timed challenge
+- `tag [--filter TOPIC]` — list tags or filter exercises by topic
+- `recommend` — suggest next exercises by tag coverage
+- `review` — SM-2 spaced repetition queue with next-review dates
+- `badges` — show earned and available achievements
+- `export` — dump progress JSON to stdout
+- `import-progress FILE` — merge progress from another machine
+- `export-obsidian --vault PATH` — export solved exercises to Obsidian markdown
+- `new --name SLUG --tier T` — scaffold a new exercise directory
+- `verify` — run all reference solutions against tests
+- `lint-exercises` — validate 7-file layout for all exercises
 - `import --slugs S [--tier T] [--dry-run]` — import Exercism exercises
 - `completion {bash,zsh}` — generate shell completion script
 
@@ -163,7 +174,7 @@ This repo supports Claude Code, Codex CLI, Gemini CLI, and GitHub Copilot as int
 
 ### Standalone CLI (no LLM required)
 
-`marathon.py` provides full feature parity for non-LLM workflows: `status`, `list`, `run`, `next`, `watch`, `hint`, `reveal`, `reset`, `submit`, `peer`, `verify`, `review`, `import`, `completion`. The only features that require an LLM are: synthesized hints (beyond `.meta/hints.md`), Socratic failure analysis, post-solve reflection, and tutoring orientation.
+`marathon.py` provides full feature parity for non-LLM workflows with 25 subcommands (run `marathon.py --help` for the full list). The only features that require an LLM are: synthesized hints (beyond `.meta/hints.md`), Socratic failure analysis, post-solve reflection, and tutoring orientation.
 
 ## Recommended models
 
@@ -189,7 +200,7 @@ All exercises now have exercise-specific `.meta/hints.md` (3 progressive levels 
 
 - Created: 2026-04-15
 - Origin: extracted from a private interview-prep directory on the day before a senior Python interview; the exercise bank and harness are generic and reusable.
-- Current exercise count: 41+ (9 tier1 + 11 tier2 + 6 tier3 + 5 tier4 + 10+ tier5 exercism)
+- Current exercise count: 61 (9 tier1 + 11 tier2 + 6 tier3 + 5 tier4 + 10 tier5-easy + 20 tier5-medium)
 - All exercise reference solutions validated against tests under Python 3.10
 - Multi-agent support: Claude Code (full harness), Codex CLI, Gemini CLI, GitHub Copilot
 - Multi-user support: per-user progress, answer submission, peer review gating

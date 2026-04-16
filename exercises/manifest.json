@@ -592,163 +592,304 @@
     "tier": "tier5_exercism_easy"
   },
   "042": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "042_anagram",
     "source": "exercism",
     "source_id": "anagram",
     "source_url": "https://exercism.org/tracks/python/exercises/anagram",
+    "tags": [
+      "strings",
+      "anagrams",
+      "sorting"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "043": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "043_binary_search",
     "source": "exercism",
     "source_id": "binary-search",
     "source_url": "https://exercism.org/tracks/python/exercises/binary-search",
+    "tags": [
+      "binary-search",
+      "algorithms",
+      "sorting"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "044": {
+    "difficulty": 5,
     "exercism_difficulty": 0,
     "slug": "044_linked_list",
     "source": "exercism",
     "source_id": "linked-list",
     "source_url": "https://exercism.org/tracks/python/exercises/linked-list",
+    "tags": [
+      "linked-list",
+      "data-structures",
+      "pointers"
+    ],
+    "target_minutes": 20,
     "tier": "tier5_exercism_medium"
   },
   "045": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "045_matrix",
     "source": "exercism",
     "source_id": "matrix",
     "source_url": "https://exercism.org/tracks/python/exercises/matrix",
+    "tags": [
+      "matrix",
+      "parsing",
+      "lists"
+    ],
+    "target_minutes": 10,
     "tier": "tier5_exercism_medium"
   },
   "046": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "046_robot_name",
     "source": "exercism",
     "source_id": "robot-name",
     "source_url": "https://exercism.org/tracks/python/exercises/robot-name",
+    "tags": [
+      "classes",
+      "random",
+      "state-management"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "047": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "047_series",
     "source": "exercism",
     "source_id": "series",
     "source_url": "https://exercism.org/tracks/python/exercises/series",
+    "tags": [
+      "strings",
+      "slicing",
+      "iteration"
+    ],
+    "target_minutes": 10,
     "tier": "tier5_exercism_medium"
   },
   "048": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "048_word_count",
     "source": "exercism",
     "source_id": "word-count",
     "source_url": "https://exercism.org/tracks/python/exercises/word-count",
+    "tags": [
+      "strings",
+      "counting",
+      "regex"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "049": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "049_phone_number",
     "source": "exercism",
     "source_id": "phone-number",
     "source_url": "https://exercism.org/tracks/python/exercises/phone-number",
+    "tags": [
+      "strings",
+      "parsing",
+      "validation"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "050": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "050_grade_school",
     "source": "exercism",
     "source_id": "grade-school",
     "source_url": "https://exercism.org/tracks/python/exercises/grade-school",
+    "tags": [
+      "dicts",
+      "sorting",
+      "classes"
+    ],
+    "target_minutes": 12,
     "tier": "tier5_exercism_medium"
   },
   "051": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "051_clock",
     "source": "exercism",
     "source_id": "clock",
     "source_url": "https://exercism.org/tracks/python/exercises/clock",
+    "tags": [
+      "classes",
+      "dunder-methods",
+      "math"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "052": {
+    "difficulty": 5,
     "exercism_difficulty": 0,
     "slug": "052_tournament",
     "source": "exercism",
     "source_id": "tournament",
     "source_url": "https://exercism.org/tracks/python/exercises/tournament",
+    "tags": [
+      "strings",
+      "parsing",
+      "sorting",
+      "dicts"
+    ],
+    "target_minutes": 20,
     "tier": "tier5_exercism_medium"
   },
   "053": {
+    "difficulty": 5,
     "exercism_difficulty": 0,
     "slug": "053_saddle_points",
     "source": "exercism",
     "source_id": "saddle-points",
     "source_url": "https://exercism.org/tracks/python/exercises/saddle-points",
+    "tags": [
+      "matrix",
+      "comprehensions",
+      "sets"
+    ],
+    "target_minutes": 20,
     "tier": "tier5_exercism_medium"
   },
   "054": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "054_flatten_array",
     "source": "exercism",
     "source_id": "flatten-array",
     "source_url": "https://exercism.org/tracks/python/exercises/flatten-array",
+    "tags": [
+      "recursion",
+      "lists",
+      "generators"
+    ],
+    "target_minutes": 10,
     "tier": "tier5_exercism_medium"
   },
   "055": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "055_sublist",
     "source": "exercism",
     "source_id": "sublist",
     "source_url": "https://exercism.org/tracks/python/exercises/sublist",
+    "tags": [
+      "lists",
+      "comparison",
+      "iteration"
+    ],
+    "target_minutes": 12,
     "tier": "tier5_exercism_medium"
   },
   "056": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "056_roman_numerals",
     "source": "exercism",
     "source_id": "roman-numerals",
     "source_url": "https://exercism.org/tracks/python/exercises/roman-numerals",
+    "tags": [
+      "math",
+      "iteration",
+      "dicts"
+    ],
+    "target_minutes": 12,
     "tier": "tier5_exercism_medium"
   },
   "057": {
+    "difficulty": 4,
     "exercism_difficulty": 0,
     "slug": "057_luhn",
     "source": "exercism",
     "source_id": "luhn",
     "source_url": "https://exercism.org/tracks/python/exercises/luhn",
+    "tags": [
+      "strings",
+      "validation",
+      "algorithms"
+    ],
+    "target_minutes": 15,
     "tier": "tier5_exercism_medium"
   },
   "058": {
+    "difficulty": 5,
     "exercism_difficulty": 0,
     "slug": "058_simple_cipher",
     "source": "exercism",
     "source_id": "simple-cipher",
     "source_url": "https://exercism.org/tracks/python/exercises/simple-cipher",
+    "tags": [
+      "strings",
+      "encryption",
+      "classes"
+    ],
+    "target_minutes": 20,
     "tier": "tier5_exercism_medium"
   },
   "059": {
+    "difficulty": 5,
     "exercism_difficulty": 0,
     "slug": "059_list_ops",
     "source": "exercism",
     "source_id": "list-ops",
     "source_url": "https://exercism.org/tracks/python/exercises/list-ops",
+    "tags": [
+      "higher-order-functions",
+      "recursion",
+      "functional"
+    ],
+    "target_minutes": 20,
     "tier": "tier5_exercism_medium"
   },
   "060": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "060_allergies",
     "source": "exercism",
     "source_id": "allergies",
     "source_url": "https://exercism.org/tracks/python/exercises/allergies",
+    "tags": [
+      "bit-manipulation",
+      "enums",
+      "lists"
+    ],
+    "target_minutes": 12,
     "tier": "tier5_exercism_medium"
   },
   "061": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "061_perfect_numbers",
     "source": "exercism",
     "source_id": "perfect-numbers",
     "source_url": "https://exercism.org/tracks/python/exercises/perfect-numbers",
+    "tags": [
+      "math",
+      "classification",
+      "iteration"
+    ],
+    "target_minutes": 10,
     "tier": "tier5_exercism_medium"
   }
 }

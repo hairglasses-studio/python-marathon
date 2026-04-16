@@ -78,13 +78,13 @@ python marathon.py next        # auto-advances to the next unsolved exercise
 
 That's the whole loop: **read the problem, write the code, run the tests, move on.**
 
-No other dependencies. `marathon.py` is a single ~280-line file that wraps pytest.
+No other dependencies. `marathon.py` is a single-file CLI (25 subcommands) that wraps pytest.
 
 ## The golden rule
 
 **Don't look inside `.meta/` until you've passed the tests (or given up.)** Solution hiding on a local filesystem is an honor system — `cat .meta/solution.py` always works — but if you peek before trying, you'll waste the exercise. Use `marathon.py reveal NNN` instead, which gates the reveal behind a confirmation prompt and records that you revealed.
 
-## Tiers (41+ exercises)
+## Tiers (61 exercises)
 
 | Tier | Count | Target time | Focus |
 |------|-------|-------------|-------|
@@ -92,24 +92,47 @@ No other dependencies. `marathon.py` is a single ~280-line file that wraps pytes
 | `tier2_patterns/` | 11 | 15-25 min | Interview primitives — DFS/topo sort, heapq, bisect, threading, retry |
 | `tier3_canonical/` | 6 | 45 min | Full multi-gate problems — spreadsheet evaluator, multithreaded crawler, in-memory SQL, dependency graph, versioned KV store, tool-call retry |
 | `tier4_async/` | 5 | 15-30 min | `asyncio` — gather + Semaphore, retry with backoff, Queue pipeline, async iterator protocol, tool-call loop with shared budget |
-| `tier5_exercism_easy/` | 10+ | 10-20 min | Exercism Python track — imported via `marathon.py import` |
+| `tier5_exercism_easy/` | 10 | 5-10 min | Exercism Python track — easy exercises |
+| `tier5_exercism_medium/` | 20 | 10-20 min | Exercism Python track — medium exercises (anagram, binary-search, linked-list, etc.) |
 
 ## Commands
 
 ```bash
-python marathon.py status                # Tier progress table + next unsolved
-python marathon.py list [--tier N]       # List exercises with status
+# Core workflow
+python marathon.py status                # Progress, XP, streak, heatmap
+python marathon.py next                  # Run next unsolved exercise
 python marathon.py run NNN               # Run tests for exercise NNN
 python marathon.py run --current         # Rerun last-run exercise
-python marathon.py next                  # Run the next unsolved exercise
+python marathon.py list [--tier N]       # List exercises with status
 python marathon.py watch [NNN]           # Re-run on file save (polls mtime)
+python marathon.py challenge [--tier N]  # Random unsolved exercise
+python marathon.py kata NNN              # Re-solve from scratch
+
+# Hints and solutions
 python marathon.py hint NNN --level 1    # Show hint 1 of 3 (records usage)
 python marathon.py reveal NNN            # Print solution (requires typing REVEAL NNN)
 python marathon.py reset NNN             # Restore original stub, clear progress
+
+# Collaboration
 python marathon.py submit NNN [--git]    # Save solution to answers/ (--git auto-commits)
 python marathon.py peer NNN --user NAME  # View peer's answer (gated on your own solve)
+python marathon.py challenge-peer NNN --user NAME  # Create timed challenge
+
+# Discovery and review
+python marathon.py tag [--filter TOPIC]  # List/search tags across exercises
+python marathon.py recommend             # Suggest next exercises by tag coverage
+python marathon.py review                # SM-2 spaced repetition queue
+python marathon.py badges                # Show earned achievements
+
+# Export and import
+python marathon.py export                # Export progress JSON to stdout
+python marathon.py import-progress FILE  # Merge progress from another machine
+python marathon.py export-obsidian --vault PATH  # Export to Obsidian markdown
+
+# Admin
 python marathon.py verify                # Run all reference solutions — health check
-python marathon.py review                # Spaced repetition suggestions
+python marathon.py lint-exercises        # Validate exercise file layout
+python marathon.py new --name SLUG       # Scaffold a new exercise
 python marathon.py import --slugs S      # Import Exercism exercises
 python marathon.py completion zsh        # Generate shell completion
 ```

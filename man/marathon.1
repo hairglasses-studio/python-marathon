@@ -2,40 +2,52 @@
 .\"
 .TH "MARATHON" "1" "April 2026" "python\-marathon" "Marathon Exercise Runner"
 .SH NAME
-marathon \- Python interview prep exercise runner
+marathon \- Python interview prep exercise runner (25 subcommands)
 .SH SYNOPSIS
 \f[B]python marathon.py\f[R] \f[I]command\f[R] [\f[I]options\f[R]]
 .SH DESCRIPTION
 Marathon is a rustlings\-for\-python style exercise runner for Python
 interview prep.
-It wraps pytest with progress tracking, hint gating, solution reveal,
-multi\-user answer sharing, and Exercism exercise importing.
+It wraps pytest with progress tracking, SM\-2 spaced repetition, badge
+achievements, multi\-user answer sharing, and Exercism exercise
+importing.
 .PP
 Exercises live in numbered directories under tier folders.
 Each exercise has a stub (\f[I]problem.py\f[R]), tests
 (\f[I]test_problem.py\f[R]), and reference solution
 (\f[I].meta/solution.py\f[R]).
 The learner edits \f[I]problem.py\f[R] until the tests pass.
-.SH COMMANDS
+.SH CORE WORKFLOW
 .TP
 \f[B]status\f[R]
-Show per\-tier progress table and the next unsolved exercise.
+Show per\-tier progress, XP level, streak count, earned badges, and a
+12\-week activity heatmap.
+.TP
+\f[B]next\f[R]
+Find and run the next unsolved exercise.
+.TP
+\f[B]run\f[R] \f[I]NNN\f[R] [\f[B]\[en]current\f[R]]
+Run pytest on exercise \f[I]NNN\f[R].
+Use \f[B]\[en]current\f[R] to rerun the last exercise.
+Supports 2D addressing: \f[CR]run \[dq]tier2 3\[dq]\f[R] runs the 3rd
+tier2 exercise.
 .TP
 \f[B]list\f[R] [\f[B]\[en]tier\f[R] \f[I]N\f[R]]
 List all exercises with tier, status, and name.
 Filter by tier number.
 .TP
-\f[B]run\f[R] \f[I]NNN\f[R] [\f[B]\[en]current\f[R]]
-Run pytest on exercise \f[I]NNN\f[R].
-Use \f[B]\[en]current\f[R] to rerun the last exercise.
-.TP
-\f[B]next\f[R]
-Find and run the next unsolved exercise.
-.TP
 \f[B]watch\f[R] [\f[I]NNN\f[R]]
 Watch \f[I]problem.py\f[R] for changes and rerun tests automatically.
 Polls every second.
-Falls back to last\-run or next unsolved if no ID given.
+.TP
+\f[B]challenge\f[R] [\f[B]\[en]tier\f[R] \f[I]N\f[R]]
+Pick a random unsolved exercise, optionally filtered by tier.
+.TP
+\f[B]kata\f[R] \f[I]NNN\f[R]
+Re\-solve an exercise from scratch.
+Backs up current solution, restores the stub, and tracks repetition
+count.
+.SH HINTS AND SOLUTIONS
 .TP
 \f[B]hint\f[R] \f[I]NNN\f[R] \f[B]\[en]level\f[R] \f[I]N\f[R]
 Show hint at level 1\-3 for exercise \f[I]NNN\f[R].
@@ -46,8 +58,8 @@ Print the reference solution.
 Requires typing \f[CR]REVEAL NNN\f[R] to confirm.
 .TP
 \f[B]reset\f[R] \f[I]NNN\f[R]
-Restore \f[I]problem.py\f[R] to its original stub and clear progress for
-the exercise.
+Restore \f[I]problem.py\f[R] to its original stub and clear progress.
+.SH COLLABORATION
 .TP
 \f[B]submit\f[R] \f[I]NNN\f[R] [\f[B]\[en]git\f[R]]
 Copy your passing \f[I]problem.py\f[R] to
@@ -59,24 +71,56 @@ commit\f[R].
 View another user\[cq]s submitted answer.
 Gated: you must have solved the exercise yourself first.
 .TP
-\f[B]verify\f[R]
-Run all reference solutions against their tests silently.
-Reports a pass/fail summary.
-Does not modify learner progress.
+\f[B]challenge\-peer\f[R] \f[I]NNN\f[R] \f[B]\[en]user\f[R] \f[I]NAME\f[R]
+Create a timed challenge with a peer.
+Stored in \f[I]answers/challenges.json\f[R].
+.SH DISCOVERY AND REVIEW
+.TP
+\f[B]tag\f[R] [\f[B]\[en]filter\f[R] \f[I]TOPIC\f[R]]
+Without \f[B]\[en]filter\f[R]: list all tags with exercise counts.
+With \f[B]\[en]filter\f[R]: show exercises matching the topic tag.
+.TP
+\f[B]recommend\f[R]
+Suggest next exercises based on tag coverage (most new tags first).
 .TP
 \f[B]review\f[R]
-Suggest 1\-3 exercises to revisit based on hint usage, reveal history,
-and time since first solve.
+SM\-2 spaced repetition queue.
+Shows exercises due for review with easiness factors and overdue status.
+.TP
+\f[B]badges\f[R]
+Show all earned and available badges with descriptions.
+.SH EXPORT AND IMPORT
+.TP
+\f[B]export\f[R]
+Dump progress JSON to stdout for backup or cross\-machine sync.
+.TP
+\f[B]import\-progress\f[R] \f[I]FILE\f[R]
+Merge progress from a JSON file.
+Takes max status, unions badges, preserves SR fields.
+.TP
+\f[B]export\-obsidian\f[R] \f[B]\[en]vault\f[R] \f[I]PATH\f[R]
+Export solved exercises to an Obsidian vault as markdown notes with YAML
+frontmatter.
+.SH ADMIN
+.TP
+\f[B]verify\f[R]
+Run all reference solutions against their tests silently.
+Reports pass/fail summary.
+Does not modify learner progress.
+.TP
+\f[B]lint\-exercises\f[R]
+Validate all exercises have the required 7\-file layout, correct test
+imports, and stub content.
+.TP
+\f[B]new\f[R] \f[B]\[en]name\f[R] \f[I]SLUG\f[R] [\f[B]\[en]tier\f[R] \f[I]T\f[R]] [\f[B]\[en]tags\f[R] \f[I]T1,T2\f[R]] [\f[B]\[en]target\-minutes\f[R] \f[I]N\f[R]]
+Scaffold a new exercise directory with all 7 files and add a manifest
+entry.
 .TP
 \f[B]import\f[R] \f[B]\[en]slugs\f[R] \f[I]S\f[R] [\f[B]\[en]exercism\-dir\f[R] \f[I]PATH\f[R]] [\f[B]\[en]tier\f[R] \f[I]T\f[R]] [\f[B]\[en]dry\-run\f[R]]
 Import exercises from a cloned Exercism Python track.
-Converts stubs, tests, and solutions to marathon format.
-Assigns monotone IDs.
 .TP
 \f[B]completion\f[R] {\f[B]bash\f[R],\f[B]zsh\f[R]}
 Generate a shell completion script.
-Pipe to a file:
-\f[CR]marathon.py completion zsh > \[ti]/.zfunc/_marathon\f[R]
 .SH ENVIRONMENT
 .TP
 \f[B].marathon_user\f[R]
@@ -87,9 +131,19 @@ Gitignored.
 .TP
 \f[B].marathon_progress.json\f[R]
 JSON progress cache in \f[I]exercises/\f[R].
-Namespaced by user.
+Per\-user namespaced.
+Tracks status, hints used, first\-solved timestamp, solve duration,
+SM\-2 scheduling fields, streak, badges, and kata count.
 Gitignored.
-Tracks status, hints used, first\-solved timestamp, and reveal history.
+.TP
+\f[B]manifest.json\f[R]
+Exercise metadata in \f[I]exercises/\f[R].
+Maps exercise IDs to slug, tier, source, tags, difficulty, and target
+minutes.
+.TP
+\f[B]badges.json\f[R]
+Badge specifications in \f[I]exercises/\f[R].
+Defines 16 achievements with slugs, names, and descriptions.
 .SH EXERCISE FORMAT
 Each exercise directory contains:
 .IP

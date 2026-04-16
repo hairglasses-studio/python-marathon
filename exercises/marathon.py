@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 """marathon.py — interview prep exercise runner.
 
-Usage:
-    python marathon.py status                 # Progress + next unsolved
-    python marathon.py run 001                # Run tests for exercise 001
-    python marathon.py run --current          # Rerun last-run exercise
-    python marathon.py next                   # Run next unsolved
-    python marathon.py watch [NNN]            # Re-run on file save
-    python marathon.py hint 001 --level 1     # Show hint level 1-3
-    python marathon.py reveal 001             # Print solution (gated)
-    python marathon.py reset 001              # Restore stub, clear progress
-    python marathon.py list [--tier N]        # List all exercises
+25 subcommands. Run `marathon.py --help` for the full list. Key commands:
+
+    marathon.py status                  # Progress, XP, streak, heatmap
+    marathon.py next / run NNN          # Run tests for exercises
+    marathon.py challenge [--tier N]    # Random unsolved exercise
+    marathon.py review                  # SM-2 spaced repetition queue
+    marathon.py submit NNN [--git]      # Save + commit answer
+    marathon.py peer NNN --user NAME    # View peer's answer (gated)
+    marathon.py tag --filter TOPIC      # Search exercises by tag
+    marathon.py recommend               # Next exercises by tag coverage
+    marathon.py verify                  # Run all reference solutions
+    marathon.py new --name SLUG         # Scaffold a new exercise
+    marathon.py badges                  # Show earned achievements
+    marathon.py kata NNN                # Re-solve from scratch
+    marathon.py completion zsh          # Generate shell completion
 """
 
 from __future__ import annotations
@@ -22,7 +27,7 @@ import shutil
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import random
 
@@ -171,7 +176,7 @@ def _record_run(ex_id: str, passed: bool) -> None:
     last_active = meta.get("last_active_date")
     streak = meta.get("streak_days", 0)
     if last_active != today:
-        if last_active == (now.date() - __import__("datetime").timedelta(days=1)).isoformat():
+        if last_active == (now.date() - timedelta(days=1)).isoformat():
             streak += 1
         elif last_active != today:
             streak = 1
@@ -180,6 +185,10 @@ def _record_run(ex_id: str, passed: bool) -> None:
         prog["_meta"] = meta
     prog[ex_id] = entry
     prog["_last_run"] = ex_id
+    # SM-2 update on pass
+    if passed:
+        entry = _sm2_update(entry)
+        prog[ex_id] = entry
     # Badge check
     if passed:
         new_badges = _check_badges(prog, ex_id, entry)
@@ -222,11 +231,11 @@ def _render_heatmap(prog: dict) -> str:
         return ""
     # Build 12-week grid (84 days), rows = weekdays (Mon-Sun), cols = weeks
     weeks = 12
-    start = today - __import__("datetime").timedelta(days=(weeks * 7) - 1 + today.weekday())
+    start = today - timedelta(days=(weeks * 7) - 1 + today.weekday())
     grid: list[list[int]] = [[0] * weeks for _ in range(7)]
     max_solves = max(solves_per_day.values()) if solves_per_day else 1
     for day_offset in range(weeks * 7):
-        d = start + __import__("datetime").timedelta(days=day_offset)
+        d = start + timedelta(days=day_offset)
         if d > today:
             break
         weekday = d.weekday()  # 0=Mon
@@ -508,7 +517,7 @@ def cmd_peer(args: argparse.Namespace) -> int:
         print("Set your identity first: echo 'yourname' > .marathon_user")
         return 1
     if me == peer:
-        print("That's you — check answers/{me}/{ex_id}/ instead")
+        print(f"That's you — check answers/{me}/{ex_id}/ instead")
         return 1
     prog = load_progress()
     if prog.get(ex_id, {}).get("status") != "passed":
@@ -526,6 +535,7 @@ def cmd_peer(args: argparse.Namespace) -> int:
 def cmd_list(args: argparse.Namespace) -> int:
     exs = list_exercises()
     prog = load_progress()
+    found = False
     for eid, path in exs:
         tier = tier_of(path)
         if args.tier is not None and f"tier{args.tier}" not in tier:
@@ -891,7 +901,7 @@ def _check_badges(prog: dict, ex_id: str, entry: dict) -> list[str]:
     for eid, info in manifest.items():
         tier_exercises.setdefault(info["tier"], set()).add(eid)
 
-    now_local = __import__("datetime").datetime.now()
+    now_local = datetime.now()
     hour = now_local.hour
     duration = entry.get("solve_duration_seconds")
     target = manifest.get(ex_id, {}).get("target_minutes")
@@ -973,7 +983,7 @@ def cmd_review(args: argparse.Namespace) -> int:
 
         interval = entry.get("sr_interval", 1)
         n = entry.get("sr_n", 0)
-        next_review = solved_dt + __import__("datetime").timedelta(days=interval * max(1, n))
+        next_review = solved_dt + timedelta(days=interval * max(1, n))
 
         reasons: list[str] = []
         days_overdue = (today - next_review).days
@@ -1186,7 +1196,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("verify", help="Run all reference solutions against tests")
     sub.add_parser("review", help="Suggest exercises to revisit (spaced repetition)")
     pi = sub.add_parser("import", help="Import exercises from Exercism")
-    pi.add_argument("--exercism-dir", default="exercism-python", help="Path to cloned exercism/python")
+    pi.add_argument("--exercism-dir", default="../exercism-python", help="Path to cloned exercism/python")
     pi.add_argument("--slugs", required=True, help="Comma-separated exercise slugs")
     pi.add_argument("--tier", default="tier5_exercism_easy", help="Target tier directory")
     pi.add_argument("--dry-run", action="store_true", help="Preview without writing")

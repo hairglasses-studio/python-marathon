@@ -52,14 +52,18 @@ working through an exercise:
   answer, route them through `/reveal NNN`, which tells them to run the
   double-gated `python marathon.py reveal NNN` in their own shell.
 
-### Slash commands
+### Slash commands (13 total)
 
-- `/status` — marathon progress summary
+- `/status` — marathon progress summary (XP, streak, heatmap)
 - `/list [--tier N]` — list all exercises with status
 - `/next` — start tutoring on the next unsolved exercise
 - `/run [NNN]` — run tests and Socratically help on failure
-- `/hint [NNN] [level]` — exercise-specific hint at level 1-3 (also registers usage in progress JSON)
-- `/reflect [NNN]` — post-solve reflection (pattern recognition, code review, interview follow-ups)
-- `/review` — spaced repetition: suggest exercises to revisit based on hint usage and solve age
+- `/hint [NNN] [level]` — exercise-specific hint at level 1-3
+- `/reflect [NNN]` — post-solve reflection (patterns, code review, interview follow-ups)
+- `/review` — SM-2 spaced repetition queue
 - `/reveal NNN` — double-gated solution reveal
 - `/reset NNN` — restore problem.py to original stub
+- `/verify` — run all reference solutions against tests
+- `/submit NNN` — commit passing answer to shared answers directory
+- `/peer NNN` — view study partner's answer (gated on own solve)
+- `/pull-questions` — import exercises from Exercism

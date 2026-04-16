@@ -35,6 +35,16 @@
     "description": "Complete all tier4_async exercises"
   },
   {
+    "slug": "tier5-easy-clear",
+    "name": "Tier 5 Easy Clear",
+    "description": "Complete all tier5_exercism_easy exercises"
+  },
+  {
+    "slug": "tier5-medium-clear",
+    "name": "Tier 5 Medium Clear",
+    "description": "Complete all tier5_exercism_medium exercises"
+  },
+  {
     "slug": "streak-7",
     "name": "Week Warrior",
     "description": "Maintain a 7-day solve streak"
