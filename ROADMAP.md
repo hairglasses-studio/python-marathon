@@ -83,7 +83,7 @@ Each item is shippable in one dev-loop iteration.
 - [x] **Shared exercise notes** — `marathon.py notes NNN` opens `answers/<user>/NNN/notes.md` in `$EDITOR`
 - [x] **`status --all`** — combined multi-user progress view with XP, streak, badges per user
 - [x] **Peer notification** — `status --all` flags when partner has viewable answers you can peer
-- [ ] **stats NNN** — per-exercise aggregate from peer `answers/` files
+- [x] **stats NNN** — per-exercise details: tier, difficulty, pattern, tags, companies, SM-2 state, peer answers
 - [ ] **shields.io badge** — CI writes `stats --json` to gist; badge in README
 - [x] **Linter improvements** — checks hints.md sections, notes.md, manifest fields (tags/difficulty/target_minutes/pattern), test functions
 - [ ] **Tier certificate** — `marathon.py certificate --tier N` generates SVG via `xml.etree.ElementTree`

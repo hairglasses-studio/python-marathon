@@ -1560,9 +1560,53 @@ def cmd_deps(args: argparse.Namespace) -> int:
 
 
 def cmd_stats(args: argparse.Namespace) -> int:
-    """Show progress statistics, optionally as JSON for CI."""
+    """Show progress statistics or per-exercise details."""
     prog = load_progress()
     manifest = _load_manifest()
+
+    # Per-exercise mode: stats NNN
+    ex_id = getattr(args, "id", None)
+    if ex_id:
+        path = find_exercise(ex_id)
+        if not path:
+            print(f"Exercise {ex_id} not found")
+            return 1
+        info = manifest.get(ex_id, {})
+        entry = prog.get(ex_id, {}) if isinstance(prog.get(ex_id), dict) else {}
+        print(f"\n{ex_id} {info.get('slug', path.name)}")
+        print(f"  Tier: {info.get('tier', '?')}  Difficulty: {info.get('difficulty', '?')}/10  Target: {info.get('target_minutes', '?')} min")
+        print(f"  Pattern: {info.get('pattern', '?')}  Tags: {', '.join(info.get('tags', []))}")
+        companies = info.get("companies", [])
+        if companies:
+            print(f"  Companies: {', '.join(companies)}")
+        status = entry.get("status", "untouched")
+        print(f"  Status: {status}")
+        if entry.get("first_solved"):
+            print(f"  First solved: {entry['first_solved'][:10]}")
+        if entry.get("solve_duration_seconds"):
+            print(f"  Solve time: {entry['solve_duration_seconds']}s")
+        if entry.get("hints_used"):
+            print(f"  Hints used: {entry['hints_used']}")
+        if entry.get("kata_count"):
+            print(f"  Kata attempts: {entry['kata_count']}")
+        if entry.get("sr_ef"):
+            print(f"  SM-2: EF={entry['sr_ef']:.1f} n={entry.get('sr_n', 0)} interval={entry.get('sr_interval', 1)}d")
+        # Peer answers
+        if ANSWERS_DIR.is_dir():
+            peers = []
+            for peer_dir in ANSWERS_DIR.iterdir():
+                if peer_dir.is_dir() and not peer_dir.name.startswith("."):
+                    sol = peer_dir / ex_id / "solution.py"
+                    if sol.exists():
+                        peers.append(peer_dir.name)
+            if peers:
+                print(f"  Peer answers: {', '.join(peers)}")
+        prereqs = info.get("prereqs", [])
+        if prereqs:
+            print(f"  Prereqs: {' -> '.join(prereqs)} -> {ex_id}")
+        return 0
+
+    # Summary mode
     total = len(manifest)
     solved = sum(1 for eid, e in prog.items()
                  if not eid.startswith("_") and isinstance(e, dict) and e.get("status") == "passed")
@@ -1570,7 +1614,6 @@ def cmd_stats(args: argparse.Namespace) -> int:
     meta = prog.get("_meta", {})
     streak = meta.get("streak_days", 0)
     badges = len(meta.get("badges", []))
-    # XP
     tier_xp = {"tier1": 10, "tier2": 25, "tier3": 100, "tier4": 50, "tier5": 15}
     xp = 0
     for eid, entry in prog.items():
@@ -1586,30 +1629,20 @@ def cmd_stats(args: argparse.Namespace) -> int:
             if entry["solve_duration_seconds"] < info["target_minutes"] * 60:
                 bonus += 3
         xp += base + bonus
-
     data = {
-        "solved": solved,
-        "total": total,
-        "pct": pct,
-        "xp": xp,
+        "solved": solved, "total": total, "pct": pct, "xp": xp,
         "level": min(50, xp // 50 + 1) if xp > 0 else 0,
-        "streak_days": streak,
-        "badges": badges,
+        "streak_days": streak, "badges": badges,
     }
-
-    if args.json:
+    if getattr(args, "json", False):
         print(json.dumps(data))
         return 0
-
     print(f"Solved: {solved}/{total} ({pct}%)")
     print(f"XP: {xp}  Level: {data['level']}")
     print(f"Streak: {streak} day{'s' if streak != 1 else ''}")
     print(f"Badges: {badges} earned")
     return 0
 
-
-
-PROGRESS_SCHEMA_VERSION = 2
 
 def _migrate_progress(data: dict) -> dict:
     """Apply incremental migrations to progress data."""
@@ -1894,6 +1927,7 @@ def build_parser() -> argparse.ArgumentParser:
     pdp = sub.add_parser("deps", help="Show optional dependency status")
     pdp.add_argument("--install", nargs="+", help="Install named packages")
     pst = sub.add_parser("stats", help="Show progress statistics")
+    pst.add_argument("id", nargs="?", default=None, help="Exercise ID for per-exercise details")
     pst.add_argument("--json", action="store_true", help="JSON output for CI")
     sub.add_parser("migrate", help="Apply progress file migrations")
     plsp = sub.add_parser("lsp", help="Generate pyrightconfig.json for an exercise")
