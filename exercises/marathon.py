@@ -27,8 +27,26 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 PROGRESS_FILE = ROOT / ".marathon_progress.json"
-TIER_DIRS = ["tier1_fluency", "tier2_patterns", "tier3_canonical", "tier4_async"]
+USER_FILE = ROOT / ".marathon_user"
+ANSWERS_DIR = ROOT / "answers"
+TIER_DIRS = [
+    "tier1_fluency",
+    "tier2_patterns",
+    "tier3_canonical",
+    "tier4_async",
+    "tier5_exercism_easy",
+    "tier5_exercism_medium",
+]
 EX_RE = re.compile(r"^(\d{3})_")
+
+
+def _whoami() -> str:
+    """Read the local user identity from .marathon_user."""
+    if USER_FILE.exists():
+        name = USER_FILE.read_text().strip().lower()
+        if name:
+            return name
+    return "default"
 
 
 def _pytest_cmd() -> list[str]:
@@ -63,14 +81,34 @@ def find_exercise(ex_id: str) -> Path | None:
     return None
 
 
-def load_progress() -> dict:
+def _load_progress_raw() -> dict:
     if PROGRESS_FILE.exists():
         return json.loads(PROGRESS_FILE.read_text())
     return {}
 
 
+def _save_progress_raw(data: dict) -> None:
+    PROGRESS_FILE.write_text(json.dumps(data, indent=2, sort_keys=True))
+
+
+def load_progress() -> dict:
+    """Load progress scoped to the current user, migrating old flat format."""
+    data = _load_progress_raw()
+    user = _whoami()
+    # Migrate old flat format: if keys look like exercise IDs, wrap under "default"
+    if data and all(k.isdigit() or k.startswith("_") for k in data):
+        data = {"default": data}
+        _save_progress_raw(data)
+    return data.get(user, {})
+
+
 def save_progress(prog: dict) -> None:
-    PROGRESS_FILE.write_text(json.dumps(prog, indent=2, sort_keys=True))
+    """Save progress scoped to the current user."""
+    data = _load_progress_raw()
+    if data and all(k.isdigit() or k.startswith("_") for k in data):
+        data = {"default": data}
+    data[_whoami()] = prog
+    _save_progress_raw(data)
 
 
 def tier_of(path: Path) -> str:
@@ -282,6 +320,60 @@ def cmd_reset(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_submit(args: argparse.Namespace) -> int:
+    """Copy your passing solution to the shared answers directory."""
+    ex_id = args.id
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    prog = load_progress()
+    if prog.get(ex_id, {}).get("status") != "passed":
+        print(f"Exercise {ex_id} hasn't been passed yet. Solve it first.")
+        return 1
+    user = _whoami()
+    if user == "default":
+        print("Set your identity first: echo 'yourname' > .marathon_user")
+        return 1
+    dest_dir = ANSWERS_DIR / user / ex_id
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    problem = path / "problem.py"
+    dest = dest_dir / "solution.py"
+    shutil.copy(problem, dest)
+    rel = dest.relative_to(ROOT)
+    print(f"✓ Saved to {rel}")
+    print(f"  git add {rel} && git commit -m 'answer({user}): {ex_id} {path.name}'")
+    return 0
+
+
+def cmd_peer(args: argparse.Namespace) -> int:
+    """Show another user's answer, gated on your own solve."""
+    ex_id = args.id
+    peer = args.user
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    me = _whoami()
+    if me == "default":
+        print("Set your identity first: echo 'yourname' > .marathon_user")
+        return 1
+    if me == peer:
+        print("That's you — check answers/{me}/{ex_id}/ instead")
+        return 1
+    prog = load_progress()
+    if prog.get(ex_id, {}).get("status") != "passed":
+        print(f"You haven't solved {ex_id} yet. Solve it first, then come back.")
+        return 1
+    peer_solution = ANSWERS_DIR / peer / ex_id / "solution.py"
+    if not peer_solution.exists():
+        print(f"{peer} hasn't submitted an answer for {ex_id} yet.")
+        return 1
+    print(f"\n=== {peer}'s solution for {path.name} ===\n")
+    print(peer_solution.read_text())
+    return 0
+
+
 def cmd_list(args: argparse.Namespace) -> int:
     exs = list_exercises()
     prog = load_progress()
@@ -313,6 +405,11 @@ def build_parser() -> argparse.ArgumentParser:
     prs.add_argument("id")
     pl = sub.add_parser("list", help="List all exercises")
     pl.add_argument("--tier", type=int, default=None)
+    ps = sub.add_parser("submit", help="Save your passing solution to answers/")
+    ps.add_argument("id")
+    pp = sub.add_parser("peer", help="View another user's answer (gated)")
+    pp.add_argument("id")
+    pp.add_argument("--user", required=True, help="Peer username to view")
     return p
 
 
@@ -327,6 +424,8 @@ def main() -> int:
         "reveal": cmd_reveal,
         "reset": cmd_reset,
         "list": cmd_list,
+        "submit": cmd_submit,
+        "peer": cmd_peer,
     }
     return cmds[args.cmd](args) or 0
 

@@ -11,7 +11,9 @@
       "Grep(./exercises/**/.meta/solution.py)",
       "Grep(./exercises/**/.meta/stub.py)",
       "Bash(cat *.meta/solution.py)",
-      "Bash(cat *.meta/stub.py)"
+      "Bash(cat *.meta/stub.py)",
+      "Read(./exercises/answers/**)",
+      "Grep(./exercises/answers/**)"
     ],
     "allow": [
       "Read(./exercises/**/README.md)",
@@ -30,7 +32,9 @@
       "Bash(python marathon.py run:*)",
       "Bash(python marathon.py list:*)",
       "Bash(python marathon.py hint:*)",
-      "Bash(python marathon.py reset:*)"
+      "Bash(python marathon.py reset:*)",
+      "Bash(python marathon.py submit:*)",
+      "Bash(python marathon.py peer:*)"
     ],
     "ask": [
       "Bash(python marathon.py reveal:*)"

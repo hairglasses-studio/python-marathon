@@ -1,4 +1,5 @@
 .marathon_progress.json
+.marathon_user
 __pycache__/
 *.pyc
 .pytest_cache/

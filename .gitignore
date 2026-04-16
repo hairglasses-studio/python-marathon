@@ -15,6 +15,9 @@ env/
 .marathon_progress.json
 **/.marathon_progress.json
 
+# Cloned exercise sources (used by import scripts)
+exercism-python/
+
 # Editor state
 .vscode/
 .idea/

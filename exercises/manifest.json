@@ -1,0 +1,299 @@
+{
+  "001": {
+    "slug": "001_fizzbuzz",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "002": {
+    "slug": "002_word_frequency",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "003": {
+    "slug": "003_windowed_generator",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "004": {
+    "slug": "004_counted_decorator",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "005": {
+    "slug": "005_int_range",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "006": {
+    "slug": "006_config_parser",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "007": {
+    "slug": "007_topn_tracker",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "008": {
+    "slug": "008_temp_attr_context",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "009": {
+    "slug": "009_parallel_sum",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier1_fluency"
+  },
+  "010": {
+    "slug": "010_dfs_traversal",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "011": {
+    "slug": "011_topo_sort_kahn",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "012": {
+    "slug": "012_three_color_cycle",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "013": {
+    "slug": "013_transitive_dependents",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "014": {
+    "slug": "014_content_addressed_cache",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "015": {
+    "slug": "015_time_travel_ledger",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "016": {
+    "slug": "016_per_key_locking",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "017": {
+    "slug": "017_budget_retry",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "018": {
+    "slug": "018_gpu_credit_manager",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "019": {
+    "slug": "019_path_normalize",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "020": {
+    "slug": "020_resumable_iterator",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier2_patterns"
+  },
+  "021": {
+    "slug": "021_spreadsheet_formula",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier3_canonical"
+  },
+  "022": {
+    "slug": "022_multithreaded_crawler",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier3_canonical"
+  },
+  "023": {
+    "slug": "023_in_memory_sql",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier3_canonical"
+  },
+  "024": {
+    "slug": "024_dep_graph_warmup",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier3_canonical"
+  },
+  "025": {
+    "slug": "025_versioned_kv_warmup",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier3_canonical"
+  },
+  "026": {
+    "slug": "026_tool_retry_warmup",
+    "source": "openai-prep",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier3_canonical"
+  },
+  "027": {
+    "slug": "027_async_gather",
+    "source": "hand-written",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier4_async"
+  },
+  "028": {
+    "slug": "028_async_retry",
+    "source": "hand-written",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier4_async"
+  },
+  "029": {
+    "slug": "029_async_queue",
+    "source": "hand-written",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier4_async"
+  },
+  "030": {
+    "slug": "030_async_iterator",
+    "source": "hand-written",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier4_async"
+  },
+  "031": {
+    "slug": "031_async_tool_loop",
+    "source": "hand-written",
+    "source_id": null,
+    "source_url": null,
+    "tier": "tier4_async"
+  },
+  "032": {
+    "exercism_difficulty": 0,
+    "slug": "032_two_fer",
+    "source": "exercism",
+    "source_id": "two-fer",
+    "source_url": "https://exercism.org/tracks/python/exercises/two-fer",
+    "tier": "tier5_exercism_easy"
+  },
+  "033": {
+    "exercism_difficulty": 0,
+    "slug": "033_hello_world",
+    "source": "exercism",
+    "source_id": "hello-world",
+    "source_url": "https://exercism.org/tracks/python/exercises/hello-world",
+    "tier": "tier5_exercism_easy"
+  },
+  "034": {
+    "exercism_difficulty": 0,
+    "slug": "034_bob",
+    "source": "exercism",
+    "source_id": "bob",
+    "source_url": "https://exercism.org/tracks/python/exercises/bob",
+    "tier": "tier5_exercism_easy"
+  },
+  "035": {
+    "exercism_difficulty": 0,
+    "slug": "035_isogram",
+    "source": "exercism",
+    "source_id": "isogram",
+    "source_url": "https://exercism.org/tracks/python/exercises/isogram",
+    "tier": "tier5_exercism_easy"
+  },
+  "036": {
+    "exercism_difficulty": 0,
+    "slug": "036_pangram",
+    "source": "exercism",
+    "source_id": "pangram",
+    "source_url": "https://exercism.org/tracks/python/exercises/pangram",
+    "tier": "tier5_exercism_easy"
+  },
+  "037": {
+    "exercism_difficulty": 0,
+    "slug": "037_difference_of_squares",
+    "source": "exercism",
+    "source_id": "difference-of-squares",
+    "source_url": "https://exercism.org/tracks/python/exercises/difference-of-squares",
+    "tier": "tier5_exercism_easy"
+  },
+  "038": {
+    "exercism_difficulty": 0,
+    "slug": "038_grains",
+    "source": "exercism",
+    "source_id": "grains",
+    "source_url": "https://exercism.org/tracks/python/exercises/grains",
+    "tier": "tier5_exercism_easy"
+  },
+  "039": {
+    "exercism_difficulty": 0,
+    "slug": "039_leap",
+    "source": "exercism",
+    "source_id": "leap",
+    "source_url": "https://exercism.org/tracks/python/exercises/leap",
+    "tier": "tier5_exercism_easy"
+  },
+  "040": {
+    "exercism_difficulty": 0,
+    "slug": "040_resistor_color",
+    "source": "exercism",
+    "source_id": "resistor-color",
+    "source_url": "https://exercism.org/tracks/python/exercises/resistor-color",
+    "tier": "tier5_exercism_easy"
+  },
+  "041": {
+    "exercism_difficulty": 0,
+    "slug": "041_rna_transcription",
+    "source": "exercism",
+    "source_id": "rna-transcription",
+    "source_url": "https://exercism.org/tracks/python/exercises/rna-transcription",
+    "tier": "tier5_exercism_easy"
+  }
+}
