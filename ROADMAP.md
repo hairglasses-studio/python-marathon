@@ -78,9 +78,9 @@ Each item is shippable in one dev-loop iteration.
 - [x] **Linter improvements** — checks hints.md sections, notes.md, manifest fields (tags/difficulty/target_minutes/pattern), test functions
 - [ ] **Tier certificate** — `marathon.py certificate --tier N` generates SVG via `xml.etree.ElementTree`
 - [ ] **Power tokens** — streak reward; bypass XP penalty on reveal/hint
-- [ ] **Kata history sparkline** — `kata_history` array in progress; `kata NNN --history` shows improvement
-- [ ] **Hot streak XP multiplier** — 1.5x XP if ≥5 solves in <30 min session
-- [ ] **Structured Socratic hint protocol** — update `hint.md` skill: L1=question, L2=statement, L3=code fragment
+- [x] **Kata history sparkline** — `kata_history` array; `kata NNN --history` shows duration bars per attempt
+- [x] **Hot streak XP multiplier** — 1.5x XP if ≥5 solves in <30 min session; shown in status
+- [x] **Structured Socratic hint protocol** — hint.md skill enforces L1=question, L2=directional, L3=code fragment
 - [x] **Document pre-commit in CONTRIBUTING.md**
 
 ---

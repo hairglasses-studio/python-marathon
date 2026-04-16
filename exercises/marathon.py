@@ -190,6 +190,14 @@ def _record_run(ex_id: str, passed: bool) -> None:
     if passed:
         entry = _sm2_update(entry)
         prog[ex_id] = entry
+    # Record kata history
+    if passed and entry.get("kata_count", 0) > 0:
+        history = entry.setdefault("kata_history", [])
+        history.append({
+            "date": now_iso,
+            "duration_s": entry.get("solve_duration_seconds"),
+            "hints_used": entry.get("hints_used", 0),
+        })
     # Badge check
     if passed:
         new_badges = _check_badges(prog, ex_id, entry)
@@ -343,6 +351,25 @@ def cmd_status(args: argparse.Namespace) -> int:
             break
     else:
         print("All clear — you're done!")
+    # Hot streak detection (>=5 solves in <30 min between consecutive solves)
+    hot_streak = False
+    recent_solves: list[str] = []
+    for eid_x in sorted(prog.keys()):
+        if eid_x.startswith("_") or not isinstance(prog.get(eid_x), dict):
+            continue
+        lr = prog[eid_x].get("last_run")
+        if lr and prog[eid_x].get("status") == "passed":
+            recent_solves.append(lr)
+    if len(recent_solves) >= 5:
+        recent_solves.sort(reverse=True)
+        last_5 = recent_solves[:5]
+        try:
+            times = [datetime.fromisoformat(t) for t in last_5]
+            span = (times[0] - times[-1]).total_seconds()
+            if span < 1800:  # 30 minutes
+                hot_streak = True
+        except (ValueError, TypeError):
+            pass
     # XP calculation
     xp = 0
     manifest = _load_manifest()
@@ -362,9 +389,12 @@ def cmd_status(args: argparse.Namespace) -> int:
             if entry_x["solve_duration_seconds"] < info["target_minutes"] * 60:
                 bonus += 3
         xp += base + bonus
+    if hot_streak:
+        xp = int(xp * 1.5)
     level = min(50, xp // 50 + 1) if xp > 0 else 0
     if xp > 0:
-        print(f"XP: {xp}  Level: {level}")
+        streak_indicator = " \U0001f525 HOT STREAK (1.5x XP)" if hot_streak else ""
+        print(f"XP: {xp}  Level: {level}{streak_indicator}")
     # Activity heatmap
     heatmap = _render_heatmap(prog)
     if heatmap:
@@ -1133,12 +1163,28 @@ def cmd_kata(args: argparse.Namespace) -> int:
     if not path:
         print(f"Exercise {ex_id} not found")
         return 1
+    prog = load_progress()
+    entry = prog.setdefault(ex_id, {})
+    # Show history if requested
+    if getattr(args, "history", False):
+        history = entry.get("kata_history", [])
+        if not history:
+            print(f"No kata history for {path.name}. Run: marathon.py kata {ex_id}")
+            return 0
+        print(f"\nKata history for {path.name} ({len(history)} attempts):\n")
+        for i, attempt in enumerate(history, 1):
+            dur = attempt.get("duration_s", "?")
+            hints = attempt.get("hints_used", 0)
+            date = attempt.get("date", "?")[:10]
+            bar_char = "\u2588" * min(20, max(1, int(float(dur) / 60) if isinstance(dur, (int, float)) else 1))
+            print(f"  #{i:2d}  {date}  {dur:>6}s  hints:{hints}  {bar_char}")
+        return 0
     stub = path / ".meta" / "stub.py"
     problem = path / "problem.py"
     if not stub.exists():
         print(f"No stub for {path.name}")
         return 1
-    # Save current solution if it exists and differs from stub
+    # Save current solution if it differs from stub
     current = problem.read_text()
     stub_text = stub.read_text()
     if current != stub_text:
@@ -1147,13 +1193,10 @@ def cmd_kata(args: argparse.Namespace) -> int:
     # Restore stub
     shutil.copy(stub, problem)
     # Track kata count
-    prog = load_progress()
-    entry = prog.setdefault(ex_id, {})
     entry["kata_count"] = entry.get("kata_count", 0) + 1
     save_progress(prog)
-    print(f"Kata #{entry['kata_count']} for {path.name} — stub restored, timer started")
+    print(f"Kata #{entry['kata_count']} for {path.name}")
     return _run_exercise(ex_id, path)
-
 
 
 def cmd_challenge_peer(args: argparse.Namespace) -> int:
@@ -1764,6 +1807,7 @@ def build_parser() -> argparse.ArgumentParser:
     pi.add_argument("--dry-run", action="store_true", help="Preview without writing")
     pk = sub.add_parser("kata", help="Re-solve exercise from scratch (kata mode)")
     pk.add_argument("id")
+    pk.add_argument("--history", action="store_true", help="Show kata attempt history")
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
