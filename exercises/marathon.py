@@ -466,53 +466,110 @@ def cmd_verify(args: argparse.Namespace) -> int:
     return 1 if failed else 0
 
 
+def _sm2_update(entry: dict) -> dict:
+    """Compute SM-2 scheduling fields from exercise progress signals."""
+    hints = entry.get("hints_used", 0)
+    revealed = int(entry.get("revealed", False))
+    # Synthesize quality rating: 5=perfect, 1=couldn't do it
+    quality = max(1, 5 - hints - (revealed * 2))
+
+    ef = entry.get("sr_ef", 2.5)
+    n = entry.get("sr_n", 0)
+    interval = entry.get("sr_interval", 1)
+
+    if quality >= 3:
+        n += 1
+        if n == 1:
+            interval = 1
+        elif n == 2:
+            interval = 6
+        else:
+            interval = round(interval * ef)
+    else:
+        n = 0
+        interval = 1
+
+    ef = max(1.3, ef + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+    entry["sr_ef"] = round(ef, 2)
+    entry["sr_n"] = n
+    entry["sr_interval"] = interval
+    return entry
+
+
 def cmd_review(args: argparse.Namespace) -> int:
-    """Suggest exercises to revisit based on hint usage and solve age."""
+    """SM-2 spaced repetition: show today's review queue."""
     prog = load_progress()
     if not prog:
         print("No progress data yet. Solve some exercises first.")
         return 0
     now = datetime.now(timezone.utc)
-    scored: list[tuple[float, str, list[str]]] = []
+    today = now.date()
+    due: list[tuple[int, str, str, list[str]]] = []
+    updated = False
+
     for eid, entry in sorted(prog.items()):
-        if eid.startswith("_"):
+        if eid.startswith("_") or not isinstance(entry, dict):
             continue
         if entry.get("status") != "passed":
             continue
+
+        # Initialize SM-2 fields if missing
+        if "sr_ef" not in entry:
+            entry = _sm2_update(entry)
+            prog[eid] = entry
+            updated = True
+
+        # Compute next review date
+        first = entry.get("first_solved")
+        if not first:
+            continue
+        try:
+            solved_dt = datetime.fromisoformat(first).date()
+        except (ValueError, TypeError):
+            continue
+
+        interval = entry.get("sr_interval", 1)
+        n = entry.get("sr_n", 0)
+        next_review = solved_dt + __import__("datetime").timedelta(days=interval * max(1, n))
+
         reasons: list[str] = []
-        score = 0.0
+        days_overdue = (today - next_review).days
+        if days_overdue >= 0:
+            reasons.append(f"due {days_overdue}d ago" if days_overdue > 0 else "due today")
         hints = entry.get("hints_used", 0)
         if hints >= 2:
-            score += hints * 2
-            reasons.append(f"used {hints} hints")
+            reasons.append(f"{hints} hints used")
         if entry.get("revealed"):
-            score += 3
             reasons.append("revealed")
-        first = entry.get("first_solved")
-        if first:
-            try:
-                solved_dt = datetime.fromisoformat(first)
-                days = (now - solved_dt).days
-                freshness = max(0, 14 - days)
-                score += freshness
-                if days <= 3:
-                    reasons.append("solved recently — reinforce")
-                elif days >= 14:
-                    reasons.append(f"solved {days}d ago — may have faded")
-            except (ValueError, TypeError):
-                pass
-        if score > 0 and reasons:
-            scored.append((score, eid, reasons))
-    scored.sort(reverse=True)
-    if not scored:
-        print("Nothing to review — keep solving!")
+
+        if reasons:
+            priority = days_overdue + (hints * 2) + (3 if entry.get("revealed") else 0)
+            path = find_exercise(eid)
+            name = path.name if path else eid
+            due.append((priority, eid, name, reasons))
+
+    if updated:
+        save_progress(prog)
+
+    due.sort(reverse=True)
+    if not due:
+        print("Nothing due for review today — keep solving!")
         return 0
-    print("\nExercises to revisit:\n")
-    for score, eid, reasons in scored[:3]:
-        path = find_exercise(eid)
-        name = path.name if path else eid
-        print(f"  {eid}  {name}  ({', '.join(reasons)})")
+
+    streak = prog.get("_meta", {}).get("streak_days", 0)
+    if streak > 0:
+        print(f"  Streak: {streak} day{'s' if streak != 1 else ''}")
+
+    print()
+    print("Review queue:")
+    print()
+    for priority, eid, name, reasons in due[:5]:
+        ef = prog.get(eid, {}).get("sr_ef", 2.5)
+        print(f"  {eid}  {name}  (EF={ef:.1f}, {', '.join(reasons)})")
+    if len(due) > 5:
+        print(f"  ... and {len(due) - 5} more")
     return 0
+
 
 
 def cmd_import(args: argparse.Namespace) -> int:

@@ -65,11 +65,11 @@ These are pure Python, no new deps, each under ~50 lines.
 - [x] Inspired by [local-leetcode-trainer](https://github.com/karote00/local-leetcode-trainer) "surprise me" UX
 
 ### SM-2 spaced repetition upgrade
-- [ ] Replace the current `cmd_review` heuristic with proper SM-2 algorithm (~30 lines)
-- [ ] Synthesize quality rating from existing signals: `quality = max(1, 5 - hints_used - (revealed * 2))`
-- [ ] Store `sr_ef`, `sr_n`, `sr_interval` per exercise in progress JSON
-- [ ] `marathon.py review` shows "today's review queue" with next-review dates
-- [ ] Ref: [HayesBarber/spaced-repetition-learning](https://github.com/HayesBarber/spaced-repetition-learning), [supermemo2 PyPI](https://pypi.org/project/supermemo2/)
+- [x] Replace the current `cmd_review` heuristic with proper SM-2 algorithm
+- [x] Synthesize quality rating from existing signals: `quality = max(1, 5 - hints_used - (revealed * 2))`
+- [x] Store `sr_ef`, `sr_n`, `sr_interval` per exercise in progress JSON
+- [x] `marathon.py review` shows "today's review queue" with next-review dates and EF scores
+- [x] Auto-initialize SM-2 fields on first review for existing progress entries
 
 ### Exercise scaffold generator
 - [ ] `marathon.py new --name "slug" --tier T --tags "t1,t2" --target-minutes N`
