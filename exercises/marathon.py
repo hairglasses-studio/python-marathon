@@ -435,6 +435,7 @@ def cmd_next(args: argparse.Namespace) -> int:
 
 
 def cmd_watch(args: argparse.Namespace) -> int:
+    """Watch mode: rerun on file change with interactive keystroke commands."""
     ex_id = args.id
     prog = load_progress()
     if ex_id is None:
@@ -454,24 +455,91 @@ def cmd_watch(args: argparse.Namespace) -> int:
         print(f"Nothing to watch in {path}")
         return 1
 
-    print(f"Watching {path.name} (Ctrl-C to stop)...")
+    print(f"Watching {path.name} (keys: r=rerun h=hint n=next l=list q=quit ?=help)")
     _run_exercise(ex_id, path)
     mtimes = {p: p.stat().st_mtime for p in watched}
+
+    # Try raw-mode stdin for keystrokes
+    raw_mode = False
+    old_settings = None
+    try:
+        import termios, tty, select as sel
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        tty.setcbreak(fd)
+        raw_mode = True
+    except (ImportError, termios.error, AttributeError):
+        pass  # No raw mode available (e.g., piped stdin)
+
     try:
         while True:
-            time.sleep(1)
+            time.sleep(0.5)
+            # Check for file changes
             changed = False
             for p in watched:
-                m = p.stat().st_mtime
-                if m != mtimes[p]:
-                    mtimes[p] = m
-                    changed = True
+                try:
+                    m = p.stat().st_mtime
+                    if m != mtimes[p]:
+                        mtimes[p] = m
+                        changed = True
+                except FileNotFoundError:
+                    pass
             if changed:
-                print(f"\n--- re-running {path.name} ---")
+                print(f"\n--- file changed, re-running {path.name} ---")
                 _run_exercise(ex_id, path)
+
+            # Check for keystrokes (non-blocking)
+            if raw_mode:
+                import select as sel
+                if sel.select([sys.stdin], [], [], 0)[0]:
+                    key = sys.stdin.read(1).lower()
+                    if key == 'q':
+                        print("\nquitting watch")
+                        break
+                    elif key == 'r':
+                        print(f"\n--- force rerun {path.name} ---")
+                        _run_exercise(ex_id, path)
+                    elif key == 'h':
+                        print(f"\n--- hint for {ex_id} ---")
+                        hint_path = path / ".meta" / "hints.md"
+                        if hint_path.exists():
+                            ht = hint_path.read_text()
+                            import re as re_mod
+                            parts = re_mod.split(r"^## Hint (\d+)\s*$", ht, flags=re_mod.M)
+                            if len(parts) >= 3:
+                                print(parts[2].strip())
+                        else:
+                            print("No hints file")
+                    elif key == 'n':
+                        print("\nskipping to next exercise...")
+                        prog = load_progress()
+                        for eid, p2 in list_exercises():
+                            if prog.get(eid, {}).get("status") != "passed":
+                                ex_id = eid
+                                path = p2
+                                watched = [pp for pp in (path / "problem.py", path / "test_problem.py") if pp.exists()]
+                                mtimes = {pp: pp.stat().st_mtime for pp in watched}
+                                print(f"Now watching {path.name}")
+                                _run_exercise(ex_id, path)
+                                break
+                        else:
+                            print("All exercises passed!")
+                    elif key == 'l':
+                        print("\n--- exercise list ---")
+                        for eid, p2 in list_exercises():
+                            status = prog.get(eid, {}).get("status", "untouched") if isinstance(prog.get(eid), dict) else "untouched"
+                            marker = MARK.get(status, "?")
+                            current = " <-" if eid == ex_id else ""
+                            print(f"  {marker} {eid}  {p2.name}{current}")
+                    elif key == '?':
+                        print("\n  r = force rerun  h = hint  n = next exercise  l = list  q = quit  ? = help")
     except KeyboardInterrupt:
         print("\nstopped watching")
-        return 0
+    finally:
+        if raw_mode and old_settings is not None:
+            import termios
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return 0
 
 
 def cmd_hint(args: argparse.Namespace) -> int:

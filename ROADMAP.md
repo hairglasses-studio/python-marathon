@@ -73,7 +73,7 @@
 
 Each item is shippable in one dev-loop iteration.
 
-- [ ] **Keystroke watch mode** — `termios`/`select` raw-mode in `watch`: keys `h`=hint, `l`=list, `r`=rerun, `n`=next, `q`=quit, `?`=help
+- [x] **Keystroke watch mode** — `termios`/`select` raw-mode in `watch`: keys `r`=rerun, `h`=hint, `n`=next, `l`=list, `q`=quit, `?`=help; graceful fallback when no tty
 - [ ] **Self-report quality rating** — after review solve, prompt `[0=forgot 1=hard 2=ok 3=easy]` via `termios`; feed into SM-2 quality
 - [x] **Pattern taxonomy** — `"pattern"` field on all 61 manifest entries; `marathon.py pattern` shows solved/total per pattern; `next --pattern X` filters
 - [x] **Named curated shortlists** — `curations.json` with 7 tracks; `marathon.py curated [NAME]`; `next --curated NAME`
