@@ -86,7 +86,7 @@ NNN_slug/
 
 ### marathon.py design
 
-Single file, no external deps, 38 subcommands. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
+Single file, no external deps, 39 subcommands. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
 
 - `status` — tier progress table, XP, streak, badges, activity heatmap
 - `run NNN [--current]` — run tests for one exercise (supports 2D addressing: `tier2 3`)

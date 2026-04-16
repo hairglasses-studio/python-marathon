@@ -78,7 +78,7 @@ python marathon.py next        # auto-advances to the next unsolved exercise
 
 That's the whole loop: **read the problem, write the code, run the tests, move on.**
 
-No other dependencies. `marathon.py` is a single-file CLI (38 subcommands) that wraps pytest.
+No other dependencies. `marathon.py` is a single-file CLI (39 subcommands) that wraps pytest.
 
 ## The golden rule
 

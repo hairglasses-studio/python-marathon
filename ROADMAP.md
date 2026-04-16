@@ -13,7 +13,7 @@
 - [x] All 61 exercises verified passing under Python 3.10
 - [x] `openai-interview` curated track preserving the original 26 OpenAI prep exercises
 
-### CLI runner (38 subcommands, ~1600 lines)
+### CLI runner (39 subcommands)
 - [x] Core: `status`, `run`, `next`, `list`, `watch`, `hint`, `reveal`, `reset`
 - [x] Collaboration: `submit [--git]`, `peer`, `challenge-peer`, `peer-status`, `diff`, `leaderboard`
 - [x] Discovery: `tag [--filter]`, `recommend`, `challenge [--tier]`, `badges`, `pattern`, `curated`, `map`
