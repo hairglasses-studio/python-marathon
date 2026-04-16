@@ -4,23 +4,79 @@ Marathon-style Python interview prep — standalone pytest-checkable exercises o
 
 Built as a rustlings-for-python with an opinionated interview-prep exercise bank.
 
-## Quick start
+## Getting started
+
+### 1. Install Python
+
+You need **Python 3.10 or newer** (the async exercises use features from 3.10+).
+
+**macOS** — install via [Homebrew](https://brew.sh):
+```bash
+brew install python
+```
+
+**Linux (Debian/Ubuntu)**:
+```bash
+sudo apt update && sudo apt install python3 python3-venv python3-pip
+```
+
+**Linux (Arch/Manjaro)**:
+```bash
+sudo pacman -S python
+```
+
+**Windows** — download the installer from [python.org](https://www.python.org/downloads/) and check "Add python.exe to PATH" during install.
+
+Verify it works:
+```bash
+python3 --version   # should print 3.10 or higher
+```
+
+> On Windows you may need to use `python` instead of `python3` everywhere below.
+
+### 2. Clone the repo
 
 ```bash
-cd exercises
+git clone git@github.com:hairglasses/python-marathon.git
+cd python-marathon
+```
 
-# Create a venv with pytest (uv is fastest; plain venv + pip works too)
+### 3. Set up the environment
+
+The only dependency is **pytest**. Create a virtual environment inside the `exercises/` directory:
+
+**Option A — with [uv](https://docs.astral.sh/uv/) (fastest)**:
+```bash
+cd exercises
 uv venv .venv
 VIRTUAL_ENV=.venv uv pip install pytest
+```
 
+**Option B — with plain pip**:
+```bash
+cd exercises
+python3 -m venv .venv
+.venv/bin/pip install pytest      # Linux/macOS
+# .venv\Scripts\pip install pytest  # Windows
+```
+
+### 4. Start drilling
+
+```bash
 # See where you are
 python marathon.py status
 
-# Start drilling
-python marathon.py next        # runs the next unsolved exercise
-# Edit tier1_fluency/001_fizzbuzz/problem.py until the tests pass
-python marathon.py next        # auto-advances
+# Start the first exercise
+python marathon.py next
 ```
+
+This opens exercise 001. Read the `README.md` inside the exercise folder, then edit `problem.py` until the tests pass. When you're done:
+
+```bash
+python marathon.py next        # auto-advances to the next unsolved exercise
+```
+
+That's the whole loop: **read the problem, write the code, run the tests, move on.**
 
 No other dependencies. `marathon.py` is a single ~280-line file that wraps pytest.
 
