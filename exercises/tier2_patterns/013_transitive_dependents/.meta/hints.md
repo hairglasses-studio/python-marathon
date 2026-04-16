@@ -2,12 +2,23 @@
 
 ## Hint 1
 
-Think about the core data structure or pattern first. What's the right Python primitive for this problem?
+This is a graph reachability problem on an inverted graph. The original graph maps each node to its dependencies; you need to walk in the reverse direction — from the changed node outward to everything that depends on it. Build a reverse adjacency map first using `collections.defaultdict(list)`, then do a BFS or DFS from `target` on that reversed graph.
 
 ## Hint 2
 
-Sketch the control flow on paper before typing. What's the happy path? What edge cases matter?
+Step-by-step approach:
+- Build the inverted graph: for each `node` and each `dep` in `graph[node]`, add `node` to `reverse[dep]` (dep is needed by node, so node is a dependent of dep)
+- BFS from `target` using `collections.deque`: start with `deque([target])` and a `visited` set initialized to `{target}`
+- Pop a node, look up its dependents in `reverse`, and enqueue any not yet visited
+- Return `visited - {target}` (the problem says do not include `target` itself)
 
 ## Hint 3
 
-If still stuck, review the Python stdlib module most relevant to this problem — it often has the exact primitive you need.
+The inversion loop that most learners write backwards:
+
+```python
+reverse = defaultdict(list)
+for node, deps in graph.items():
+    for dep in deps:
+        reverse[dep].append(node)  # node depends on dep → node is a dependent of dep
+```

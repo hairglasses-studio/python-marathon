@@ -6,6 +6,11 @@ argument-hint: "[NNN] [level]"
 Generate a hint for the exercise specified by `$ARGUMENTS` (default: the
 current exercise from `python marathon.py status`).
 
+**First**, register the hint usage in the progress file by running
+`python marathon.py hint NNN --level N` (from `exercises/`). This ensures
+`.marathon_progress.json` tracks hint usage whether the learner uses
+the CLI or Claude Code. Then proceed with generating your own hint below.
+
 **Hint sources, in priority order:**
 1. `README.md` — the problem statement
 2. `problem.py` — the signature and any docstring

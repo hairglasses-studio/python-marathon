@@ -3,13 +3,15 @@
     "deny": [
       "Read(./exercises/**/.meta/solution.py)",
       "Read(./exercises/**/.meta/stub.py)",
-      "Edit(./exercises/**/.meta/**)",
-      "Write(./exercises/**/.meta/**)",
       "Edit(./exercises/**/test_problem.py)",
       "Write(./exercises/**/test_problem.py)",
       "Edit(./exercises/marathon.py)",
       "Edit(./exercises/conftest.py)",
-      "Edit(./exercises/pytest.ini)"
+      "Edit(./exercises/pytest.ini)",
+      "Grep(./exercises/**/.meta/solution.py)",
+      "Grep(./exercises/**/.meta/stub.py)",
+      "Bash(cat *.meta/solution.py)",
+      "Bash(cat *.meta/stub.py)"
     ],
     "allow": [
       "Read(./exercises/**/README.md)",
@@ -19,6 +21,10 @@
       "Read(./exercises/**/.meta/notes.md)",
       "Edit(./exercises/**/problem.py)",
       "Write(./exercises/**/problem.py)",
+      "Edit(./exercises/**/.meta/hints.md)",
+      "Write(./exercises/**/.meta/hints.md)",
+      "Edit(./exercises/**/.meta/notes.md)",
+      "Write(./exercises/**/.meta/notes.md)",
       "Bash(python marathon.py status)",
       "Bash(python marathon.py next)",
       "Bash(python marathon.py run:*)",

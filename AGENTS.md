@@ -122,11 +122,11 @@ The `.claude/` directory configures Claude Code as an interactive tutor when lau
 
 1. **`.claude/settings.json`** — permission rules that deny reading `.meta/solution.py` and `.meta/stub.py`, restrict edits to `exercises/**/problem.py` only, pre-allow `marathon.py` commands, and put `reveal` behind an explicit approval gate.
 
-2. **`.claude/commands/`** — six slash commands (`/status`, `/next`, `/run`, `/hint`, `/reveal`, `/reset`) that wrap `marathon.py` subcommands with tutor-appropriate behavior.
+2. **`.claude/commands/`** — nine slash commands (`/status`, `/list`, `/next`, `/run`, `/hint`, `/reflect`, `/review`, `/reveal`, `/reset`) that wrap `marathon.py` subcommands with tutor-appropriate behavior. `/reflect` adds post-solve deepening; `/review` provides spaced-repetition suggestions.
 
-3. **`CLAUDE.md`** — a "Learning Mode" section describing the tutor contract: Socratic-first posture, generate exercise-specific hints from the problem spec (since `.meta/hints.md` is generic boilerplate for exercises 001-026), never reveal solutions unprompted.
+3. **`CLAUDE.md`** — a "Learning Mode" section describing the tutor contract: Socratic-first posture, generate exercise-specific hints, never reveal solutions unprompted.
 
-The key design constraint: `.meta/hints.md` files for the 26 notebook-sourced exercises contain identical generic boilerplate — they were templated by `build_exercises.py` and never backfilled. Only Tier 4 (027-031) has hand-written substantive hints. The Claude Code `/hint` command synthesizes real hints from `README.md` + `problem.py` + `test_problem.py` instead of relying on the boilerplate.
+All 31 exercises now have exercise-specific `.meta/hints.md` (3 progressive levels each) and substantive `.meta/notes.md` (why it matters, gotchas, interview follow-ups). The `/hint` command also registers usage in `.marathon_progress.json` via the CLI before synthesizing its own response.
 
 **If you're adding a non-Claude agent integration** (Codex, Gemini, Copilot): follow the same principle — deny access to `.meta/solution.py`, scope edits to `problem.py`, and instruct the agent to tutor rather than solve. The `.claude/` configuration is Claude-harness-specific, but the philosophy applies to any agent.
 

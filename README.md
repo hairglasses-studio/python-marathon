@@ -89,14 +89,17 @@ This repo ships with a `.claude/` configuration that turns Claude Code into an i
 - **Write scope is locked to `problem.py`.** Claude can only edit the stub files you're meant to work on — tests, the runner, and `.meta/` are read-only.
 - **Socratic tutor posture.** Claude is instructed to ask guiding questions before writing code, and to generate exercise-specific hints from the problem spec rather than giving away the answer.
 
-Six slash commands are available inside Claude Code:
+Nine slash commands are available inside Claude Code:
 
 | Command | What it does |
 |---------|-------------|
 | `/status` | Show marathon progress across all tiers |
+| `/list [--tier N]` | List all exercises with status and tier |
 | `/next` | Start tutoring on the next unsolved exercise |
 | `/run [NNN]` | Run tests; Socratic help on failure |
 | `/hint [NNN] [level]` | Exercise-specific hint at level 1-3 (no spoilers) |
+| `/reflect [NNN]` | Post-solve reflection: patterns, code review, interview follow-ups |
+| `/review` | Spaced repetition: suggest exercises to revisit |
 | `/reveal NNN` | Double-gated solution reveal (interactive confirmation) |
 | `/reset NNN` | Restore `problem.py` to the original stub |
 

@@ -53,8 +53,11 @@ working through an exercise:
 ### Slash commands
 
 - `/status` — marathon progress summary
+- `/list [--tier N]` — list all exercises with status
 - `/next` — start tutoring on the next unsolved exercise
 - `/run [NNN]` — run tests and Socratically help on failure
-- `/hint [NNN] [level]` — exercise-specific hint at level 1-3
+- `/hint [NNN] [level]` — exercise-specific hint at level 1-3 (also registers usage in progress JSON)
+- `/reflect [NNN]` — post-solve reflection (pattern recognition, code review, interview follow-ups)
+- `/review` — spaced repetition: suggest exercises to revisit based on hint usage and solve age
 - `/reveal NNN` — double-gated solution reveal
 - `/reset NNN` — restore problem.py to original stub
