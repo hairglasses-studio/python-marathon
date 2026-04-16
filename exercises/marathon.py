@@ -1684,6 +1684,61 @@ def cmd_migrate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_certificate(args: argparse.Namespace) -> int:
+    """Generate an SVG completion certificate for a tier."""
+    import xml.etree.ElementTree as ET
+    tier_num = args.tier
+    tier_name = None
+    for t in TIER_DIRS:
+        if f"tier{tier_num}" in t:
+            tier_name = t
+            break
+    if not tier_name:
+        print(f"Tier {tier_num} not found")
+        return 1
+    manifest = _load_manifest()
+    prog = load_progress()
+    tier_exs = [(eid, info) for eid, info in manifest.items() if info.get("tier") == tier_name]
+    total = len(tier_exs)
+    solved = sum(1 for eid, _ in tier_exs
+                 if isinstance(prog.get(eid), dict) and prog[eid].get("status") == "passed")
+    if solved < total:
+        print(f"Tier {tier_num} ({tier_name}): {solved}/{total} solved. Complete all to earn a certificate.")
+        return 1
+    user = _whoami()
+    now_date = datetime.now(timezone.utc).strftime("%B %d, %Y")
+    # Build SVG
+    svg = ET.Element("svg", xmlns="http://www.w3.org/2000/svg", width="600", height="400", viewBox="0 0 600 400")
+    # Background
+    rect = ET.SubElement(svg, "rect", width="600", height="400", rx="20", fill="#1a1a2e")
+    # Border
+    ET.SubElement(svg, "rect", x="10", y="10", width="580", height="380", rx="15", fill="none", stroke="#e6b800", **{"stroke-width": "3"})
+    # Title
+    title = ET.SubElement(svg, "text", x="300", y="80", fill="#e6b800", **{"font-size": "28", "font-family": "monospace", "text-anchor": "middle", "font-weight": "bold"})
+    title.text = "CERTIFICATE OF COMPLETION"
+    # Tier name
+    tier_text = ET.SubElement(svg, "text", x="300", y="140", fill="#ffffff", **{"font-size": "22", "font-family": "monospace", "text-anchor": "middle"})
+    tier_text.text = tier_name.replace("_", " ").title()
+    # User
+    user_text = ET.SubElement(svg, "text", x="300", y="200", fill="#88ccff", **{"font-size": "20", "font-family": "monospace", "text-anchor": "middle"})
+    user_text.text = user
+    # Stats
+    stats_text = ET.SubElement(svg, "text", x="300", y="250", fill="#aaaaaa", **{"font-size": "16", "font-family": "monospace", "text-anchor": "middle"})
+    stats_text.text = f"{total} exercises completed"
+    # Date
+    date_text = ET.SubElement(svg, "text", x="300", y="300", fill="#aaaaaa", **{"font-size": "14", "font-family": "monospace", "text-anchor": "middle"})
+    date_text.text = now_date
+    # Marathon branding
+    brand = ET.SubElement(svg, "text", x="300", y="360", fill="#555555", **{"font-size": "12", "font-family": "monospace", "text-anchor": "middle"})
+    brand.text = "python-marathon"
+    output = getattr(args, "output", None) or f"certificate_tier{tier_num}_{user}.svg"
+    tree = ET.ElementTree(svg)
+    ET.indent(tree, space="  ")
+    tree.write(output, xml_declaration=True, encoding="unicode")
+    print(f"Certificate saved to {output}")
+    return 0
+
+
 def cmd_lsp(args: argparse.Namespace) -> int:
     """Generate pyrightconfig.json scoped to one exercise."""
     ex_id = args.id
@@ -1930,6 +1985,9 @@ def build_parser() -> argparse.ArgumentParser:
     pst.add_argument("id", nargs="?", default=None, help="Exercise ID for per-exercise details")
     pst.add_argument("--json", action="store_true", help="JSON output for CI")
     sub.add_parser("migrate", help="Apply progress file migrations")
+    pcert = sub.add_parser("certificate", help="Generate SVG completion certificate")
+    pcert.add_argument("--tier", type=int, required=True, help="Tier number")
+    pcert.add_argument("--output", default=None, help="Output SVG file path")
     plsp = sub.add_parser("lsp", help="Generate pyrightconfig.json for an exercise")
     plsp.add_argument("id")
     sub.add_parser("doctor", help="Self-diagnostics for environment and data")
@@ -1977,6 +2035,7 @@ def main() -> int:
         "deps": cmd_deps,
         "stats": cmd_stats,
         "migrate": cmd_migrate,
+        "certificate": cmd_certificate,
         "lsp": cmd_lsp,
         "doctor": cmd_doctor,
         "shell": cmd_shell,

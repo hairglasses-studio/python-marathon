@@ -86,7 +86,7 @@ Each item is shippable in one dev-loop iteration.
 - [x] **stats NNN** — per-exercise details: tier, difficulty, pattern, tags, companies, SM-2 state, peer answers
 - [ ] **shields.io badge** — CI writes `stats --json` to gist; badge in README
 - [x] **Linter improvements** — checks hints.md sections, notes.md, manifest fields (tags/difficulty/target_minutes/pattern), test functions
-- [ ] **Tier certificate** — `marathon.py certificate --tier N` generates SVG via `xml.etree.ElementTree`
+- [x] **Tier certificate** — `marathon.py certificate --tier N [--output FILE]` generates SVG via `xml.etree.ElementTree`
 - [ ] **Power tokens** — streak reward; bypass XP penalty on reveal/hint
 - [x] **Kata history sparkline** — `kata_history` array; `kata NNN --history` shows duration bars per attempt
 - [x] **Hot streak XP multiplier** — 1.5x XP if ≥5 solves in <30 min session; shown in status
