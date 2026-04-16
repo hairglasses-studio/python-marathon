@@ -52,17 +52,17 @@
 These are pure Python, no new deps, each under ~50 lines.
 
 ### Solve-time recording
-- [ ] Record `time.perf_counter()` at `marathon.py next`/`run` start, store `solve_duration_seconds` in progress JSON on pass
+- [x] Record `time.perf_counter()` at `marathon.py next`/`run` start, store `solve_duration_seconds` in progress JSON on pass
 - [ ] Display in `marathon.py status` — actual time vs target time per exercise
 
 ### Streak tracking
-- [ ] Add `streak_days` + `last_active_date` to progress JSON
-- [ ] On any passing run: if `last_active_date` was yesterday, increment streak; else reset
+- [x] Add `streak_days` + `last_active_date` to progress JSON `_meta` object
+- [x] On any passing run: if `last_active_date` was yesterday, increment streak; else reset
 - [ ] Show current streak in `marathon.py status`
 
 ### Random challenge picker
-- [ ] `marathon.py challenge [tier]` — pick a random unsolved exercise, optionally filtered by tier
-- [ ] Inspired by [local-leetcode-trainer](https://github.com/karote00/local-leetcode-trainer) "surprise me" UX
+- [x] `marathon.py challenge [--tier N]` — pick a random unsolved exercise, optionally filtered by tier
+- [x] Inspired by [local-leetcode-trainer](https://github.com/karote00/local-leetcode-trainer) "surprise me" UX
 
 ### SM-2 spaced repetition upgrade
 - [ ] Replace the current `cmd_review` heuristic with proper SM-2 algorithm (~30 lines)

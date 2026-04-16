@@ -24,6 +24,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+import random
 
 ROOT = Path(__file__).resolve().parent
 PROGRESS_FILE = ROOT / ".marathon_progress.json"
@@ -56,6 +57,7 @@ def _pytest_cmd() -> list[str]:
         return [str(venv_py), "-m", "pytest"]
     return ["pytest"]
 
+_RUN_START_TIME: float | None = None
 MARK = {"passed": "✓", "failed": "✗", "untouched": "·", "revealed": "!"}
 
 
@@ -122,20 +124,41 @@ def _run_pytest(path: Path) -> int:
 
 
 def _record_run(ex_id: str, passed: bool) -> None:
+    global _RUN_START_TIME
     prog = load_progress()
     entry = prog.get(ex_id, {})
     entry["status"] = "passed" if passed else "failed"
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(timezone.utc)
+    now_iso = now.isoformat()
     if passed and "first_solved" not in entry:
-        entry["first_solved"] = now
-    entry["last_run"] = now
+        entry["first_solved"] = now_iso
+    entry["last_run"] = now_iso
+    # Solve-time recording
+    if passed and _RUN_START_TIME is not None:
+        entry["solve_duration_seconds"] = round(time.perf_counter() - _RUN_START_TIME, 1)
+    _RUN_START_TIME = None
+    # Streak tracking
+    today = now.date().isoformat()
+    meta = prog.get("_meta", {})
+    last_active = meta.get("last_active_date")
+    streak = meta.get("streak_days", 0)
+    if last_active != today:
+        if last_active == (now.date() - __import__("datetime").timedelta(days=1)).isoformat():
+            streak += 1
+        elif last_active != today:
+            streak = 1
+        meta["last_active_date"] = today
+        meta["streak_days"] = streak
+        prog["_meta"] = meta
     prog[ex_id] = entry
     prog["_last_run"] = ex_id
     save_progress(prog)
 
 
 def _run_exercise(ex_id: str, path: Path) -> int:
+    global _RUN_START_TIME
     print(f"\n▶ Running {path.name}...\n")
+    _RUN_START_TIME = time.perf_counter()
     rc = _run_pytest(path)
     _record_run(ex_id, rc == 0)
     if rc == 0:
@@ -397,6 +420,23 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 
+def cmd_challenge(args: argparse.Namespace) -> int:
+    """Pick a random unsolved exercise, optionally filtered by tier."""
+    exs = list_exercises()
+    prog = load_progress()
+    unsolved = [(eid, path) for eid, path in exs
+                if prog.get(eid, {}).get("status") != "passed"]
+    if args.tier is not None:
+        unsolved = [(eid, path) for eid, path in unsolved
+                    if f"tier{args.tier}" in tier_of(path)]
+    if not unsolved:
+        scope = f" in tier {args.tier}" if args.tier else ""
+        print(f"No unsolved exercises{scope} — you're done!")
+        return 0
+    eid, path = random.choice(unsolved)
+    return _run_exercise(eid, path)
+
+
 def cmd_verify(args: argparse.Namespace) -> int:
     """Run all reference solutions against tests silently."""
     exs = list_exercises()
@@ -527,6 +567,8 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("peer", help="View another user's answer (gated)")
     pp.add_argument("id")
     pp.add_argument("--user", required=True, help="Peer username to view")
+    pch = sub.add_parser("challenge", help="Random unsolved exercise")
+    pch.add_argument("--tier", type=int, default=None, help="Filter by tier")
     sub.add_parser("verify", help="Run all reference solutions against tests")
     sub.add_parser("review", help="Suggest exercises to revisit (spaced repetition)")
     pi = sub.add_parser("import", help="Import exercises from Exercism")
@@ -552,6 +594,7 @@ def main() -> int:
         "list": cmd_list,
         "submit": cmd_submit,
         "peer": cmd_peer,
+        "challenge": cmd_challenge,
         "verify": cmd_verify,
         "review": cmd_review,
         "import": cmd_import,
