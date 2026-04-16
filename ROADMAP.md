@@ -94,15 +94,15 @@ These are pure Python, no new deps, each under ~50 lines.
 - [x] Badges: First Blood, Clean Sweep, Speed Demon, Tier 1-4 Clear, Week Warrior, Month Master, Dawn Solver, Night Owl, Ten Down, Half Marathon, Marathon
 
 ### Progress export/import for cross-machine sync
-- [ ] `marathon.py export > backup.json` — dump progress
-- [ ] `marathon.py import backup.json --merge` — merge by taking max status, union of badges, latest timestamps
-- [ ] Enables syncing between machines without git-tracking the progress file
+- [x] `marathon.py export` — dump progress JSON to stdout
+- [x] `marathon.py import-progress FILE` — merge by taking max status, union badges, preserve SR fields
+- [x] Enables syncing between machines without git-tracking the progress file
 
 ### Obsidian vault export
-- [ ] `marathon.py export-obsidian --vault PATH` — write one `.md` per solved exercise
-- [ ] YAML frontmatter: tags, status, solved date, hints used, duration
-- [ ] Body: problem statement + your solution in a code block
-- [ ] Obsidian handles full-text search, graph view, tag navigation (~60 lines)
+- [x] `marathon.py export-obsidian --vault PATH` — write one `.md` per solved exercise
+- [x] YAML frontmatter: exercise, slug, tier, tags, solved date, hints, duration
+- [x] Body: problem statement from README + solution from problem.py in fenced code block
+- [x] Obsidian handles full-text search, graph view, tag navigation
 
 ---
 

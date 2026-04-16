@@ -434,6 +434,113 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 
+def cmd_export(args: argparse.Namespace) -> int:
+    """Export progress JSON to stdout."""
+    prog = load_progress()
+    print(json.dumps(prog, indent=2, sort_keys=True))
+    return 0
+
+
+def cmd_import_progress(args: argparse.Namespace) -> int:
+    """Import and merge progress from a JSON file."""
+    import_path = Path(args.file)
+    if not import_path.exists():
+        print(f"File not found: {import_path}")
+        return 1
+    incoming = json.loads(import_path.read_text())
+    if not isinstance(incoming, dict):
+        print("Invalid progress format")
+        return 1
+    prog = load_progress()
+    merged = 0
+    status_rank = {"untouched": 0, "failed": 1, "passed": 2}
+    for eid, entry in incoming.items():
+        if eid.startswith("_"):
+            # Merge _meta: union badges, max streak
+            if eid == "_meta" and isinstance(entry, dict):
+                meta = prog.setdefault("_meta", {})
+                old_badges = set(meta.get("badges", []))
+                new_badges = set(entry.get("badges", []))
+                meta["badges"] = sorted(old_badges | new_badges)
+                meta["streak_days"] = max(meta.get("streak_days", 0), entry.get("streak_days", 0))
+                prog["_meta"] = meta
+            continue
+        if not isinstance(entry, dict):
+            continue
+        existing = prog.get(eid, {})
+        # Take max status
+        new_rank = status_rank.get(entry.get("status", "untouched"), 0)
+        old_rank = status_rank.get(existing.get("status", "untouched"), 0)
+        if new_rank >= old_rank:
+            # Merge: keep the better entry, preserve SR fields from both
+            for key in ("sr_ef", "sr_n", "sr_interval"):
+                if key in existing and key not in entry:
+                    entry[key] = existing[key]
+            prog[eid] = entry
+            merged += 1
+    save_progress(prog)
+    print(f"Merged {merged} exercise entries")
+    return 0
+
+
+def cmd_export_obsidian(args: argparse.Namespace) -> int:
+    """Export solved exercises to an Obsidian vault as markdown notes."""
+    vault = Path(args.vault)
+    vault.mkdir(parents=True, exist_ok=True)
+    prog = load_progress()
+    manifest = _load_manifest()
+    exported = 0
+    for eid, entry in sorted(prog.items()):
+        if eid.startswith("_") or not isinstance(entry, dict):
+            continue
+        if entry.get("status") != "passed":
+            continue
+        path = find_exercise(eid)
+        if not path:
+            continue
+        info = manifest.get(eid, {})
+        tags = info.get("tags", [])
+        problem_py = path / "problem.py"
+        readme = path / "README.md"
+
+        # Build frontmatter
+        lines = ["---"]
+        lines.append("exercise: " + json.dumps(eid))
+        lines.append("slug: " + json.dumps(info.get("slug", path.name)))
+        lines.append("tier: " + json.dumps(info.get("tier", "unknown")))
+        lines.append(f"status: passed")
+        if tags:
+            lines.append(f"tags: [{', '.join(tags)}]")
+        if entry.get("first_solved"):
+            lines.append("solved: " + json.dumps(entry["first_solved"][:10]))
+        lines.append(f"hints_used: {entry.get('hints_used', 0)}")
+        if entry.get("solve_duration_seconds"):
+            lines.append(f"duration_seconds: {entry['solve_duration_seconds']}")
+        lines.append("---")
+        lines.append("")
+
+        # Problem statement
+        if readme.exists():
+            lines.append(readme.read_text().strip())
+        lines.append("")
+
+        # Solution
+        lines.append("## My Solution")
+        lines.append("")
+        lines.append("```python")
+        if problem_py.exists():
+            lines.append(problem_py.read_text().strip())
+        lines.append("```")
+        lines.append("")
+
+        note_path = vault / f"{eid}_{path.name}.md"
+        note_path.write_text(chr(10).join(lines) + chr(10))
+        exported += 1
+
+    print(f"Exported {exported} exercises to {vault}")
+    return 0
+
+
 def cmd_new(args: argparse.Namespace) -> int:
     """Scaffold a new exercise directory with all 7 files."""
     manifest = _load_manifest()
@@ -858,6 +965,11 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("peer", help="View another user's answer (gated)")
     pp.add_argument("id")
     pp.add_argument("--user", required=True, help="Peer username to view")
+    sub.add_parser("export", help="Export progress JSON to stdout")
+    pim = sub.add_parser("import-progress", help="Import and merge progress from file")
+    pim.add_argument("file", help="JSON file to import")
+    pob = sub.add_parser("export-obsidian", help="Export solved exercises to Obsidian vault")
+    pob.add_argument("--vault", required=True, help="Path to Obsidian vault directory")
     pn = sub.add_parser("new", help="Scaffold a new exercise")
     pn.add_argument("--name", required=True, help="Exercise slug (e.g. sliding_window_max)")
     pn.add_argument("--tier", default="tier2_patterns", help="Target tier directory")
@@ -894,6 +1006,9 @@ def main() -> int:
         "list": cmd_list,
         "submit": cmd_submit,
         "peer": cmd_peer,
+        "export": cmd_export,
+        "import-progress": cmd_import_progress,
+        "export-obsidian": cmd_export_obsidian,
         "new": cmd_new,
         "badges": cmd_badges,
         "tag": cmd_tag,
