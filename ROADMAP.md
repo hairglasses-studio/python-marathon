@@ -64,7 +64,7 @@ Each item is shippable in one dev-loop iteration.
 
 - [ ] **Keystroke watch mode** — `termios`/`select` raw-mode in `watch`: keys `h`=hint, `l`=list, `r`=rerun, `n`=next, `q`=quit, `?`=help
 - [ ] **Self-report quality rating** — after review solve, prompt `[0=forgot 1=hard 2=ok 3=easy]` via `termios`; feed into SM-2 quality
-- [ ] **Pattern taxonomy** — add `"pattern"` field to manifest; `marathon.py pattern` lists patterns; `next --pattern X` filters
+- [x] **Pattern taxonomy** — `"pattern"` field on all 61 manifest entries; `marathon.py pattern` shows solved/total per pattern; `next --pattern X` filters
 - [ ] **Named curated shortlists** — `curations.json` with `blind75`, `async-mastery`, etc.; `list --curated NAME`; `next --curated NAME`
 - [ ] **Concept prerequisite DAG** — `"prereqs"` in manifest; `recommend` upgrades to topo-sort; `marathon.py map NNN` prints chain
 - [ ] **Company tags** — add `"companies"` to manifest; `list --company google`

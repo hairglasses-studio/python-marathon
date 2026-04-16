@@ -1,6 +1,7 @@
 {
   "001": {
     "difficulty": 1,
+    "pattern": "basics",
     "slug": "001_fizzbuzz",
     "source": "openai-prep",
     "source_id": null,
@@ -15,6 +16,7 @@
   },
   "002": {
     "difficulty": 2,
+    "pattern": "counting",
     "slug": "002_word_frequency",
     "source": "openai-prep",
     "source_id": null,
@@ -29,6 +31,7 @@
   },
   "003": {
     "difficulty": 3,
+    "pattern": "sliding-window",
     "slug": "003_windowed_generator",
     "source": "openai-prep",
     "source_id": null,
@@ -43,6 +46,7 @@
   },
   "004": {
     "difficulty": 3,
+    "pattern": "decorator",
     "slug": "004_counted_decorator",
     "source": "openai-prep",
     "source_id": null,
@@ -57,6 +61,7 @@
   },
   "005": {
     "difficulty": 3,
+    "pattern": "iterator-protocol",
     "slug": "005_int_range",
     "source": "openai-prep",
     "source_id": null,
@@ -71,6 +76,7 @@
   },
   "006": {
     "difficulty": 2,
+    "pattern": "parsing",
     "slug": "006_config_parser",
     "source": "openai-prep",
     "source_id": null,
@@ -85,6 +91,7 @@
   },
   "007": {
     "difficulty": 3,
+    "pattern": "heap",
     "slug": "007_topn_tracker",
     "source": "openai-prep",
     "source_id": null,
@@ -99,6 +106,7 @@
   },
   "008": {
     "difficulty": 3,
+    "pattern": "context-manager",
     "slug": "008_temp_attr_context",
     "source": "openai-prep",
     "source_id": null,
@@ -113,6 +121,7 @@
   },
   "009": {
     "difficulty": 4,
+    "pattern": "concurrency",
     "slug": "009_parallel_sum",
     "source": "openai-prep",
     "source_id": null,
@@ -127,6 +136,7 @@
   },
   "010": {
     "difficulty": 4,
+    "pattern": "dfs",
     "slug": "010_dfs_traversal",
     "source": "openai-prep",
     "source_id": null,
@@ -141,6 +151,7 @@
   },
   "011": {
     "difficulty": 5,
+    "pattern": "topological-sort",
     "slug": "011_topo_sort_kahn",
     "source": "openai-prep",
     "source_id": null,
@@ -156,6 +167,7 @@
   },
   "012": {
     "difficulty": 5,
+    "pattern": "cycle-detection",
     "slug": "012_three_color_cycle",
     "source": "openai-prep",
     "source_id": null,
@@ -170,6 +182,7 @@
   },
   "013": {
     "difficulty": 5,
+    "pattern": "dfs",
     "slug": "013_transitive_dependents",
     "source": "openai-prep",
     "source_id": null,
@@ -184,6 +197,7 @@
   },
   "014": {
     "difficulty": 4,
+    "pattern": "hashing",
     "slug": "014_content_addressed_cache",
     "source": "openai-prep",
     "source_id": null,
@@ -198,6 +212,7 @@
   },
   "015": {
     "difficulty": 5,
+    "pattern": "versioned-data-structure",
     "slug": "015_time_travel_ledger",
     "source": "openai-prep",
     "source_id": null,
@@ -212,6 +227,7 @@
   },
   "016": {
     "difficulty": 6,
+    "pattern": "concurrency",
     "slug": "016_per_key_locking",
     "source": "openai-prep",
     "source_id": null,
@@ -226,6 +242,7 @@
   },
   "017": {
     "difficulty": 5,
+    "pattern": "retry-backoff",
     "slug": "017_budget_retry",
     "source": "openai-prep",
     "source_id": null,
@@ -240,6 +257,7 @@
   },
   "018": {
     "difficulty": 5,
+    "pattern": "concurrency",
     "slug": "018_gpu_credit_manager",
     "source": "openai-prep",
     "source_id": null,
@@ -254,6 +272,7 @@
   },
   "019": {
     "difficulty": 4,
+    "pattern": "parsing",
     "slug": "019_path_normalize",
     "source": "openai-prep",
     "source_id": null,
@@ -268,6 +287,7 @@
   },
   "020": {
     "difficulty": 5,
+    "pattern": "iterator-protocol",
     "slug": "020_resumable_iterator",
     "source": "openai-prep",
     "source_id": null,
@@ -282,6 +302,7 @@
   },
   "021": {
     "difficulty": 8,
+    "pattern": "recursive-evaluation",
     "slug": "021_spreadsheet_formula",
     "source": "openai-prep",
     "source_id": null,
@@ -297,6 +318,7 @@
   },
   "022": {
     "difficulty": 8,
+    "pattern": "bfs",
     "slug": "022_multithreaded_crawler",
     "source": "openai-prep",
     "source_id": null,
@@ -312,6 +334,7 @@
   },
   "023": {
     "difficulty": 9,
+    "pattern": "parsing",
     "slug": "023_in_memory_sql",
     "source": "openai-prep",
     "source_id": null,
@@ -327,6 +350,7 @@
   },
   "024": {
     "difficulty": 7,
+    "pattern": "topological-sort",
     "slug": "024_dep_graph_warmup",
     "source": "openai-prep",
     "source_id": null,
@@ -341,6 +365,7 @@
   },
   "025": {
     "difficulty": 7,
+    "pattern": "versioned-data-structure",
     "slug": "025_versioned_kv_warmup",
     "source": "openai-prep",
     "source_id": null,
@@ -355,6 +380,7 @@
   },
   "026": {
     "difficulty": 7,
+    "pattern": "retry-backoff",
     "slug": "026_tool_retry_warmup",
     "source": "openai-prep",
     "source_id": null,
@@ -370,6 +396,7 @@
   },
   "027": {
     "difficulty": 5,
+    "pattern": "concurrency",
     "slug": "027_async_gather",
     "source": "hand-written",
     "source_id": null,
@@ -385,6 +412,7 @@
   },
   "028": {
     "difficulty": 5,
+    "pattern": "retry-backoff",
     "slug": "028_async_retry",
     "source": "hand-written",
     "source_id": null,
@@ -399,6 +427,7 @@
   },
   "029": {
     "difficulty": 6,
+    "pattern": "producer-consumer",
     "slug": "029_async_queue",
     "source": "hand-written",
     "source_id": null,
@@ -414,6 +443,7 @@
   },
   "030": {
     "difficulty": 6,
+    "pattern": "iterator-protocol",
     "slug": "030_async_iterator",
     "source": "hand-written",
     "source_id": null,
@@ -428,6 +458,7 @@
   },
   "031": {
     "difficulty": 7,
+    "pattern": "concurrency",
     "slug": "031_async_tool_loop",
     "source": "hand-written",
     "source_id": null,
@@ -444,6 +475,7 @@
   "032": {
     "difficulty": 1,
     "exercism_difficulty": 0,
+    "pattern": "basics",
     "slug": "032_two_fer",
     "source": "exercism",
     "source_id": "two-fer",
@@ -459,6 +491,7 @@
   "033": {
     "difficulty": 1,
     "exercism_difficulty": 0,
+    "pattern": "basics",
     "slug": "033_hello_world",
     "source": "exercism",
     "source_id": "hello-world",
@@ -474,6 +507,7 @@
   "034": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "parsing",
     "slug": "034_bob",
     "source": "exercism",
     "source_id": "bob",
@@ -489,6 +523,7 @@
   "035": {
     "difficulty": 2,
     "exercism_difficulty": 0,
+    "pattern": "hashing",
     "slug": "035_isogram",
     "source": "exercism",
     "source_id": "isogram",
@@ -504,6 +539,7 @@
   "036": {
     "difficulty": 2,
     "exercism_difficulty": 0,
+    "pattern": "hashing",
     "slug": "036_pangram",
     "source": "exercism",
     "source_id": "pangram",
@@ -519,6 +555,7 @@
   "037": {
     "difficulty": 2,
     "exercism_difficulty": 0,
+    "pattern": "math",
     "slug": "037_difference_of_squares",
     "source": "exercism",
     "source_id": "difference-of-squares",
@@ -534,6 +571,7 @@
   "038": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "math",
     "slug": "038_grains",
     "source": "exercism",
     "source_id": "grains",
@@ -549,6 +587,7 @@
   "039": {
     "difficulty": 1,
     "exercism_difficulty": 0,
+    "pattern": "basics",
     "slug": "039_leap",
     "source": "exercism",
     "source_id": "leap",
@@ -564,6 +603,7 @@
   "040": {
     "difficulty": 2,
     "exercism_difficulty": 0,
+    "pattern": "lookup-table",
     "slug": "040_resistor_color",
     "source": "exercism",
     "source_id": "resistor-color",
@@ -579,6 +619,7 @@
   "041": {
     "difficulty": 2,
     "exercism_difficulty": 0,
+    "pattern": "lookup-table",
     "slug": "041_rna_transcription",
     "source": "exercism",
     "source_id": "rna-transcription",
@@ -594,6 +635,7 @@
   "042": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "sorting",
     "slug": "042_anagram",
     "source": "exercism",
     "source_id": "anagram",
@@ -609,6 +651,7 @@
   "043": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "binary-search",
     "slug": "043_binary_search",
     "source": "exercism",
     "source_id": "binary-search",
@@ -624,6 +667,7 @@
   "044": {
     "difficulty": 5,
     "exercism_difficulty": 0,
+    "pattern": "linked-list",
     "slug": "044_linked_list",
     "source": "exercism",
     "source_id": "linked-list",
@@ -639,6 +683,7 @@
   "045": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "parsing",
     "slug": "045_matrix",
     "source": "exercism",
     "source_id": "matrix",
@@ -654,6 +699,7 @@
   "046": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "state-machine",
     "slug": "046_robot_name",
     "source": "exercism",
     "source_id": "robot-name",
@@ -669,6 +715,7 @@
   "047": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "sliding-window",
     "slug": "047_series",
     "source": "exercism",
     "source_id": "series",
@@ -684,6 +731,7 @@
   "048": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "counting",
     "slug": "048_word_count",
     "source": "exercism",
     "source_id": "word-count",
@@ -699,6 +747,7 @@
   "049": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "parsing",
     "slug": "049_phone_number",
     "source": "exercism",
     "source_id": "phone-number",
@@ -714,6 +763,7 @@
   "050": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "sorting",
     "slug": "050_grade_school",
     "source": "exercism",
     "source_id": "grade-school",
@@ -729,6 +779,7 @@
   "051": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "dunder-methods",
     "slug": "051_clock",
     "source": "exercism",
     "source_id": "clock",
@@ -744,6 +795,7 @@
   "052": {
     "difficulty": 5,
     "exercism_difficulty": 0,
+    "pattern": "parsing",
     "slug": "052_tournament",
     "source": "exercism",
     "source_id": "tournament",
@@ -760,6 +812,7 @@
   "053": {
     "difficulty": 5,
     "exercism_difficulty": 0,
+    "pattern": "matrix",
     "slug": "053_saddle_points",
     "source": "exercism",
     "source_id": "saddle-points",
@@ -775,6 +828,7 @@
   "054": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "recursion",
     "slug": "054_flatten_array",
     "source": "exercism",
     "source_id": "flatten-array",
@@ -790,6 +844,7 @@
   "055": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "two-pointers",
     "slug": "055_sublist",
     "source": "exercism",
     "source_id": "sublist",
@@ -805,6 +860,7 @@
   "056": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "math",
     "slug": "056_roman_numerals",
     "source": "exercism",
     "source_id": "roman-numerals",
@@ -820,6 +876,7 @@
   "057": {
     "difficulty": 4,
     "exercism_difficulty": 0,
+    "pattern": "validation",
     "slug": "057_luhn",
     "source": "exercism",
     "source_id": "luhn",
@@ -835,6 +892,7 @@
   "058": {
     "difficulty": 5,
     "exercism_difficulty": 0,
+    "pattern": "encryption",
     "slug": "058_simple_cipher",
     "source": "exercism",
     "source_id": "simple-cipher",
@@ -850,6 +908,7 @@
   "059": {
     "difficulty": 5,
     "exercism_difficulty": 0,
+    "pattern": "higher-order-functions",
     "slug": "059_list_ops",
     "source": "exercism",
     "source_id": "list-ops",
@@ -865,6 +924,7 @@
   "060": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "bit-manipulation",
     "slug": "060_allergies",
     "source": "exercism",
     "source_id": "allergies",
@@ -880,6 +940,7 @@
   "061": {
     "difficulty": 3,
     "exercism_difficulty": 0,
+    "pattern": "math",
     "slug": "061_perfect_numbers",
     "source": "exercism",
     "source_id": "perfect-numbers",

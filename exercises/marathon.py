@@ -1134,6 +1134,30 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_pattern(args: argparse.Namespace) -> int:
+    """Show all patterns with solved/total counts."""
+    manifest = _load_manifest()
+    prog = load_progress()
+    from collections import Counter
+    pattern_total: Counter = Counter()
+    pattern_solved: Counter = Counter()
+    for eid, info in manifest.items():
+        p = info.get("pattern", "uncategorized")
+        pattern_total[p] += 1
+        entry = prog.get(eid, {})
+        if isinstance(entry, dict) and entry.get("status") == "passed":
+            pattern_solved[p] += 1
+    print()
+    print(f"  {'Pattern':25s}  {'Solved':>6s}  {'Total':>5s}")
+    print(f"  {'-------':25s}  {'------':>6s}  {'-----':>5s}")
+    for p in sorted(pattern_total, key=lambda x: (-pattern_total[x], x)):
+        s = pattern_solved[p]
+        t = pattern_total[p]
+        bar = "█" * s + "░" * (t - s)
+        print(f"  {p:25s}  {s:6d}/{t:<5d} {bar}")
+    return 0
+
+
 def cmd_diff(args: argparse.Namespace) -> int:
     """Show a unified diff between your solution and a peer's."""
     import difflib
@@ -1519,7 +1543,8 @@ def build_parser() -> argparse.ArgumentParser:
     pr = sub.add_parser("run", help="Run tests for an exercise")
     pr.add_argument("id", nargs="?", default=None)
     pr.add_argument("--current", action="store_true")
-    sub.add_parser("next", help="Run the next unsolved exercise")
+    pnx = sub.add_parser("next", help="Run the next unsolved exercise")
+    pnx.add_argument("--pattern", default=None, help="Filter by pattern")
     pw = sub.add_parser("watch", help="Watch mode (polls file mtimes)")
     pw.add_argument("id", nargs="?", default=None)
     ph = sub.add_parser("hint", help="Show a hint")
@@ -1566,6 +1591,7 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    sub.add_parser("pattern", help="Show all patterns with solved/total")
     pdf = sub.add_parser("diff", help="Diff your answer vs a peer's")
     pdf.add_argument("id")
     pdf.add_argument("--user", required=True, help="Peer to diff against")
@@ -1611,6 +1637,7 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "pattern": cmd_pattern,
         "diff": cmd_diff,
         "leaderboard": cmd_leaderboard,
         "peer-status": cmd_peer_status,
