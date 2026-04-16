@@ -434,6 +434,73 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 
+def cmd_new(args: argparse.Namespace) -> int:
+    """Scaffold a new exercise directory with all 7 files."""
+    manifest = _load_manifest()
+    next_id = max((int(k) for k in manifest), default=0) + 1
+    ex_id = f"{next_id:03d}"
+    slug = f"{ex_id}_{args.name}"
+    tier = args.tier
+    tier_dir = ROOT / tier
+    tier_dir.mkdir(exist_ok=True)
+    dest = tier_dir / slug
+    if dest.exists():
+        print(f"Directory already exists: {dest}")
+        return 1
+    dest.mkdir(parents=True)
+    meta = dest / ".meta"
+    meta.mkdir()
+
+    tags = [t.strip() for t in (args.tags or "").split(",") if t.strip()]
+    target = args.target_minutes or 15
+    title = args.name.replace("_", " ").title()
+
+    # problem.py
+    (dest / "problem.py").write_text(
+        f'def solve():\n    """TODO: implement."""\n    raise NotImplementedError("fill me in")\n'
+    )
+    # stub.py
+    shutil.copy(dest / "problem.py", meta / "stub.py")
+    # solution.py
+    (meta / "solution.py").write_text(
+        f'def solve():\n    """TODO: reference solution."""\n    pass\n'
+    )
+    # test_problem.py
+    (dest / "test_problem.py").write_text(
+        f'# Tests — do not edit. Run via:\n#   python marathon.py run {ex_id}\n\nfrom problem import *\n\n\ndef test_all():\n    # TODO: add test cases\n    pass\n'
+    )
+    # README.md
+    (dest / "README.md").write_text(
+        f'# {title}\n\n**Tier:** {tier}\n**Target time:** {target} minutes\n**Topics:** {", ".join(tags) if tags else "TODO"}\n\n## Problem\n\nTODO: describe the problem.\n\n## How to run\n\n    python marathon.py run {ex_id}\n'
+    )
+    # hints.md
+    (meta / "hints.md").write_text(
+        f'# Hints for {title}\n\n## Hint 1\n\nTODO\n\n## Hint 2\n\nTODO\n\n## Hint 3\n\nTODO\n'
+    )
+    # notes.md
+    (meta / "notes.md").write_text(
+        f'# Notes for {title}\n\n## Why this matters\n\nTODO\n'
+    )
+
+    # Update manifest
+    manifest[ex_id] = {
+        "slug": slug,
+        "tier": tier,
+        "source": "hand-written",
+        "source_id": None,
+        "source_url": None,
+        "tags": tags,
+        "difficulty": 5,
+        "target_minutes": target,
+    }
+    MANIFEST_FILE.write_text(json.dumps(manifest, indent=2, sort_keys=True) + chr(10))
+
+    print(f"Created {dest.relative_to(ROOT)} ({ex_id})")
+    print(f"  Edit: problem.py, test_problem.py, .meta/solution.py, README.md")
+    print(f"  Then: marathon.py run {ex_id}")
+    return 0
+
+
 def cmd_badges(args: argparse.Namespace) -> int:
     """Show earned and available badges."""
     prog = load_progress()
@@ -791,6 +858,11 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("peer", help="View another user's answer (gated)")
     pp.add_argument("id")
     pp.add_argument("--user", required=True, help="Peer username to view")
+    pn = sub.add_parser("new", help="Scaffold a new exercise")
+    pn.add_argument("--name", required=True, help="Exercise slug (e.g. sliding_window_max)")
+    pn.add_argument("--tier", default="tier2_patterns", help="Target tier directory")
+    pn.add_argument("--tags", default="", help="Comma-separated topic tags")
+    pn.add_argument("--target-minutes", type=int, default=15, help="Target solve time")
     sub.add_parser("badges", help="Show earned and available badges")
     pt = sub.add_parser("tag", help="List tags or filter exercises by tag")
     pt.add_argument("--filter", default=None, help="Filter exercises by tag")
@@ -822,6 +894,7 @@ def main() -> int:
         "list": cmd_list,
         "submit": cmd_submit,
         "peer": cmd_peer,
+        "new": cmd_new,
         "badges": cmd_badges,
         "tag": cmd_tag,
         "recommend": cmd_recommend,

@@ -72,9 +72,9 @@ These are pure Python, no new deps, each under ~50 lines.
 - [x] Auto-initialize SM-2 fields on first review for existing progress entries
 
 ### Exercise scaffold generator
-- [ ] `marathon.py new --name "slug" --tier T --tags "t1,t2" --target-minutes N`
-- [ ] Creates the full 7-file directory with templates + adds manifest entry
-- [ ] Generalizes `scripts/build_exercises.py` to work from CLI without notebooks
+- [x] `marathon.py new --name SLUG --tier T --tags T1,T2 --target-minutes N`
+- [x] Creates the full 7-file directory with templates + adds manifest entry
+- [x] Auto-assigns next monotone ID from manifest
 
 ### Manifest enrichment
 - [x] Add `tags`, `difficulty` (1-10), `target_minutes` to all 41 entries in `manifest.json`
@@ -83,9 +83,9 @@ These are pure Python, no new deps, each under ~50 lines.
 - [x] `marathon.py recommend` — tag-coverage-based recommendation (most new tags first)
 
 ### Incremental test gates
-- [ ] Add `@pytest.mark.incremental` hook to `exercises/conftest.py` (~15 lines)
-- [ ] Tests in a class skip after the first failure — "show one error at a time" UX
-- [ ] Inspired by [python_koans](https://github.com/gregmalcolm/python_koans) and [pytest incremental docs](https://docs.pytest.org/en/stable/example/simple.html)
+- [x] Add `@pytest.mark.incremental` hook to `exercises/conftest.py`
+- [x] Tests in a class skip after the first failure — "show one error at a time" UX
+- [x] `pytest_runtest_makereport` + `pytest_runtest_setup` hooks per pytest docs
 
 ### Badge system
 - [x] Define 14 badge specs in `exercises/badges.json`: slug, name, description
