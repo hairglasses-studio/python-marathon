@@ -158,9 +158,9 @@
 - [ ] Ref: [big_O](https://github.com/pberkes/big_O), [bigocheck](https://github.com/adwantg/bigocheck)
 
 ### Solution diff view
-- [ ] `marathon.py diff NNN [--user NAME]` — side-by-side diff of your answer vs peer's using `difflib.unified_diff`
-- [ ] Gate: you must have solved + peer must have submitted
-- [ ] Enhancement: AST-normalized diff — normalize variable names before diffing; source: [exercism/python-representer](https://github.com/exercism/python-representer)
+- [x] `marathon.py diff NNN --user NAME` — unified diff via stdlib `difflib`
+- [x] Gate: both users must have submitted answers
+- [ ] Enhancement: AST-normalized diff — normalize variable names before diffing
 
 ### Leaderboard
 - [x] `marathon.py leaderboard` — reads `answers/<user>/` dirs, shows solve count + XP + progress bar per user

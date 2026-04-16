@@ -1134,6 +1134,42 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_diff(args: argparse.Namespace) -> int:
+    """Show a unified diff between your solution and a peer's."""
+    import difflib
+    ex_id = args.id
+    peer = args.user
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    me = _whoami()
+    if me == "default":
+        print("Set your identity first: echo 'yourname' > .marathon_user")
+        return 1
+    my_sol = ANSWERS_DIR / me / ex_id / "solution.py"
+    peer_sol = ANSWERS_DIR / peer / ex_id / "solution.py"
+    if not my_sol.exists():
+        print(f"You haven't submitted an answer for {ex_id}. Use: marathon.py submit {ex_id}")
+        return 1
+    if not peer_sol.exists():
+        print(f"{peer} hasn't submitted an answer for {ex_id} yet.")
+        return 1
+    my_lines = my_sol.read_text().splitlines(keepends=True)
+    peer_lines = peer_sol.read_text().splitlines(keepends=True)
+    diff = difflib.unified_diff(
+        my_lines, peer_lines,
+        fromfile=f"{me}/{ex_id}/solution.py",
+        tofile=f"{peer}/{ex_id}/solution.py",
+    )
+    output = "".join(diff)
+    if not output:
+        print(f"Solutions are identical!")
+    else:
+        print(output)
+    return 0
+
+
 def cmd_leaderboard(args: argparse.Namespace) -> int:
     """Show leaderboard from submitted answers across all users."""
     if not ANSWERS_DIR.is_dir():
@@ -1530,6 +1566,9 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    pdf = sub.add_parser("diff", help="Diff your answer vs a peer's")
+    pdf.add_argument("id")
+    pdf.add_argument("--user", required=True, help="Peer to diff against")
     sub.add_parser("leaderboard", help="Show leaderboard from submitted answers")
     sub.add_parser("peer-status", help="Show open peer challenges")
     pdp = sub.add_parser("deps", help="Show optional dependency status")
@@ -1572,6 +1611,7 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "diff": cmd_diff,
         "leaderboard": cmd_leaderboard,
         "peer-status": cmd_peer_status,
         "deps": cmd_deps,
