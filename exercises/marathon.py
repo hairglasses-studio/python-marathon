@@ -984,6 +984,47 @@ def cmd_import(args: argparse.Namespace) -> int:
     return subprocess.run(cmd).returncode
 
 
+def cmd_lint_exercises(args: argparse.Namespace) -> int:
+    """Validate all exercises have the required file layout."""
+    exs = list_exercises()
+    required = ["problem.py", "test_problem.py", "README.md"]
+    meta_required = ["stub.py", "solution.py", "hints.md"]
+    errors = 0
+    for eid, path in exs:
+        missing = []
+        for f in required:
+            if not (path / f).exists():
+                missing.append(f)
+        meta = path / ".meta"
+        if not meta.is_dir():
+            missing.append(".meta/")
+        else:
+            for f in meta_required:
+                if not (meta / f).exists():
+                    missing.append(f".meta/{f}")
+        # Check test imports
+        test_file = path / "test_problem.py"
+        if test_file.exists():
+            content = test_file.read_text()
+            if "from problem import" not in content and "import problem" not in content:
+                missing.append("test: missing 'from problem import'")
+        # Check stub has NotImplementedError
+        problem_file = path / "problem.py"
+        if problem_file.exists():
+            stub = (meta / "stub.py") if meta.is_dir() else None
+            if stub and stub.exists():
+                stub_content = stub.read_text()
+                if "NotImplementedError" not in stub_content and "pass" not in stub_content:
+                    missing.append("stub: no NotImplementedError or pass")
+        if missing:
+            print(f"  WARN {eid} {path.name}: {', '.join(missing)}")
+            errors += 1
+        else:
+            print(f"  OK   {eid} {path.name}")
+    print(f"\n{len(exs)} exercises, {errors} with warnings")
+    return 1 if errors else 0
+
+
 def cmd_completion(args: argparse.Namespace) -> int:
     """Generate shell completion script."""
     try:
@@ -1044,6 +1085,7 @@ def build_parser() -> argparse.ArgumentParser:
     pi.add_argument("--slugs", required=True, help="Comma-separated exercise slugs")
     pi.add_argument("--tier", default="tier5_exercism_easy", help="Target tier directory")
     pi.add_argument("--dry-run", action="store_true", help="Preview without writing")
+    sub.add_parser("lint-exercises", help="Validate exercise file layout")
     pc = sub.add_parser("completion", help="Generate shell completion script")
     pc.add_argument("shell", choices=["bash", "zsh"], help="Shell type")
     return p
@@ -1073,6 +1115,7 @@ def main() -> int:
         "verify": cmd_verify,
         "review": cmd_review,
         "import": cmd_import,
+        "lint-exercises": cmd_lint_exercises,
         "completion": cmd_completion,
     }
     return cmds[args.cmd](args) or 0

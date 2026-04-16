@@ -277,14 +277,15 @@ These are pure Python, no new deps, each under ~50 lines.
 ## Quality and testing
 
 ### CI pipeline
-- [ ] GitHub Actions workflow: `marathon.py verify` on every push
-- [ ] Run only on changed exercise dirs: `git diff --name-only HEAD~1`
+- [x] `.github/workflows/verify.yml` — runs `lint-exercises` + `verify` on push/PR
+- [x] Tests on Python 3.10, 3.11, 3.12 matrix
+- [x] Triggered only on `exercises/**` and `scripts/**` path changes
 - [ ] shields.io badge from `marathon.py stats --json` output
 
 ### Exercise linter
-- [ ] `marathon.py lint-exercises` — validate all exercises have the required 7-file layout
-- [ ] Check imports in test files (`from problem import *`)
-- [ ] Verify stub has `raise NotImplementedError`
+- [x] `marathon.py lint-exercises` — validate 7-file layout, test imports, stub content
+- [x] Checks: problem.py, test_problem.py, README.md, .meta/{stub,solution,hints}.py
+- [x] Reports OK/WARN per exercise with specific missing items
 
 ### Pre-commit hook
 - [ ] Run `marathon.py verify` on changed exercise dirs only

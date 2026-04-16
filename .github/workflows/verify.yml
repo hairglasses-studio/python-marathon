@@ -1,0 +1,37 @@
+name: Verify exercises
+
+on:
+  push:
+    paths:
+      - 'exercises/**'
+      - 'scripts/**'
+  pull_request:
+    paths:
+      - 'exercises/**'
+      - 'scripts/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Lint exercise layout
+        working-directory: exercises
+        run: python marathon.py lint-exercises
+
+      - name: Verify all reference solutions
+        working-directory: exercises
+        run: python marathon.py verify
