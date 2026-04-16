@@ -31,6 +31,7 @@ PROGRESS_FILE = ROOT / ".marathon_progress.json"
 USER_FILE = ROOT / ".marathon_user"
 ANSWERS_DIR = ROOT / "answers"
 MANIFEST_FILE = ROOT / "manifest.json"
+BADGES_FILE = ROOT / "badges.json"
 TIER_DIRS = [
     "tier1_fluency",
     "tier2_patterns",
@@ -160,6 +161,11 @@ def _record_run(ex_id: str, passed: bool) -> None:
         prog["_meta"] = meta
     prog[ex_id] = entry
     prog["_last_run"] = ex_id
+    # Badge check
+    if passed:
+        new_badges = _check_badges(prog, ex_id, entry)
+        for b in new_badges:
+            print(f"  \U0001f3c6 Badge earned: {b}")
     save_progress(prog)
 
 
@@ -428,6 +434,22 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 
+def cmd_badges(args: argparse.Namespace) -> int:
+    """Show earned and available badges."""
+    prog = load_progress()
+    meta = prog.get("_meta", {})
+    earned = set(meta.get("badges", []))
+    if not BADGES_FILE.exists():
+        print("No badges.json found")
+        return 1
+    specs = json.loads(BADGES_FILE.read_text())
+    print(f"\nBadges ({len(earned)}/{len(specs)}):\n")
+    for spec in specs:
+        marker = "\U0001f3c6" if spec["slug"] in earned else "  "
+        print(f"  {marker} {spec['name']:20s}  {spec['description']}")
+    return 0
+
+
 def cmd_tag(args: argparse.Namespace) -> int:
     """List tags or filter exercises by tag."""
     manifest = _load_manifest()
@@ -571,6 +593,76 @@ def _sm2_update(entry: dict) -> dict:
     return entry
 
 
+
+def _check_badges(prog: dict, ex_id: str, entry: dict) -> list[str]:
+    """Check and award badges. Returns list of newly earned badge names."""
+    if not BADGES_FILE.exists():
+        return []
+    badge_specs = json.loads(BADGES_FILE.read_text())
+    meta = prog.setdefault("_meta", {})
+    earned: list[str] = meta.get("badges", [])
+    new_badges: list[str] = []
+    manifest = _load_manifest()
+
+    # Count stats
+    solved_ids = {eid for eid, e in prog.items()
+                  if not eid.startswith("_") and isinstance(e, dict) and e.get("status") == "passed"}
+    total_solved = len(solved_ids)
+    streak = meta.get("streak_days", 0)
+
+    # Tier completion check
+    tier_exercises: dict[str, set[str]] = {}
+    for eid, info in manifest.items():
+        tier_exercises.setdefault(info["tier"], set()).add(eid)
+
+    now_local = __import__("datetime").datetime.now()
+    hour = now_local.hour
+    duration = entry.get("solve_duration_seconds")
+    target = manifest.get(ex_id, {}).get("target_minutes")
+    hints = entry.get("hints_used", 0)
+
+    for spec in badge_specs:
+        slug = spec["slug"]
+        if slug in earned:
+            continue
+        award = False
+        if slug == "first-blood" and total_solved >= 1:
+            award = True
+        elif slug == "clean-sweep" and hints == 0 and entry.get("status") == "passed":
+            award = True
+        elif slug == "speed-demon" and duration and target and duration < (target * 60) / 2:
+            award = True
+        elif slug == "dawn-solver" and hour < 7:
+            award = True
+        elif slug == "night-owl" and hour >= 0 and hour < 4:
+            award = True
+        elif slug == "streak-7" and streak >= 7:
+            award = True
+        elif slug == "streak-30" and streak >= 30:
+            award = True
+        elif slug == "ten-down" and total_solved >= 10:
+            award = True
+        elif slug == "half-marathon" and total_solved >= 20:
+            award = True
+        elif slug == "marathon" and total_solved >= len(manifest):
+            award = True
+        elif slug.startswith("tier") and slug.endswith("-clear"):
+            tier_num = slug.replace("tier", "").replace("-clear", "")
+            for tier_name, tier_ids in tier_exercises.items():
+                if f"tier{tier_num}" in tier_name and tier_ids.issubset(solved_ids):
+                    award = True
+                    break
+        if award:
+            earned.append(slug)
+            new_badges.append(spec["name"])
+
+    if new_badges:
+        meta["badges"] = earned
+        prog["_meta"] = meta
+
+    return new_badges
+
+
 def cmd_review(args: argparse.Namespace) -> int:
     """SM-2 spaced repetition: show today's review queue."""
     prog = load_progress()
@@ -699,6 +791,7 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("peer", help="View another user's answer (gated)")
     pp.add_argument("id")
     pp.add_argument("--user", required=True, help="Peer username to view")
+    sub.add_parser("badges", help="Show earned and available badges")
     pt = sub.add_parser("tag", help="List tags or filter exercises by tag")
     pt.add_argument("--filter", default=None, help="Filter exercises by tag")
     sub.add_parser("recommend", help="Recommend next exercises by tag coverage")
@@ -729,6 +822,7 @@ def main() -> int:
         "list": cmd_list,
         "submit": cmd_submit,
         "peer": cmd_peer,
+        "badges": cmd_badges,
         "tag": cmd_tag,
         "recommend": cmd_recommend,
         "challenge": cmd_challenge,

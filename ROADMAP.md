@@ -88,9 +88,10 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Inspired by [python_koans](https://github.com/gregmalcolm/python_koans) and [pytest incremental docs](https://docs.pytest.org/en/stable/example/simple.html)
 
 ### Badge system
-- [ ] Define badge specs in `exercises/badges.json`: slug, name, condition
-- [ ] Check badges on every passing run; store earned badges in progress JSON
-- [ ] Badge ideas: "Dawn Solver" (before 7am), "Clean Sweep" (no hints), "Tier Clear" (all exercises in a tier), "Speed Demon" (under half target time), "Streak 7" (7 days in a row)
+- [x] Define 14 badge specs in `exercises/badges.json`: slug, name, description
+- [x] Check badges on every passing run; store earned badges in progress JSON `_meta.badges`
+- [x] `marathon.py badges` — show earned/available badges with descriptions
+- [x] Badges: First Blood, Clean Sweep, Speed Demon, Tier 1-4 Clear, Week Warrior, Month Master, Dawn Solver, Night Owl, Ten Down, Half Marathon, Marathon
 
 ### Progress export/import for cross-machine sync
 - [ ] `marathon.py export > backup.json` — dump progress

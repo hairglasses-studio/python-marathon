@@ -1,0 +1,72 @@
+[
+  {
+    "slug": "first-blood",
+    "name": "First Blood",
+    "description": "Solve your first exercise"
+  },
+  {
+    "slug": "clean-sweep",
+    "name": "Clean Sweep",
+    "description": "Solve an exercise with zero hints"
+  },
+  {
+    "slug": "speed-demon",
+    "name": "Speed Demon",
+    "description": "Solve an exercise in under half the target time"
+  },
+  {
+    "slug": "tier1-clear",
+    "name": "Tier 1 Clear",
+    "description": "Complete all tier1_fluency exercises"
+  },
+  {
+    "slug": "tier2-clear",
+    "name": "Tier 2 Clear",
+    "description": "Complete all tier2_patterns exercises"
+  },
+  {
+    "slug": "tier3-clear",
+    "name": "Tier 3 Clear",
+    "description": "Complete all tier3_canonical exercises"
+  },
+  {
+    "slug": "tier4-clear",
+    "name": "Tier 4 Clear",
+    "description": "Complete all tier4_async exercises"
+  },
+  {
+    "slug": "streak-7",
+    "name": "Week Warrior",
+    "description": "Maintain a 7-day solve streak"
+  },
+  {
+    "slug": "streak-30",
+    "name": "Month Master",
+    "description": "Maintain a 30-day solve streak"
+  },
+  {
+    "slug": "dawn-solver",
+    "name": "Dawn Solver",
+    "description": "Solve an exercise before 7:00 AM local time"
+  },
+  {
+    "slug": "night-owl",
+    "name": "Night Owl",
+    "description": "Solve an exercise after midnight local time"
+  },
+  {
+    "slug": "ten-down",
+    "name": "Ten Down",
+    "description": "Solve 10 exercises total"
+  },
+  {
+    "slug": "half-marathon",
+    "name": "Half Marathon",
+    "description": "Solve 20 exercises total"
+  },
+  {
+    "slug": "marathon",
+    "name": "Marathon",
+    "description": "Solve all exercises"
+  }
+]
