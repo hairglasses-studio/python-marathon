@@ -30,6 +30,7 @@ ROOT = Path(__file__).resolve().parent
 PROGRESS_FILE = ROOT / ".marathon_progress.json"
 USER_FILE = ROOT / ".marathon_user"
 ANSWERS_DIR = ROOT / "answers"
+MANIFEST_FILE = ROOT / "manifest.json"
 TIER_DIRS = [
     "tier1_fluency",
     "tier2_patterns",
@@ -39,6 +40,13 @@ TIER_DIRS = [
     "tier5_exercism_medium",
 ]
 EX_RE = re.compile(r"^(\d{3})_")
+
+
+def _load_manifest() -> dict:
+    """Load exercises/manifest.json."""
+    if MANIFEST_FILE.exists():
+        return json.loads(MANIFEST_FILE.read_text())
+    return {}
 
 
 def _whoami() -> str:
@@ -420,6 +428,73 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 
+def cmd_tag(args: argparse.Namespace) -> int:
+    """List tags or filter exercises by tag."""
+    manifest = _load_manifest()
+    if args.filter:
+        tag = args.filter.lower()
+        print(f"\nExercises tagged '{tag}':\n")
+        found = 0
+        for eid, info in sorted(manifest.items()):
+            tags = [t.lower() for t in info.get("tags", [])]
+            if tag in tags:
+                diff = info.get("difficulty", "?")
+                mins = info.get("target_minutes", "?")
+                print(f"  {eid}  {info['slug']:30s}  d={diff}  {mins}min  [{', '.join(info.get('tags', []))}]")
+                found += 1
+        if not found:
+            print(f"  No exercises with tag '{tag}'")
+        return 0
+    # List all tags
+    from collections import Counter
+    tag_counts: Counter = Counter()
+    for info in manifest.values():
+        for t in info.get("tags", []):
+            tag_counts[t] += 1
+    print(f"\n{len(tag_counts)} tags across {len(manifest)} exercises:\n")
+    for tag, count in tag_counts.most_common():
+        print(f"  {tag:25s}  {count} exercises")
+    return 0
+
+
+def cmd_recommend(args: argparse.Namespace) -> int:
+    """Recommend next exercises based on tag coverage."""
+    manifest = _load_manifest()
+    prog = load_progress()
+    # Collect tags from solved exercises
+    solved_tags: set[str] = set()
+    solved_ids: set[str] = set()
+    for eid, entry in prog.items():
+        if eid.startswith("_") or not isinstance(entry, dict):
+            continue
+        if entry.get("status") == "passed":
+            solved_ids.add(eid)
+            for t in manifest.get(eid, {}).get("tags", []):
+                solved_tags.add(t)
+    # Score unsolved exercises by new-tag coverage
+    candidates: list[tuple[int, int, str, str, list[str]]] = []
+    for eid, info in sorted(manifest.items()):
+        if eid in solved_ids:
+            continue
+        tags = info.get("tags", [])
+        new_tags = [t for t in tags if t not in solved_tags]
+        diff = info.get("difficulty", 5)
+        if new_tags:
+            candidates.append((len(new_tags), -diff, eid, info["slug"], new_tags))
+    candidates.sort(reverse=True)
+    if not candidates:
+        if not solved_ids:
+            print("No progress yet. Start with: marathon.py next")
+        else:
+            print("You've covered all available tags!")
+        return 0
+    print(f"\nSolved: {len(solved_ids)}/{len(manifest)} | Tags covered: {len(solved_tags)}\n")
+    print("Recommended next (most new tags first):\n")
+    for new_count, neg_diff, eid, slug, new_tags in candidates[:5]:
+        print(f"  {eid}  {slug:30s}  +{new_count} new tags: {', '.join(new_tags)}")
+    return 0
+
+
 def cmd_challenge(args: argparse.Namespace) -> int:
     """Pick a random unsolved exercise, optionally filtered by tier."""
     exs = list_exercises()
@@ -624,6 +699,9 @@ def build_parser() -> argparse.ArgumentParser:
     pp = sub.add_parser("peer", help="View another user's answer (gated)")
     pp.add_argument("id")
     pp.add_argument("--user", required=True, help="Peer username to view")
+    pt = sub.add_parser("tag", help="List tags or filter exercises by tag")
+    pt.add_argument("--filter", default=None, help="Filter exercises by tag")
+    sub.add_parser("recommend", help="Recommend next exercises by tag coverage")
     pch = sub.add_parser("challenge", help="Random unsolved exercise")
     pch.add_argument("--tier", type=int, default=None, help="Filter by tier")
     sub.add_parser("verify", help="Run all reference solutions against tests")
@@ -651,6 +729,8 @@ def main() -> int:
         "list": cmd_list,
         "submit": cmd_submit,
         "peer": cmd_peer,
+        "tag": cmd_tag,
+        "recommend": cmd_recommend,
         "challenge": cmd_challenge,
         "verify": cmd_verify,
         "review": cmd_review,

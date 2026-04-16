@@ -77,10 +77,10 @@ These are pure Python, no new deps, each under ~50 lines.
 - [ ] Generalizes `scripts/build_exercises.py` to work from CLI without notebooks
 
 ### Manifest enrichment
-- [ ] Add `tags`, `prerequisites`, `difficulty` (1-10), `target_minutes` to all 41 entries in `manifest.json`
-- [ ] `marathon.py tag --list` — show all tags with exercise counts
-- [ ] `marathon.py tag --filter TOPIC` — list exercises matching a topic tag
-- [ ] Enable tag-based recommendation in `marathon.py recommend`
+- [x] Add `tags`, `difficulty` (1-10), `target_minutes` to all 41 entries in `manifest.json`
+- [x] `marathon.py tag` — show all 82 tags with exercise counts
+- [x] `marathon.py tag --filter TOPIC` — list exercises matching a topic tag with difficulty + time
+- [x] `marathon.py recommend` — tag-coverage-based recommendation (most new tags first)
 
 ### Incremental test gates
 - [ ] Add `@pytest.mark.incremental` hook to `exercises/conftest.py` (~15 lines)

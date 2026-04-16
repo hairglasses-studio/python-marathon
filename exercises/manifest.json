@@ -1,299 +1,594 @@
 {
   "001": {
+    "difficulty": 1,
     "slug": "001_fizzbuzz",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "control-flow",
+      "modulo",
+      "strings"
+    ],
+    "target_minutes": 5,
     "tier": "tier1_fluency"
   },
   "002": {
+    "difficulty": 2,
     "slug": "002_word_frequency",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "dicts",
+      "collections",
+      "counting"
+    ],
+    "target_minutes": 8,
     "tier": "tier1_fluency"
   },
   "003": {
+    "difficulty": 3,
     "slug": "003_windowed_generator",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "generators",
+      "itertools",
+      "sliding-window"
+    ],
+    "target_minutes": 10,
     "tier": "tier1_fluency"
   },
   "004": {
+    "difficulty": 3,
     "slug": "004_counted_decorator",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "decorators",
+      "closures",
+      "functools"
+    ],
+    "target_minutes": 10,
     "tier": "tier1_fluency"
   },
   "005": {
+    "difficulty": 3,
     "slug": "005_int_range",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "classes",
+      "dunder-methods",
+      "iteration"
+    ],
+    "target_minutes": 12,
     "tier": "tier1_fluency"
   },
   "006": {
+    "difficulty": 2,
     "slug": "006_config_parser",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "parsing",
+      "dicts",
+      "strings"
+    ],
+    "target_minutes": 10,
     "tier": "tier1_fluency"
   },
   "007": {
+    "difficulty": 3,
     "slug": "007_topn_tracker",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "heapq",
+      "classes",
+      "sorting"
+    ],
+    "target_minutes": 12,
     "tier": "tier1_fluency"
   },
   "008": {
+    "difficulty": 3,
     "slug": "008_temp_attr_context",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "context-managers",
+      "dunder-methods",
+      "classes"
+    ],
+    "target_minutes": 10,
     "tier": "tier1_fluency"
   },
   "009": {
+    "difficulty": 4,
     "slug": "009_parallel_sum",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "threading",
+      "concurrent",
+      "parallel"
+    ],
+    "target_minutes": 12,
     "tier": "tier1_fluency"
   },
   "010": {
+    "difficulty": 4,
     "slug": "010_dfs_traversal",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "graphs",
+      "dfs",
+      "recursion"
+    ],
+    "target_minutes": 15,
     "tier": "tier2_patterns"
   },
   "011": {
+    "difficulty": 5,
     "slug": "011_topo_sort_kahn",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "graphs",
+      "topological-sort",
+      "bfs",
+      "kahn"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "012": {
+    "difficulty": 5,
     "slug": "012_three_color_cycle",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "graphs",
+      "cycle-detection",
+      "coloring"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "013": {
+    "difficulty": 5,
     "slug": "013_transitive_dependents",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "graphs",
+      "dfs",
+      "transitive-closure"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "014": {
+    "difficulty": 4,
     "slug": "014_content_addressed_cache",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "hashing",
+      "caching",
+      "content-addressing"
+    ],
+    "target_minutes": 15,
     "tier": "tier2_patterns"
   },
   "015": {
+    "difficulty": 5,
     "slug": "015_time_travel_ledger",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "versioning",
+      "data-structures",
+      "time-travel"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "016": {
+    "difficulty": 6,
     "slug": "016_per_key_locking",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "threading",
+      "locks",
+      "concurrency"
+    ],
+    "target_minutes": 25,
     "tier": "tier2_patterns"
   },
   "017": {
+    "difficulty": 5,
     "slug": "017_budget_retry",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "retry",
+      "exponential-backoff",
+      "error-handling"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "018": {
+    "difficulty": 5,
     "slug": "018_gpu_credit_manager",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "threading",
+      "semaphore",
+      "resource-management"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "019": {
+    "difficulty": 4,
     "slug": "019_path_normalize",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "strings",
+      "parsing",
+      "path-normalization"
+    ],
+    "target_minutes": 15,
     "tier": "tier2_patterns"
   },
   "020": {
+    "difficulty": 5,
     "slug": "020_resumable_iterator",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "iterators",
+      "protocol",
+      "state-machine"
+    ],
+    "target_minutes": 20,
     "tier": "tier2_patterns"
   },
   "021": {
+    "difficulty": 8,
     "slug": "021_spreadsheet_formula",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "parsing",
+      "evaluation",
+      "spreadsheet",
+      "recursion"
+    ],
+    "target_minutes": 45,
     "tier": "tier3_canonical"
   },
   "022": {
+    "difficulty": 8,
     "slug": "022_multithreaded_crawler",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "threading",
+      "crawling",
+      "concurrency",
+      "bfs"
+    ],
+    "target_minutes": 45,
     "tier": "tier3_canonical"
   },
   "023": {
+    "difficulty": 9,
     "slug": "023_in_memory_sql",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "sql",
+      "parsing",
+      "data-structures",
+      "query-engine"
+    ],
+    "target_minutes": 45,
     "tier": "tier3_canonical"
   },
   "024": {
+    "difficulty": 7,
     "slug": "024_dep_graph_warmup",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "graphs",
+      "dependency-resolution",
+      "topological-sort"
+    ],
+    "target_minutes": 45,
     "tier": "tier3_canonical"
   },
   "025": {
+    "difficulty": 7,
     "slug": "025_versioned_kv_warmup",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "versioning",
+      "key-value",
+      "data-structures"
+    ],
+    "target_minutes": 45,
     "tier": "tier3_canonical"
   },
   "026": {
+    "difficulty": 7,
     "slug": "026_tool_retry_warmup",
     "source": "openai-prep",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "retry",
+      "tool-calling",
+      "error-handling",
+      "api"
+    ],
+    "target_minutes": 45,
     "tier": "tier3_canonical"
   },
   "027": {
+    "difficulty": 5,
     "slug": "027_async_gather",
     "source": "hand-written",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "asyncio",
+      "gather",
+      "semaphore",
+      "concurrency"
+    ],
+    "target_minutes": 15,
     "tier": "tier4_async"
   },
   "028": {
+    "difficulty": 5,
     "slug": "028_async_retry",
     "source": "hand-written",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "asyncio",
+      "retry",
+      "exponential-backoff"
+    ],
+    "target_minutes": 20,
     "tier": "tier4_async"
   },
   "029": {
+    "difficulty": 6,
     "slug": "029_async_queue",
     "source": "hand-written",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "asyncio",
+      "queue",
+      "pipeline",
+      "producer-consumer"
+    ],
+    "target_minutes": 25,
     "tier": "tier4_async"
   },
   "030": {
+    "difficulty": 6,
     "slug": "030_async_iterator",
     "source": "hand-written",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "asyncio",
+      "iterator-protocol",
+      "async-for"
+    ],
+    "target_minutes": 25,
     "tier": "tier4_async"
   },
   "031": {
+    "difficulty": 7,
     "slug": "031_async_tool_loop",
     "source": "hand-written",
     "source_id": null,
     "source_url": null,
+    "tags": [
+      "asyncio",
+      "tool-calling",
+      "budget",
+      "shared-state"
+    ],
+    "target_minutes": 30,
     "tier": "tier4_async"
   },
   "032": {
+    "difficulty": 1,
     "exercism_difficulty": 0,
     "slug": "032_two_fer",
     "source": "exercism",
     "source_id": "two-fer",
     "source_url": "https://exercism.org/tracks/python/exercises/two-fer",
+    "tags": [
+      "strings",
+      "default-arguments",
+      "basics"
+    ],
+    "target_minutes": 5,
     "tier": "tier5_exercism_easy"
   },
   "033": {
+    "difficulty": 1,
     "exercism_difficulty": 0,
     "slug": "033_hello_world",
     "source": "exercism",
     "source_id": "hello-world",
     "source_url": "https://exercism.org/tracks/python/exercises/hello-world",
+    "tags": [
+      "strings",
+      "functions",
+      "basics"
+    ],
+    "target_minutes": 5,
     "tier": "tier5_exercism_easy"
   },
   "034": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "034_bob",
     "source": "exercism",
     "source_id": "bob",
     "source_url": "https://exercism.org/tracks/python/exercises/bob",
+    "tags": [
+      "strings",
+      "conditionals",
+      "parsing"
+    ],
+    "target_minutes": 10,
     "tier": "tier5_exercism_easy"
   },
   "035": {
+    "difficulty": 2,
     "exercism_difficulty": 0,
     "slug": "035_isogram",
     "source": "exercism",
     "source_id": "isogram",
     "source_url": "https://exercism.org/tracks/python/exercises/isogram",
+    "tags": [
+      "strings",
+      "sets",
+      "iteration"
+    ],
+    "target_minutes": 8,
     "tier": "tier5_exercism_easy"
   },
   "036": {
+    "difficulty": 2,
     "exercism_difficulty": 0,
     "slug": "036_pangram",
     "source": "exercism",
     "source_id": "pangram",
     "source_url": "https://exercism.org/tracks/python/exercises/pangram",
+    "tags": [
+      "strings",
+      "sets",
+      "ascii"
+    ],
+    "target_minutes": 8,
     "tier": "tier5_exercism_easy"
   },
   "037": {
+    "difficulty": 2,
     "exercism_difficulty": 0,
     "slug": "037_difference_of_squares",
     "source": "exercism",
     "source_id": "difference-of-squares",
     "source_url": "https://exercism.org/tracks/python/exercises/difference-of-squares",
+    "tags": [
+      "math",
+      "comprehensions",
+      "formulas"
+    ],
+    "target_minutes": 8,
     "tier": "tier5_exercism_easy"
   },
   "038": {
+    "difficulty": 3,
     "exercism_difficulty": 0,
     "slug": "038_grains",
     "source": "exercism",
     "source_id": "grains",
     "source_url": "https://exercism.org/tracks/python/exercises/grains",
+    "tags": [
+      "math",
+      "bit-manipulation",
+      "exceptions"
+    ],
+    "target_minutes": 10,
     "tier": "tier5_exercism_easy"
   },
   "039": {
+    "difficulty": 1,
     "exercism_difficulty": 0,
     "slug": "039_leap",
     "source": "exercism",
     "source_id": "leap",
     "source_url": "https://exercism.org/tracks/python/exercises/leap",
+    "tags": [
+      "conditionals",
+      "boolean-logic",
+      "math"
+    ],
+    "target_minutes": 5,
     "tier": "tier5_exercism_easy"
   },
   "040": {
+    "difficulty": 2,
     "exercism_difficulty": 0,
     "slug": "040_resistor_color",
     "source": "exercism",
     "source_id": "resistor-color",
     "source_url": "https://exercism.org/tracks/python/exercises/resistor-color",
+    "tags": [
+      "lists",
+      "indexing",
+      "enums"
+    ],
+    "target_minutes": 8,
     "tier": "tier5_exercism_easy"
   },
   "041": {
+    "difficulty": 2,
     "exercism_difficulty": 0,
     "slug": "041_rna_transcription",
     "source": "exercism",
     "source_id": "rna-transcription",
     "source_url": "https://exercism.org/tracks/python/exercises/rna-transcription",
+    "tags": [
+      "strings",
+      "translation",
+      "dicts"
+    ],
+    "target_minutes": 8,
     "tier": "tier5_exercism_easy"
   }
 }
