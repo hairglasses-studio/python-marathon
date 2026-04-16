@@ -159,8 +159,8 @@ These are pure Python, no new deps, each under ~50 lines.
 ## Exercise source expansion
 
 ### More Exercism
-- [ ] Import medium-difficulty batch into `tier5_exercism_medium/` (anagram, binary-search, linked-list, matrix, robot-name, etc.)
-- [ ] Curate a "top 30" Exercism list ordered by interview relevance
+- [x] Import 20 medium-difficulty exercises into `tier5_exercism_medium/` (042-061): anagram, binary-search, linked-list, matrix, robot-name, series, word-count, phone-number, grade-school, clock, tournament, saddle-points, flatten-array, sublist, roman-numerals, luhn, simple-cipher, list-ops, allergies, perfect-numbers
+- [x] All 20 verified passing under Python 3.10 (61 total exercises now)
 - [ ] Backfill hand-written `.meta/hints.md` for imported exercises (current ones are placeholder templates)
 
 ### Exercism problem-specifications

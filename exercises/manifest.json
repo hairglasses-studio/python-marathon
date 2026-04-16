@@ -590,5 +590,165 @@
     ],
     "target_minutes": 8,
     "tier": "tier5_exercism_easy"
+  },
+  "042": {
+    "exercism_difficulty": 0,
+    "slug": "042_anagram",
+    "source": "exercism",
+    "source_id": "anagram",
+    "source_url": "https://exercism.org/tracks/python/exercises/anagram",
+    "tier": "tier5_exercism_medium"
+  },
+  "043": {
+    "exercism_difficulty": 0,
+    "slug": "043_binary_search",
+    "source": "exercism",
+    "source_id": "binary-search",
+    "source_url": "https://exercism.org/tracks/python/exercises/binary-search",
+    "tier": "tier5_exercism_medium"
+  },
+  "044": {
+    "exercism_difficulty": 0,
+    "slug": "044_linked_list",
+    "source": "exercism",
+    "source_id": "linked-list",
+    "source_url": "https://exercism.org/tracks/python/exercises/linked-list",
+    "tier": "tier5_exercism_medium"
+  },
+  "045": {
+    "exercism_difficulty": 0,
+    "slug": "045_matrix",
+    "source": "exercism",
+    "source_id": "matrix",
+    "source_url": "https://exercism.org/tracks/python/exercises/matrix",
+    "tier": "tier5_exercism_medium"
+  },
+  "046": {
+    "exercism_difficulty": 0,
+    "slug": "046_robot_name",
+    "source": "exercism",
+    "source_id": "robot-name",
+    "source_url": "https://exercism.org/tracks/python/exercises/robot-name",
+    "tier": "tier5_exercism_medium"
+  },
+  "047": {
+    "exercism_difficulty": 0,
+    "slug": "047_series",
+    "source": "exercism",
+    "source_id": "series",
+    "source_url": "https://exercism.org/tracks/python/exercises/series",
+    "tier": "tier5_exercism_medium"
+  },
+  "048": {
+    "exercism_difficulty": 0,
+    "slug": "048_word_count",
+    "source": "exercism",
+    "source_id": "word-count",
+    "source_url": "https://exercism.org/tracks/python/exercises/word-count",
+    "tier": "tier5_exercism_medium"
+  },
+  "049": {
+    "exercism_difficulty": 0,
+    "slug": "049_phone_number",
+    "source": "exercism",
+    "source_id": "phone-number",
+    "source_url": "https://exercism.org/tracks/python/exercises/phone-number",
+    "tier": "tier5_exercism_medium"
+  },
+  "050": {
+    "exercism_difficulty": 0,
+    "slug": "050_grade_school",
+    "source": "exercism",
+    "source_id": "grade-school",
+    "source_url": "https://exercism.org/tracks/python/exercises/grade-school",
+    "tier": "tier5_exercism_medium"
+  },
+  "051": {
+    "exercism_difficulty": 0,
+    "slug": "051_clock",
+    "source": "exercism",
+    "source_id": "clock",
+    "source_url": "https://exercism.org/tracks/python/exercises/clock",
+    "tier": "tier5_exercism_medium"
+  },
+  "052": {
+    "exercism_difficulty": 0,
+    "slug": "052_tournament",
+    "source": "exercism",
+    "source_id": "tournament",
+    "source_url": "https://exercism.org/tracks/python/exercises/tournament",
+    "tier": "tier5_exercism_medium"
+  },
+  "053": {
+    "exercism_difficulty": 0,
+    "slug": "053_saddle_points",
+    "source": "exercism",
+    "source_id": "saddle-points",
+    "source_url": "https://exercism.org/tracks/python/exercises/saddle-points",
+    "tier": "tier5_exercism_medium"
+  },
+  "054": {
+    "exercism_difficulty": 0,
+    "slug": "054_flatten_array",
+    "source": "exercism",
+    "source_id": "flatten-array",
+    "source_url": "https://exercism.org/tracks/python/exercises/flatten-array",
+    "tier": "tier5_exercism_medium"
+  },
+  "055": {
+    "exercism_difficulty": 0,
+    "slug": "055_sublist",
+    "source": "exercism",
+    "source_id": "sublist",
+    "source_url": "https://exercism.org/tracks/python/exercises/sublist",
+    "tier": "tier5_exercism_medium"
+  },
+  "056": {
+    "exercism_difficulty": 0,
+    "slug": "056_roman_numerals",
+    "source": "exercism",
+    "source_id": "roman-numerals",
+    "source_url": "https://exercism.org/tracks/python/exercises/roman-numerals",
+    "tier": "tier5_exercism_medium"
+  },
+  "057": {
+    "exercism_difficulty": 0,
+    "slug": "057_luhn",
+    "source": "exercism",
+    "source_id": "luhn",
+    "source_url": "https://exercism.org/tracks/python/exercises/luhn",
+    "tier": "tier5_exercism_medium"
+  },
+  "058": {
+    "exercism_difficulty": 0,
+    "slug": "058_simple_cipher",
+    "source": "exercism",
+    "source_id": "simple-cipher",
+    "source_url": "https://exercism.org/tracks/python/exercises/simple-cipher",
+    "tier": "tier5_exercism_medium"
+  },
+  "059": {
+    "exercism_difficulty": 0,
+    "slug": "059_list_ops",
+    "source": "exercism",
+    "source_id": "list-ops",
+    "source_url": "https://exercism.org/tracks/python/exercises/list-ops",
+    "tier": "tier5_exercism_medium"
+  },
+  "060": {
+    "exercism_difficulty": 0,
+    "slug": "060_allergies",
+    "source": "exercism",
+    "source_id": "allergies",
+    "source_url": "https://exercism.org/tracks/python/exercises/allergies",
+    "tier": "tier5_exercism_medium"
+  },
+  "061": {
+    "exercism_difficulty": 0,
+    "slug": "061_perfect_numbers",
+    "source": "exercism",
+    "source_id": "perfect-numbers",
+    "source_url": "https://exercism.org/tracks/python/exercises/perfect-numbers",
+    "tier": "tier5_exercism_medium"
   }
 }
