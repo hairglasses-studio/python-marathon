@@ -48,9 +48,18 @@
 ### CI, quality, and DX
 - [x] `.github/workflows/verify.yml` (Python 3.10/3.11/3.12 matrix)
 - [x] `scripts/pre-commit` + `verify --changed-only`
-- [x] Man page, zsh completions (307 lines), Makefile
+- [x] Man page, zsh completions (439 lines), Makefile
 - [x] `.python-version` pinned 3.10, getting-started README
 - [x] CONTRIBUTING.md
+
+### VS Code study environment
+- [x] `python-marathon.code-workspace` — 14 tasks, 3 debug configs, file nesting, ruff format-on-save
+- [x] `.vscode/extensions.json` — 13 recommended + 4 unwanted (Copilot blocked)
+- [x] `.vscode/python.code-snippets` — 6 snippets (stub, astub, test, cls, notdone, ctx)
+- [x] Pylance tuned for `from problem import *` pattern (reportUndefinedVariable: information)
+- [x] Pytest Test Explorer disabled (prevents `from problem import *` collision)
+- [x] File nesting: .meta/ collapsed under problem.py, config files under marathon.py
+- [x] Zen mode configured for focused study (Ctrl+K Z)
 
 ---
 
@@ -132,7 +141,7 @@ Each item is shippable in one dev-loop iteration.
 - [ ] **Textual TUI** — full reactive terminal UI for watch mode
 - [ ] **Multi-language support** — Go/TypeScript runners alongside pytest
 - [ ] **Docker sandbox** — containerized test runner
-- [ ] **VS Code tasks.json** — `lsp NNN` generates `.vscode/tasks.json`
+- [x] **VS Code workspace** — 14 tasks, 3 debug configs, snippets, extensions, file nesting
 - [ ] **Full VS Code extension** — sidebar explorer with pass/fail markers
 - [ ] **Jupyter dual-notebook export** — challenge + solution notebooks
 - [ ] **Notion sync** — `sync-notion --token`

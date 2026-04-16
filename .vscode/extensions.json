@@ -1,0 +1,23 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "charliermarsh.ruff",
+    "usernamehw.errorlens",
+    "oderwat.indent-rainbow",
+    "kevinrose.vsc-python-indent",
+    "gruntfuggly.todo-tree",
+    "aaron-bond.better-comments",
+    "ms-python.mypy-type-checker",
+    "yzhang.markdown-all-in-one",
+    "bierner.markdown-preview-github-styles",
+    "streetsidesoftware.code-spell-checker"
+  ],
+  "unwantedRecommendations": [
+    "ms-python.autopep8",
+    "ms-python.black-formatter",
+    "GitHub.copilot",
+    "GitHub.copilot-chat"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "Stub function": {
+    "scope": "python",
+    "prefix": "stub",
+    "body": [
+      "def ${1:function_name}(${2:args}) -> ${3:return_type}:",
+      "    \"\"\"${4:Docstring.}\"\"\"",
+      "    raise NotImplementedError(\"fill me in\")"
+    ],
+    "description": "Marathon exercise stub function"
+  },
+  "Async stub function": {
+    "scope": "python",
+    "prefix": "astub",
+    "body": [
+      "async def ${1:function_name}(${2:args}) -> ${3:return_type}:",
+      "    \"\"\"${4:Docstring.}\"\"\"",
+      "    raise NotImplementedError(\"fill me in\")"
+    ],
+    "description": "Marathon async exercise stub"
+  },
+  "Test function": {
+    "scope": "python",
+    "prefix": "test",
+    "body": [
+      "def test_${1:case_name}():",
+      "    assert ${2:function}(${3:input}) == ${4:expected}"
+    ],
+    "description": "Pytest test function"
+  },
+  "Class with __init__": {
+    "scope": "python",
+    "prefix": "cls",
+    "body": [
+      "class ${1:ClassName}:",
+      "    def __init__(self, ${2:args}) -> None:",
+      "        ${3:self.attr = attr}",
+      "",
+      "    def ${4:method}(self) -> ${5:None}:",
+      "        ${6:pass}"
+    ],
+    "description": "Class with __init__"
+  },
+  "MARATHON NOT DONE": {
+    "scope": "python",
+    "prefix": "notdone",
+    "body": ["# MARATHON: NOT DONE"],
+    "description": "Mark exercise as not done even if tests pass"
+  },
+  "Context manager class": {
+    "scope": "python",
+    "prefix": "ctx",
+    "body": [
+      "class ${1:ContextManager}:",
+      "    def __enter__(self):",
+      "        ${2:pass}",
+      "        return self",
+      "",
+      "    def __exit__(self, exc_type, exc_val, exc_tb):",
+      "        ${3:pass}",
+      "        return False"
+    ],
+    "description": "Context manager with __enter__/__exit__"
+  }
+}

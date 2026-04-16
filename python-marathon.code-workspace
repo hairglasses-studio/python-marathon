@@ -1,0 +1,284 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "python-marathon"
+    }
+  ],
+  "settings": {
+    // ── Python environment ──
+    "python.defaultInterpreterPath": "${workspaceFolder}/exercises/.venv/bin/python",
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": false,
+    "python.testing.autoTestDiscoverOnSaveEnabled": false,
+
+    // ── Pylance / type checking ──
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticSeverityOverrides": {
+      "reportMissingModuleSource": "none",
+      "reportWildcardImportFromLibrary": "none",
+      "reportUndefinedVariable": "information"
+    },
+    "python.analysis.completeFunctionParens": true,
+
+    // ── Ruff formatter + linter ──
+    "[python]": {
+      "editor.tabSize": 4,
+      "editor.insertSpaces": true,
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+        "source.fixAll.ruff": "explicit",
+        "source.organizeImports.ruff": "explicit"
+      }
+    },
+
+    // ── File explorer ──
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "exercises/.venv": true,
+      "**/pyrightconfig.json": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+      "problem.py": "test_problem.py, README.md, .meta",
+      "marathon.py": ".marathon_progress.json, .marathon_user, manifest.json, badges.json, curations.json, pytest.ini, conftest.py"
+    },
+
+    // ── Search ──
+    "search.exclude": {
+      "exercises/.venv": true,
+      "**/__pycache__": true,
+      "**/solution.py": true,
+      "**/stub.py": true,
+      "exercises/answers": true
+    },
+
+    // ── Editor ──
+    "editor.rulers": [88],
+    "editor.minimap.enabled": false,
+    "editor.renderLineHighlight": "all",
+    "editor.renderLineHighlightOnlyWhenFocus": true,
+    "editor.parameterHints.enabled": true,
+    "editor.hover.delay": 300,
+    "editor.wordBasedSuggestions": "off",
+    "editor.scrollbar.verticalScrollbarSize": 10,
+    "editor.scrollbar.horizontalScrollbarSize": 10,
+    "editor.guides.highlightActiveIndentation": true,
+    "editor.semanticHighlighting.enabled": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+
+    // ── Ultrawide layout (5120x1440) ──
+    "workbench.sideBar.location": "right",
+    "workbench.panel.defaultLocation": "bottom",
+    "workbench.panel.opensMaximized": "never",
+    "workbench.editor.openSideBySideDirection": "right",
+    "workbench.editor.centeredLayoutAutoResize": false,
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.editor.pinnedTabSizing": "compact",
+    "workbench.editor.wrapTabs": false,
+    "workbench.activityBar.location": "top",
+    "workbench.editor.showTabs": "multiple",
+
+    // ── Distraction reduction ──
+    "breadcrumbs.enabled": false,
+    "workbench.tips.enabled": false,
+    "workbench.startupEditor": "none",
+    "gitlens.currentLine.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "gitlens.hovers.currentLine.over": "line",
+
+    // ── Zen mode (Ctrl+K Z for deep study) ──
+    "zenMode.hideLineNumbers": false,
+    "zenMode.hideTabs": false,
+    "zenMode.centerLayout": true,
+    "zenMode.fullScreen": false,
+
+    // ── Markdown preview for exercise READMEs ──
+    "markdown.preview.fontSize": 15,
+    "markdown.preview.lineHeight": 1.6,
+
+    // ── Status bar ──
+    "workbench.colorCustomizations": {
+      "statusBar.background": "#1a1a2e",
+      "statusBar.foreground": "#888888"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.debugpy",
+      "charliermarsh.ruff",
+      "usernamehw.errorlens",
+      "oderwat.indent-rainbow",
+      "kevinrose.vsc-python-indent",
+      "gruntfuggly.todo-tree",
+      "aaron-bond.better-comments",
+      "ms-python.mypy-type-checker",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-preview-github-styles",
+      "streetsidesoftware.code-spell-checker"
+    ],
+    "unwantedRecommendations": [
+      "ms-python.autopep8",
+      "ms-python.black-formatter",
+      "GitHub.copilot",
+      "GitHub.copilot-chat"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "inputs": [
+      {
+        "id": "exerciseId",
+        "type": "promptString",
+        "description": "Exercise number (e.g. 014)",
+        "default": "001"
+      },
+      {
+        "id": "hintLevel",
+        "type": "pickString",
+        "description": "Hint level",
+        "options": ["1", "2", "3"],
+        "default": "1"
+      }
+    ],
+    "tasks": [
+      {
+        "label": "marathon: run exercise",
+        "type": "shell",
+        "command": "python marathon.py run ${input:exerciseId}",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "group": { "kind": "test", "isDefault": true },
+        "presentation": { "reveal": "always", "clear": false, "panel": "shared" }
+      },
+      {
+        "label": "marathon: run current",
+        "type": "shell",
+        "command": "python marathon.py run --current",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "group": "test",
+        "presentation": { "reveal": "always", "clear": false, "panel": "shared" }
+      },
+      {
+        "label": "marathon: next",
+        "type": "shell",
+        "command": "python marathon.py next",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "group": "test",
+        "presentation": { "reveal": "always", "clear": false, "panel": "shared" }
+      },
+      {
+        "label": "marathon: challenge (random)",
+        "type": "shell",
+        "command": "python marathon.py challenge",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "group": "test",
+        "presentation": { "reveal": "always", "clear": false }
+      },
+      {
+        "label": "marathon: status",
+        "type": "shell",
+        "command": "python marathon.py status",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false, "panel": "shared" }
+      },
+      {
+        "label": "marathon: review (spaced repetition)",
+        "type": "shell",
+        "command": "python marathon.py review",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false }
+      },
+      {
+        "label": "marathon: hint",
+        "type": "shell",
+        "command": "python marathon.py hint ${input:exerciseId} --level ${input:hintLevel}",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false }
+      },
+      {
+        "label": "marathon: watch",
+        "type": "shell",
+        "command": "python marathon.py watch",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "group": "test",
+        "isBackground": true,
+        "problemMatcher": [],
+        "presentation": { "reveal": "always", "clear": true, "panel": "dedicated" }
+      },
+      {
+        "label": "marathon: verify",
+        "type": "shell",
+        "command": "python marathon.py verify",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": true, "panel": "dedicated" }
+      },
+      {
+        "label": "marathon: verify (changed only)",
+        "type": "shell",
+        "command": "python marathon.py verify --changed-only",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false }
+      },
+      {
+        "label": "marathon: reset exercise",
+        "type": "shell",
+        "command": "python marathon.py reset ${input:exerciseId}",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false }
+      },
+      {
+        "label": "marathon: doctor",
+        "type": "shell",
+        "command": "python marathon.py doctor",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false }
+      },
+      {
+        "label": "marathon: lsp (scope Pylance)",
+        "type": "shell",
+        "command": "python marathon.py lsp ${input:exerciseId}",
+        "options": { "cwd": "${workspaceFolder}/exercises" },
+        "presentation": { "reveal": "always", "clear": false }
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug current exercise",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["-q", "--tb=long", "--no-header", "-s", "${fileDirname}"],
+        "cwd": "${fileDirname}",
+        "justMyCode": false,
+        "env": { "PYTHONPATH": "${fileDirname}" }
+      },
+      {
+        "name": "Debug exercise (verbose + print output)",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "pytest",
+        "args": ["-v", "--tb=long", "--no-header", "-s", "--capture=no", "${fileDirname}"],
+        "cwd": "${fileDirname}",
+        "justMyCode": false,
+        "env": { "PYTHONPATH": "${fileDirname}" }
+      },
+      {
+        "name": "Run problem.py directly (needs __main__ guard)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "cwd": "${fileDirname}",
+        "justMyCode": false
+      }
+    ]
+  }
+}
