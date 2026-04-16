@@ -342,7 +342,17 @@ def cmd_submit(args: argparse.Namespace) -> int:
     shutil.copy(problem, dest)
     rel = dest.relative_to(ROOT)
     print(f"✓ Saved to {rel}")
-    print(f"  git add {rel} && git commit -m 'answer({user}): {ex_id} {path.name}'")
+    if getattr(args, "git", False):
+        subprocess.run(["git", "add", str(dest)], cwd=ROOT.parent)
+        msg = f"answer({user}): {ex_id} {path.name}"
+        result = subprocess.run(["git", "commit", "-m", msg], cwd=ROOT.parent)
+        if result.returncode == 0:
+            print(f"✓ Committed: {msg}")
+        else:
+            print("✗ git commit failed")
+            return 1
+    else:
+        print(f"  git add {rel} && git commit -m 'answer({user}): {ex_id} {path.name}'")
     return 0
 
 
@@ -386,6 +396,112 @@ def cmd_list(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    """Run all reference solutions against tests silently."""
+    exs = list_exercises()
+    passed = failed = 0
+    failures: list[str] = []
+    for eid, path in exs:
+        solution = path / ".meta" / "solution.py"
+        problem = path / "problem.py"
+        if not solution.exists():
+            continue
+        backup = problem.read_bytes()
+        shutil.copy(solution, problem)
+        cmd = _pytest_cmd() + [str(path), "-q", "--tb=line", "--no-header"]
+        result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+        problem.write_bytes(backup)
+        if result.returncode == 0:
+            print(f"PASS {path.name}")
+            passed += 1
+        else:
+            print(f"FAIL {path.name}")
+            failed += 1
+            failures.append(f"{path.name}: {result.stdout.strip().splitlines()[-1] if result.stdout.strip() else result.stderr.strip()}")
+    print()
+    print(f"--- Passed: {passed}  Failed: {failed} ---")
+    for f in failures:
+        print(f"  ✗ {f}")
+    return 1 if failed else 0
+
+
+def cmd_review(args: argparse.Namespace) -> int:
+    """Suggest exercises to revisit based on hint usage and solve age."""
+    prog = load_progress()
+    if not prog:
+        print("No progress data yet. Solve some exercises first.")
+        return 0
+    now = datetime.now(timezone.utc)
+    scored: list[tuple[float, str, list[str]]] = []
+    for eid, entry in sorted(prog.items()):
+        if eid.startswith("_"):
+            continue
+        if entry.get("status") != "passed":
+            continue
+        reasons: list[str] = []
+        score = 0.0
+        hints = entry.get("hints_used", 0)
+        if hints >= 2:
+            score += hints * 2
+            reasons.append(f"used {hints} hints")
+        if entry.get("revealed"):
+            score += 3
+            reasons.append("revealed")
+        first = entry.get("first_solved")
+        if first:
+            try:
+                solved_dt = datetime.fromisoformat(first)
+                days = (now - solved_dt).days
+                freshness = max(0, 14 - days)
+                score += freshness
+                if days <= 3:
+                    reasons.append("solved recently — reinforce")
+                elif days >= 14:
+                    reasons.append(f"solved {days}d ago — may have faded")
+            except (ValueError, TypeError):
+                pass
+        if score > 0 and reasons:
+            scored.append((score, eid, reasons))
+    scored.sort(reverse=True)
+    if not scored:
+        print("Nothing to review — keep solving!")
+        return 0
+    print("\nExercises to revisit:\n")
+    for score, eid, reasons in scored[:3]:
+        path = find_exercise(eid)
+        name = path.name if path else eid
+        print(f"  {eid}  {name}  ({', '.join(reasons)})")
+    return 0
+
+
+def cmd_import(args: argparse.Namespace) -> int:
+    """Import exercises from Exercism."""
+    script = ROOT.parent / "scripts" / "import_exercism.py"
+    if not script.exists():
+        print(f"Import script not found: {script}")
+        return 1
+    cmd = [sys.executable, str(script),
+           "--exercism-dir", args.exercism_dir,
+           "--slugs", args.slugs,
+           "--tier", args.tier]
+    if args.dry_run:
+        cmd.append("--dry-run")
+    return subprocess.run(cmd).returncode
+
+
+def cmd_completion(args: argparse.Namespace) -> int:
+    """Generate shell completion script."""
+    try:
+        import shtab
+        parser = build_parser()
+        print(shtab.complete(parser, args.shell))
+        return 0
+    except ImportError:
+        print("shtab not installed. Run: pip install shtab", file=sys.stderr)
+        return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="marathon", description="Interview prep exercise runner")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -407,9 +523,19 @@ def build_parser() -> argparse.ArgumentParser:
     pl.add_argument("--tier", type=int, default=None)
     ps = sub.add_parser("submit", help="Save your passing solution to answers/")
     ps.add_argument("id")
+    ps.add_argument("--git", action="store_true", help="Auto git-add and commit")
     pp = sub.add_parser("peer", help="View another user's answer (gated)")
     pp.add_argument("id")
     pp.add_argument("--user", required=True, help="Peer username to view")
+    sub.add_parser("verify", help="Run all reference solutions against tests")
+    sub.add_parser("review", help="Suggest exercises to revisit (spaced repetition)")
+    pi = sub.add_parser("import", help="Import exercises from Exercism")
+    pi.add_argument("--exercism-dir", default="exercism-python", help="Path to cloned exercism/python")
+    pi.add_argument("--slugs", required=True, help="Comma-separated exercise slugs")
+    pi.add_argument("--tier", default="tier5_exercism_easy", help="Target tier directory")
+    pi.add_argument("--dry-run", action="store_true", help="Preview without writing")
+    pc = sub.add_parser("completion", help="Generate shell completion script")
+    pc.add_argument("shell", choices=["bash", "zsh"], help="Shell type")
     return p
 
 
@@ -426,6 +552,10 @@ def main() -> int:
         "list": cmd_list,
         "submit": cmd_submit,
         "peer": cmd_peer,
+        "verify": cmd_verify,
+        "review": cmd_review,
+        "import": cmd_import,
+        "completion": cmd_completion,
     }
     return cmds[args.cmd](args) or 0
 

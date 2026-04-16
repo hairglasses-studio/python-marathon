@@ -1,4 +1,8 @@
 {
+  "model": "sonnet",
+  "env": {
+    "CLAUDE_CODE_EFFORT_LEVEL": "medium"
+  },
   "permissions": {
     "deny": [
       "Read(./exercises/**/.meta/solution.py)",

@@ -1,0 +1,12 @@
+# python-marathon — Codex CLI project config
+# Tuned for ChatGPT Plus ($20/mo) — o3-mini at medium reasoning.
+# See AGENTS.md for the canonical tutor contract.
+
+model = "o3-mini"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+# NOTE: Codex has no file-path deny rules. Solution hiding (.meta/solution.py)
+# is enforced behaviorally via AGENTS.md — the agent is instructed not to read
+# solutions, but there is no harness-level block like Claude's settings.json.

@@ -84,7 +84,7 @@ No other dependencies. `marathon.py` is a single ~280-line file that wraps pytes
 
 **Don't look inside `.meta/` until you've passed the tests (or given up.)** Solution hiding on a local filesystem is an honor system — `cat .meta/solution.py` always works — but if you peek before trying, you'll waste the exercise. Use `marathon.py reveal NNN` instead, which gates the reveal behind a confirmation prompt and records that you revealed.
 
-## Tiers (31 exercises total)
+## Tiers (41+ exercises)
 
 | Tier | Count | Target time | Focus |
 |------|-------|-------------|-------|
@@ -92,6 +92,7 @@ No other dependencies. `marathon.py` is a single ~280-line file that wraps pytes
 | `tier2_patterns/` | 11 | 15-25 min | Interview primitives — DFS/topo sort, heapq, bisect, threading, retry |
 | `tier3_canonical/` | 6 | 45 min | Full multi-gate problems — spreadsheet evaluator, multithreaded crawler, in-memory SQL, dependency graph, versioned KV store, tool-call retry |
 | `tier4_async/` | 5 | 15-30 min | `asyncio` — gather + Semaphore, retry with backoff, Queue pipeline, async iterator protocol, tool-call loop with shared budget |
+| `tier5_exercism_easy/` | 10+ | 10-20 min | Exercism Python track — imported via `marathon.py import` |
 
 ## Commands
 
@@ -105,9 +106,20 @@ python marathon.py watch [NNN]           # Re-run on file save (polls mtime)
 python marathon.py hint NNN --level 1    # Show hint 1 of 3 (records usage)
 python marathon.py reveal NNN            # Print solution (requires typing REVEAL NNN)
 python marathon.py reset NNN             # Restore original stub, clear progress
+python marathon.py submit NNN [--git]    # Save solution to answers/ (--git auto-commits)
+python marathon.py peer NNN --user NAME  # View peer's answer (gated on your own solve)
+python marathon.py verify                # Run all reference solutions — health check
+python marathon.py review                # Spaced repetition suggestions
+python marathon.py import --slugs S      # Import Exercism exercises
+python marathon.py completion zsh        # Generate shell completion
 ```
 
-Progress is cached in `.marathon_progress.json` (gitignored) — tracks status, hints used, first-solved timestamp per exercise.
+Progress is cached in `.marathon_progress.json` (gitignored, per-user namespaced) — tracks status, hints used, first-solved timestamp per exercise.
+
+Set your identity (for multi-user features):
+```bash
+echo "yourname" > exercises/.marathon_user
+```
 
 ## Exercise anatomy
 
@@ -137,15 +149,13 @@ Two paths:
 
 **From a Jupyter notebook**: `scripts/build_exercises.py` is a one-shot converter that reads scaffold/test/solution triplet cells and materializes exercise directories. See the docstring for the ExerciseSpec format. The script in this repo was originally run against notebooks in a private prep repo — adapt the `NOTEBOOKS` dict and `SPECS` list for your own source.
 
-## Using with Claude Code
+## Using with AI tutors
 
-This repo ships with a `.claude/` configuration that turns Claude Code into an interactive tutor. When you launch a Claude Code session from the repo root, the harness enforces learning-mode rules automatically:
+This repo supports **Claude Code**, **Codex CLI**, **Gemini CLI**, and **GitHub Copilot** as interactive tutors. All four follow the same contract: Socratic-first, never reveal solutions unprompted, only edit `problem.py`.
 
-- **Solution hiding is technically enforced.** `.claude/settings.json` denies `Read` on `.meta/solution.py` and `.meta/stub.py`, so Claude cannot peek at answers even if you ask it to.
-- **Write scope is locked to `problem.py`.** Claude can only edit the stub files you're meant to work on — tests, the runner, and `.meta/` are read-only.
-- **Socratic tutor posture.** Claude is instructed to ask guiding questions before writing code, and to generate exercise-specific hints from the problem spec rather than giving away the answer.
+### Claude Code (full harness enforcement)
 
-Nine slash commands are available inside Claude Code:
+`.claude/settings.json` enforces deny rules — Claude cannot read solutions even if asked. 13 slash commands are available:
 
 | Command | What it does |
 |---------|-------------|
@@ -158,6 +168,10 @@ Nine slash commands are available inside Claude Code:
 | `/review` | Spaced repetition: suggest exercises to revisit |
 | `/reveal NNN` | Double-gated solution reveal (interactive confirmation) |
 | `/reset NNN` | Restore `problem.py` to the original stub |
+| `/verify` | Run all reference solutions against tests |
+| `/submit NNN` | Commit your answer to the shared answers directory |
+| `/peer NNN` | View partner's answer (gated on your own solve) |
+| `/pull-questions` | Import new exercises from Exercism |
 
 To get started:
 
@@ -165,6 +179,41 @@ To get started:
 claude                  # launch Claude Code from the repo root
 /next                   # begin the first exercise
 ```
+
+### Codex CLI / Gemini CLI
+
+Both use behavioral tutor contracts via `AGENTS.md` (no harness-level deny rules). Use `marathon.py` subcommands directly instead of slash commands:
+
+```bash
+codex                   # or: gemini
+# then ask: "run marathon.py next" or "help me with exercise 001"
+```
+
+### Recommended models ($20/mo plans)
+
+| Tool | Default model | Plan |
+|------|--------------|------|
+| Claude Code | Sonnet 4.6 | Claude Pro ($20/mo) |
+| Codex CLI | o3-mini | ChatGPT Plus ($20/mo) |
+| Gemini CLI | Flash 2.5 | Free tier |
+
+These defaults are set in `.claude/settings.json` and `.codex/config.toml`.
+
+## Shell completion
+
+Generate zsh tab-completion for all marathon.py subcommands:
+
+```bash
+# One-time setup
+python marathon.py completion zsh > ~/.zfunc/_marathon
+
+# Or install system-wide
+sudo python marathon.py completion zsh > /usr/local/share/zsh/site-functions/_marathon
+```
+
+Bash completion is also available: `marathon.py completion bash > ~/.local/share/bash-completion/completions/marathon`.
+
+A man page is available at `man/marathon.1` (generate with `make man`).
 
 ## Origin
 

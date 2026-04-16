@@ -1,5 +1,7 @@
 # python-marathon — Agent Instructions
 
+> Canonical instructions: AGENTS.md
+
 Canonical instructions for LLM agents (Claude, Codex, Gemini, Copilot) working on this repo. `CLAUDE.md`, `GEMINI.md`, and `.github/copilot-instructions.md` are thin mirrors that point here.
 
 ## What this is
@@ -11,21 +13,32 @@ Canonical instructions for LLM agents (Claude, Codex, Gemini, Copilot) working o
 ```
 python-marathon/
   exercises/              # The exercise bank
-    marathon.py           # CLI runner (~280 lines, zero non-pytest deps)
+    marathon.py           # CLI runner (zero non-pytest deps)
     conftest.py           # Shared pytest fixtures
     pytest.ini            # Pytest config — no testpaths (run per-exercise)
-    README.md             # User-facing marathon guide
+    manifest.json         # Exercise source metadata (openai-prep, exercism, etc.)
+    answers/              # Per-user submitted solutions (committed to git)
     tier1_fluency/        # Beginner drills (9)
     tier2_patterns/       # Interview primitives (11)
     tier3_canonical/      # Full multi-gate problems (6)
     tier4_async/          # asyncio exercises (5, hand-written)
+    tier5_exercism_easy/  # Exercism imports — easy (10+)
+    tier5_exercism_medium/ # Exercism imports — medium
   .claude/                # Claude Code learning-mode configuration
-    settings.json         # Permission rules (deny solutions, scope edits)
-    commands/             # Slash commands (/status, /next, /run, /hint, /reveal, /reset)
+    settings.json         # Permission rules (deny solutions, scope edits) + model config
+    commands/             # Slash commands (13 total)
+  .codex/                 # Codex CLI project config
+    config.toml           # Model, sandbox, approval policy
+  .gemini/                # Gemini CLI context bridge
+    settings.json         # Context file list
+  .github/
+    copilot-instructions.md  # Copilot mirror → AGENTS.md
   scripts/
     build_exercises.py    # One-shot notebook → exercise converter
+    import_exercism.py    # Exercism Python track importer
+    backfill_manifest.py  # One-shot manifest generator
   README.md
-  AGENTS.md               # This file
+  AGENTS.md               # This file (canonical)
   LICENSE                 # MIT
 ```
 
@@ -73,7 +86,7 @@ NNN_slug/
 
 ### marathon.py design
 
-Single file, no external deps. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored). Commands:
+Single file, no external deps. Uses `subprocess.run` to invoke pytest. Progress cached in `.marathon_progress.json` (gitignored, per-user namespaced). User identity from `.marathon_user` file. Commands:
 
 - `status` — tier progress table + next unsolved
 - `list [--tier N]` — flat list with status
@@ -83,6 +96,12 @@ Single file, no external deps. Uses `subprocess.run` to invoke pytest. Progress 
 - `hint NNN --level N` — print hint level N (1-3), records usage
 - `reveal NNN` — print solution (gated on typing `REVEAL NNN`)
 - `reset NNN` — restore problem.py from `.meta/stub.py`, clear progress
+- `submit NNN [--git]` — copy passing solution to `answers/<user>/NNN/`, optionally git commit
+- `peer NNN --user NAME` — view peer's solution (gated on own solve)
+- `verify` — run all reference solutions against tests, report pass/fail
+- `review` — algorithmic spaced-repetition suggestions from progress data
+- `import --slugs S [--tier T] [--dry-run]` — import Exercism exercises
+- `completion {bash,zsh}` — generate shell completion script
 
 ### Adding a new exercise
 
@@ -116,19 +135,49 @@ The converter is currently hard-coded against 4 specific notebooks from a privat
 
 If you're adding exercises to a public repo, **don't check in solutions to the public branch** if you want meaningful hiding. Instead: keep `.meta/solution.py` in a private branch/repo and distribute only the stub + tests.
 
-## Claude Code learning mode
+## Multi-agent tutor support
 
-The `.claude/` directory configures Claude Code as an interactive tutor when launched from this repo. The configuration has three layers:
+This repo supports Claude Code, Codex CLI, Gemini CLI, and GitHub Copilot as interactive tutors. The tutor contract is the same across all tools:
 
-1. **`.claude/settings.json`** — permission rules that deny reading `.meta/solution.py` and `.meta/stub.py`, restrict edits to `exercises/**/problem.py` only, pre-allow `marathon.py` commands, and put `reveal` behind an explicit approval gate.
+- **Do not read** `.meta/solution.py` or `.meta/stub.py` — these are the answers.
+- **Only edit** `exercises/**/problem.py` — tests and the runner are read-only.
+- **Socratic-first posture.** Ask guiding questions before writing code.
+- **Run tests via** `python marathon.py run NNN`, not bare `pytest`.
+- **Never reveal solutions unprompted.** Route through `marathon.py reveal NNN`.
 
-2. **`.claude/commands/`** — nine slash commands (`/status`, `/list`, `/next`, `/run`, `/hint`, `/reflect`, `/review`, `/reveal`, `/reset`) that wrap `marathon.py` subcommands with tutor-appropriate behavior. `/reflect` adds post-solve deepening; `/review` provides spaced-repetition suggestions.
+### Claude Code (full harness enforcement)
 
-3. **`CLAUDE.md`** — a "Learning Mode" section describing the tutor contract: Socratic-first posture, generate exercise-specific hints, never reveal solutions unprompted.
+`.claude/settings.json` enforces deny rules at the harness level — Claude literally cannot read solutions even if asked. 13 slash commands in `.claude/commands/` provide the skill surface (`/status`, `/next`, `/run`, `/hint`, `/reflect`, `/review`, `/reveal`, `/reset`, `/list`, `/verify`, `/submit`, `/peer`, `/pull-questions`). `CLAUDE.md` describes the tutor contract in the Learning Mode section.
 
-All 31 exercises now have exercise-specific `.meta/hints.md` (3 progressive levels each) and substantive `.meta/notes.md` (why it matters, gotchas, interview follow-ups). The `/hint` command also registers usage in `.marathon_progress.json` via the CLI before synthesizing its own response.
+### Codex CLI (behavioral + sandbox)
 
-**If you're adding a non-Claude agent integration** (Codex, Gemini, Copilot): follow the same principle — deny access to `.meta/solution.py`, scope edits to `problem.py`, and instruct the agent to tutor rather than solve. The `.claude/` configuration is Claude-harness-specific, but the philosophy applies to any agent.
+`.codex/config.toml` sets `sandbox_mode = "workspace-write"` and `approval_policy = "on-request"`. Codex has no file-path deny rules — solution hiding is enforced behaviorally via this AGENTS.md instruction. The agent should follow the same tutor contract as Claude. No slash commands — use `marathon.py` subcommands directly.
+
+### Gemini CLI (behavioral + context bridge)
+
+`.gemini/settings.json` injects `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` as context. No deny rules or slash commands. Tutor contract is behavioral only.
+
+### GitHub Copilot
+
+`.github/copilot-instructions.md` mirrors the tutor contract from AGENTS.md.
+
+### Standalone CLI (no LLM required)
+
+`marathon.py` provides full feature parity for non-LLM workflows: `status`, `list`, `run`, `next`, `watch`, `hint`, `reveal`, `reset`, `submit`, `peer`, `verify`, `review`, `import`, `completion`. The only features that require an LLM are: synthesized hints (beyond `.meta/hints.md`), Socratic failure analysis, post-solve reflection, and tutoring orientation.
+
+## Recommended models
+
+This repo is tuned for **$20/mo subscription plans**, not API billing:
+
+| Tool | Default model | Plan | Why |
+|------|--------------|------|-----|
+| Claude Code | Sonnet 4.6 | Claude Pro ($20/mo) | Unlimited rate, excellent at code tutoring |
+| Codex CLI | o3-mini | ChatGPT Plus ($20/mo) | Budget reasoning model, included in Plus |
+| Gemini CLI | Flash 2.5 | Free tier | 250 req/day free, adequate for Tier 1-2 |
+
+These defaults are set in `.claude/settings.json` and `.codex/config.toml`. Users with API access can override to Opus/GPT-4o for Tier 3-4 exercises where deeper reasoning helps.
+
+All exercises now have exercise-specific `.meta/hints.md` (3 progressive levels each) and substantive `.meta/notes.md` (why it matters, gotchas, interview follow-ups).
 
 ## Sensitivity rules
 
@@ -140,5 +189,7 @@ All 31 exercises now have exercise-specific `.meta/hints.md` (3 progressive leve
 
 - Created: 2026-04-15
 - Origin: extracted from a private interview-prep directory on the day before a senior Python interview; the exercise bank and harness are generic and reusable.
-- Current exercise count: 31 (9 tier1 + 11 tier2 + 6 tier3 + 5 tier4)
-- All Tier 4 async solutions validated against their own tests
+- Current exercise count: 41+ (9 tier1 + 11 tier2 + 6 tier3 + 5 tier4 + 10+ tier5 exercism)
+- All exercise reference solutions validated against tests under Python 3.10
+- Multi-agent support: Claude Code (full harness), Codex CLI, Gemini CLI, GitHub Copilot
+- Multi-user support: per-user progress, answer submission, peer review gating
