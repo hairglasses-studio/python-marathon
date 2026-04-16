@@ -1106,6 +1106,98 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_stats(args: argparse.Namespace) -> int:
+    """Show progress statistics, optionally as JSON for CI."""
+    prog = load_progress()
+    manifest = _load_manifest()
+    total = len(manifest)
+    solved = sum(1 for eid, e in prog.items()
+                 if not eid.startswith("_") and isinstance(e, dict) and e.get("status") == "passed")
+    pct = round(solved / total * 100, 1) if total else 0
+    meta = prog.get("_meta", {})
+    streak = meta.get("streak_days", 0)
+    badges = len(meta.get("badges", []))
+    # XP
+    tier_xp = {"tier1": 10, "tier2": 25, "tier3": 100, "tier4": 50, "tier5": 15}
+    xp = 0
+    for eid, entry in prog.items():
+        if eid.startswith("_") or not isinstance(entry, dict):
+            continue
+        if entry.get("status") != "passed":
+            continue
+        info = manifest.get(eid, {})
+        tier_key = info.get("tier", "")[:5]
+        base = tier_xp.get(tier_key, 10)
+        bonus = 5 if entry.get("hints_used", 0) == 0 else 0
+        if entry.get("solve_duration_seconds") and info.get("target_minutes"):
+            if entry["solve_duration_seconds"] < info["target_minutes"] * 60:
+                bonus += 3
+        xp += base + bonus
+
+    data = {
+        "solved": solved,
+        "total": total,
+        "pct": pct,
+        "xp": xp,
+        "level": min(50, xp // 50 + 1) if xp > 0 else 0,
+        "streak_days": streak,
+        "badges": badges,
+    }
+
+    if args.json:
+        print(json.dumps(data))
+        return 0
+
+    print(f"Solved: {solved}/{total} ({pct}%)")
+    print(f"XP: {xp}  Level: {data['level']}")
+    print(f"Streak: {streak} day{'s' if streak != 1 else ''}")
+    print(f"Badges: {badges} earned")
+    return 0
+
+
+
+PROGRESS_SCHEMA_VERSION = 2
+
+def _migrate_progress(data: dict) -> dict:
+    """Apply incremental migrations to progress data."""
+    version = data.get("_schema_version", 0)
+    if version < 1:
+        # v0 -> v1: wrap flat format under user key (already handled by load_progress)
+        pass
+    if version < 2:
+        # v1 -> v2: ensure all passed entries have SM-2 fields
+        for user_key, user_data in data.items():
+            if user_key == "_schema_version":
+                continue
+            if not isinstance(user_data, dict):
+                continue
+            for eid, entry in user_data.items():
+                if eid.startswith("_") or not isinstance(entry, dict):
+                    continue
+                if entry.get("status") == "passed" and "sr_ef" not in entry:
+                    entry = _sm2_update(entry)
+                    user_data[eid] = entry
+    data["_schema_version"] = PROGRESS_SCHEMA_VERSION
+    return data
+
+
+def cmd_migrate(args: argparse.Namespace) -> int:
+    """Apply incremental migrations to the progress file."""
+    if not PROGRESS_FILE.exists():
+        print("No progress file to migrate.")
+        return 0
+    data = _load_progress_raw()
+    old_version = data.get("_schema_version", 0)
+    data = _migrate_progress(data)
+    _save_progress_raw(data)
+    new_version = data.get("_schema_version", 0)
+    if old_version == new_version:
+        print(f"Progress already at schema version {new_version}. No migration needed.")
+    else:
+        print(f"Migrated progress: v{old_version} -> v{new_version}")
+    return 0
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
     """Self-diagnostics: check environment, dependencies, and data integrity."""
     issues = 0
@@ -1298,6 +1390,9 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    pst = sub.add_parser("stats", help="Show progress statistics")
+    pst.add_argument("--json", action="store_true", help="JSON output for CI")
+    sub.add_parser("migrate", help="Apply progress file migrations")
     sub.add_parser("doctor", help="Self-diagnostics for environment and data")
     psh = sub.add_parser("shell", help="REPL with exercise problem.py pre-imported")
     psh.add_argument("id")
@@ -1333,6 +1428,8 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "stats": cmd_stats,
+        "migrate": cmd_migrate,
         "doctor": cmd_doctor,
         "shell": cmd_shell,
         "lint-exercises": cmd_lint_exercises,

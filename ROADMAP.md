@@ -125,14 +125,15 @@
 - [ ] Makes the implicit optional-dep system explicit and self-documenting
 
 ### `marathon.py stats [NNN]` + shields.io badge
-- [ ] `marathon.py stats --json` — emit `{"solved": 12, "total": 61, "pct": 19.7}` for CI consumption
+- [x] `marathon.py stats --json` — emit JSON with solved/total/pct/xp/level/streak/badges
+- [x] `marathon.py stats` — human-readable progress summary
 - [ ] CI step writes JSON to gist; shields.io endpoint badge in README
-- [ ] `marathon.py stats NNN` — per-exercise aggregate from peer `answers/<user>/NNN/stats.json` files: "You: 12min | Median: 18min | Fast: 8min | N=3"
+- [ ] `marathon.py stats NNN` — per-exercise aggregate from peer answers
 
 ### Progress schema versioning + migration
-- [ ] Add `"_schema_version": 1` to the root of `.marathon_progress.json`
-- [ ] `marathon.py migrate` — apply incremental migrations (SM-2 → FSRS field rename, etc.)
-- [ ] Source: Anki card format versioning — makes future algorithm changes safe to deploy
+- [x] `_schema_version` field in progress JSON root (currently v2)
+- [x] `marathon.py migrate` — apply incremental migrations (v0→v1 flat→namespaced, v1→v2 SM-2 field init)
+- [x] Source: Anki card format versioning
 
 ### Self-report quality rating on review
 - [ ] After a review solve, prompt: "How well did you remember this? [0=forgot 1=hard 2=ok 3=easy] "
