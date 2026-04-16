@@ -48,14 +48,14 @@ The only dependency is **pytest**. Create a virtual environment inside the `exer
 **Option A — with [uv](https://docs.astral.sh/uv/) (fastest)**:
 ```bash
 cd exercises
-uv venv .venv
+uv venv .venv --python 3.10
 VIRTUAL_ENV=.venv uv pip install pytest
 ```
 
-**Option B — with plain pip**:
+**Option B — with plain pip** (use whichever `python3.10` your system provides):
 ```bash
 cd exercises
-python3 -m venv .venv
+python3.10 -m venv .venv
 .venv/bin/pip install pytest      # Linux/macOS
 # .venv\Scripts\pip install pytest  # Windows
 ```

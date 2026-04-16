@@ -35,7 +35,7 @@ No build step — this is pure Python. Setup a dev environment:
 
 ```bash
 cd exercises
-uv venv .venv
+uv venv .venv --python 3.10
 VIRTUAL_ENV=.venv uv pip install pytest
 ```
 
@@ -43,7 +43,7 @@ Or with plain pip:
 
 ```bash
 cd exercises
-python -m venv .venv
+python3.10 -m venv .venv
 .venv/bin/pip install pytest
 ```
 
