@@ -101,9 +101,9 @@
 - [ ] Ref: [textualize/rich](https://github.com/textualize/rich) (~50k stars)
 
 ### `# MARATHON: NOT DONE` sentinel
-- [ ] If `problem.py` contains `# MARATHON: NOT DONE`, prevent `next` from auto-advancing even if tests pass
-- [ ] Print: "Tests pass but exercise is marked NOT DONE. Remove the sentinel when satisfied."
-- [ ] Source: rustlings `// I AM NOT DONE` pattern (~55k stars) — prevents accidentally skipping exercises with trivially-passing stubs
+- [x] If `problem.py` contains `# MARATHON: NOT DONE`, prevent `next` from auto-advancing even if tests pass
+- [x] Print: "Tests pass but exercise is marked NOT DONE. Remove the sentinel when satisfied."
+- [x] Source: rustlings `// I AM NOT DONE` pattern
 
 ### Keystroke commands in `watch` mode
 - [ ] Use stdlib `termios`/`select` raw-mode stdin alongside the mtime poll loop
@@ -111,13 +111,13 @@
 - [ ] Zero new deps; source: rustlings watch mode interactive keys
 
 ### `marathon.py shell NNN` — REPL mode
-- [ ] Drop into `code.interact()` (stdlib) with `problem.py` pre-imported
-- [ ] Banner: "Imported problem 015 (path_normalize). Type path_normalize('...') to probe your solution."
-- [ ] Zero deps; source: Codewars "run in REPL" UX
+- [x] Drop into `code.interact()` (stdlib) with `problem.py` pre-imported
+- [x] Banner shows exercise ID and name
+- [x] Zero deps
 
 ### `marathon.py doctor` — self-diagnostics
-- [ ] Checks: Python ≥ 3.10, pytest reachable, `.venv` setup, progress file valid JSON, manifest integrity, orphaned exercise dirs not in manifest, exercises in manifest missing from filesystem
-- [ ] Source: `rustup doctor`, `brew doctor` — critical for onboarding
+- [x] Checks: Python version, pytest, .venv, .marathon_user, progress JSON, manifest integrity, disk/manifest sync, badges
+- [x] Zero deps; source: `rustup doctor`, `brew doctor`
 
 ### `marathon.py deps` — optional dependency table
 - [ ] Print feature→package table with installed/missing status for: `rich`, `radon`, `watchdog`, `genanki`, `py-fsrs`, `hypothesis`, `shtab`, `watchdog`

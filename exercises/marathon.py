@@ -204,6 +204,13 @@ def _run_exercise(ex_id: str, path: Path) -> int:
     rc = _run_pytest(path)
     _record_run(ex_id, rc == 0)
     if rc == 0:
+        # Check NOT DONE sentinel
+        problem_text = (path / "problem.py").read_text()
+        if "# MARATHON: NOT DONE" in problem_text:
+            print(f"\n✓ {path.name} tests pass but exercise is marked NOT DONE.")
+            print("  Remove '# MARATHON: NOT DONE' from problem.py when satisfied.")
+            _record_run(ex_id, False)  # Don't advance
+            return 1
         print(f"\n✓ {path.name} passed")
     else:
         print(f"\n✗ {path.name} failed — fix and rerun")
@@ -1099,6 +1106,92 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_doctor(args: argparse.Namespace) -> int:
+    """Self-diagnostics: check environment, dependencies, and data integrity."""
+    issues = 0
+    v = sys.version_info
+    if v < (3, 10):
+        print(f"  FAIL  Python {v.major}.{v.minor} < 3.10 required")
+        issues += 1
+    else:
+        print(f"  OK    Python {v.major}.{v.minor}.{v.micro}")
+    try:
+        result = subprocess.run(_pytest_cmd() + ["--version"], capture_output=True, text=True)
+        if result.returncode == 0:
+            print(f"  OK    {result.stdout.strip().splitlines()[0]}")
+        else:
+            print("  FAIL  pytest not reachable")
+            issues += 1
+    except FileNotFoundError:
+        print("  FAIL  pytest not found")
+        issues += 1
+    venv = ROOT / ".venv"
+    if venv.is_dir():
+        print("  OK    .venv exists")
+    else:
+        print("  WARN  No .venv directory")
+        issues += 1
+    if USER_FILE.exists():
+        print(f"  OK    User identity: {_whoami()}")
+    else:
+        print("  WARN  No .marathon_user file")
+    if PROGRESS_FILE.exists():
+        try:
+            data = json.loads(PROGRESS_FILE.read_text())
+            print(f"  OK    Progress file valid ({len(data)} keys)")
+        except json.JSONDecodeError:
+            print("  FAIL  Progress file is invalid JSON")
+            issues += 1
+    else:
+        print("  OK    No progress file yet (fresh start)")
+    manifest = _load_manifest()
+    if manifest:
+        print(f"  OK    Manifest: {len(manifest)} exercises")
+    else:
+        print("  FAIL  No manifest.json or empty")
+        issues += 1
+    disk_ids = {eid for eid, _ in list_exercises()}
+    manifest_ids = set(manifest.keys())
+    orphan_disk = disk_ids - manifest_ids
+    orphan_manifest = manifest_ids - disk_ids
+    if orphan_disk:
+        print(f"  WARN  Dirs not in manifest: {', '.join(sorted(orphan_disk))}")
+        issues += 1
+    if orphan_manifest:
+        print(f"  WARN  Manifest without dirs: {', '.join(sorted(orphan_manifest))}")
+        issues += 1
+    if not orphan_disk and not orphan_manifest:
+        print("  OK    Manifest and disk in sync")
+    if BADGES_FILE.exists():
+        badges = json.loads(BADGES_FILE.read_text())
+        print(f"  OK    Badges: {len(badges)} defined")
+    else:
+        print("  WARN  No badges.json")
+    print()
+    if issues == 0:
+        print("All checks passed.")
+    else:
+        print(f"{issues} issue(s) found.")
+    return 1 if issues else 0
+
+
+def cmd_shell(args: argparse.Namespace) -> int:
+    """Drop into a REPL with the exercise problem.py pre-imported."""
+    import code as code_mod
+    ex_id = args.id
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    sys.path.insert(0, str(path))
+    ns: dict = {}
+    problem_file = path / "problem.py"
+    exec(compile(problem_file.read_text(), str(problem_file), "exec"), ns)
+    banner = f"Imported problem {ex_id} ({path.name}). Probe your solution interactively."
+    code_mod.interact(banner=banner, local=ns)
+    return 0
+
+
 def cmd_lint_exercises(args: argparse.Namespace) -> int:
     """Validate all exercises have the required file layout."""
     exs = list_exercises()
@@ -1205,6 +1298,9 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    sub.add_parser("doctor", help="Self-diagnostics for environment and data")
+    psh = sub.add_parser("shell", help="REPL with exercise problem.py pre-imported")
+    psh.add_argument("id")
     sub.add_parser("lint-exercises", help="Validate exercise file layout")
     pc = sub.add_parser("completion", help="Generate shell completion script")
     pc.add_argument("shell", choices=["bash", "zsh"], help="Shell type")
@@ -1237,6 +1333,8 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "doctor": cmd_doctor,
+        "shell": cmd_shell,
         "lint-exercises": cmd_lint_exercises,
         "completion": cmd_completion,
     }
