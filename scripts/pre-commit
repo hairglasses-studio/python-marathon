@@ -1,0 +1,6 @@
+#!/bin/sh
+# Pre-commit hook: verify only changed exercise reference solutions.
+# Install: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+cd exercises || exit 0
+python marathon.py verify --changed-only

@@ -830,6 +830,33 @@ def cmd_challenge(args: argparse.Namespace) -> int:
 def cmd_verify(args: argparse.Namespace) -> int:
     """Run all reference solutions against tests silently."""
     exs = list_exercises()
+    # --changed-only: filter to exercises with files changed in git
+    if getattr(args, "changed_only", False):
+        try:
+            result = subprocess.run(
+                ["git", "diff", "--name-only", "HEAD"],
+                capture_output=True, text=True, cwd=ROOT.parent,
+            )
+            changed_files = set(result.stdout.strip().splitlines())
+            # Also check untracked
+            result2 = subprocess.run(
+                ["git", "ls-files", "--others", "--exclude-standard"],
+                capture_output=True, text=True, cwd=ROOT.parent,
+            )
+            changed_files |= set(result2.stdout.strip().splitlines())
+            # Filter exercises to those with changed files
+            filtered = []
+            for eid, path in exs:
+                rel = str(path.relative_to(ROOT.parent))
+                if any(cf.startswith(rel) for cf in changed_files):
+                    filtered.append((eid, path))
+            if not filtered:
+                print("No exercise files changed — nothing to verify.")
+                return 0
+            exs = filtered
+            print(f"Verifying {len(exs)} changed exercise(s)...")
+        except FileNotFoundError:
+            pass  # git not available, verify all
     passed = failed = 0
     failures: list[str] = []
     for eid, path in exs:
@@ -848,11 +875,12 @@ def cmd_verify(args: argparse.Namespace) -> int:
         else:
             print(f"FAIL {path.name}")
             failed += 1
-            failures.append(f"{path.name}: {result.stdout.strip().splitlines()[-1] if result.stdout.strip() else result.stderr.strip()}")
+            out = result.stdout.strip()
+            failures.append(f"{path.name}: {out.splitlines()[-1] if out else result.stderr.strip()}")
     print()
     print(f"--- Passed: {passed}  Failed: {failed} ---")
     for f in failures:
-        print(f"  ✗ {f}")
+        print(f"  \u2717 {f}")
     return 1 if failed else 0
 
 
@@ -1489,7 +1517,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("recommend", help="Recommend next exercises by tag coverage")
     pch = sub.add_parser("challenge", help="Random unsolved exercise")
     pch.add_argument("--tier", type=int, default=None, help="Filter by tier")
-    sub.add_parser("verify", help="Run all reference solutions against tests")
+    pv = sub.add_parser("verify", help="Run all reference solutions against tests")
+    pv.add_argument("--changed-only", action="store_true", help="Only verify exercises with changed files")
     sub.add_parser("review", help="Suggest exercises to revisit (spaced repetition)")
     pi = sub.add_parser("import", help="Import exercises from Exercism")
     pi.add_argument("--exercism-dir", default="../exercism-python", help="Path to cloned exercism/python")

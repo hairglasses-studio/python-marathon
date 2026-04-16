@@ -199,8 +199,8 @@
 - [ ] Source: rustlings inotify-driven watch
 
 ### Pre-commit hook
-- [ ] `.git/hooks/pre-commit` (or `pre-commit` config) runs `marathon.py verify --changed-only`
-- [ ] `marathon.py verify --changed-only` — only re-run reference solutions for exercises touched in `git diff --name-only`
+- [x] `marathon.py verify --changed-only` — only verify exercises with changed files in git diff
+- [x] `scripts/pre-commit` hook script (install with `cp scripts/pre-commit .git/hooks/`)
 - [ ] Document in CONTRIBUTING.md
 
 ---
