@@ -37,6 +37,7 @@ USER_FILE = ROOT / ".marathon_user"
 ANSWERS_DIR = ROOT / "answers"
 MANIFEST_FILE = ROOT / "manifest.json"
 BADGES_FILE = ROOT / "badges.json"
+CURATIONS_FILE = ROOT / "curations.json"
 TIER_DIRS = [
     "tier1_fluency",
     "tier2_patterns",
@@ -1134,6 +1135,50 @@ def cmd_challenge_peer(args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_curations() -> dict:
+    if CURATIONS_FILE.exists():
+        return json.loads(CURATIONS_FILE.read_text())
+    return {}
+
+
+def cmd_curated(args: argparse.Namespace) -> int:
+    """List curated exercise tracks or show exercises in a track."""
+    curations = _load_curations()
+    if not curations:
+        print("No curations.json found.")
+        return 1
+    prog = load_progress()
+    if args.name:
+        name = args.name
+        if name not in curations:
+            print(f"Unknown curation: {name}")
+            print(f"Available: {', '.join(sorted(curations))}")
+            return 1
+        cur = curations[name]
+        print(f"\n{cur['name']}: {cur['description']}\n")
+        solved = 0
+        for eid in cur["exercises"]:
+            path = find_exercise(eid)
+            status = prog.get(eid, {}).get("status", "untouched") if isinstance(prog.get(eid), dict) else "untouched"
+            marker = MARK.get(status, "?")
+            slug = path.name if path else eid
+            print(f"  {marker} {eid}  {slug}")
+            if status == "passed":
+                solved += 1
+        total = len(cur["exercises"])
+        print(f"\n{solved}/{total} completed")
+        return 0
+    # List all curations
+    print()
+    for key, cur in sorted(curations.items()):
+        total = len(cur["exercises"])
+        solved = sum(1 for eid in cur["exercises"]
+                     if isinstance(prog.get(eid), dict) and prog.get(eid, {}).get("status") == "passed")
+        print(f"  {key:20s}  {solved}/{total:2d}  {cur['name']}")
+    print(f"\nUse: marathon.py curated <name>")
+    return 0
+
+
 def cmd_pattern(args: argparse.Namespace) -> int:
     """Show all patterns with solved/total counts."""
     manifest = _load_manifest()
@@ -1397,6 +1442,28 @@ def cmd_migrate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_lsp(args: argparse.Namespace) -> int:
+    """Generate pyrightconfig.json scoped to one exercise."""
+    ex_id = args.id
+    path = find_exercise(ex_id)
+    if not path:
+        print(f"Exercise {ex_id} not found")
+        return 1
+    config = {
+        "include": [str(path)],
+        "executionEnvironments": [
+            {"root": str(path), "extraPaths": [str(path)]}
+        ],
+        "pythonVersion": "3.10",
+        "typeCheckingMode": "basic",
+    }
+    out = path / "pyrightconfig.json"
+    out.write_text(json.dumps(config, indent=2) + chr(10))
+    print(f"Written {out.relative_to(ROOT)}")
+    print(f"Open {path.relative_to(ROOT)} in your editor for scoped type checking.")
+    return 0
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
     """Self-diagnostics: check environment, dependencies, and data integrity."""
     issues = 0
@@ -1545,6 +1612,7 @@ def build_parser() -> argparse.ArgumentParser:
     pr.add_argument("--current", action="store_true")
     pnx = sub.add_parser("next", help="Run the next unsolved exercise")
     pnx.add_argument("--pattern", default=None, help="Filter by pattern")
+    pnx.add_argument("--curated", default=None, help="Follow a curated track")
     pw = sub.add_parser("watch", help="Watch mode (polls file mtimes)")
     pw.add_argument("id", nargs="?", default=None)
     ph = sub.add_parser("hint", help="Show a hint")
@@ -1591,6 +1659,8 @@ def build_parser() -> argparse.ArgumentParser:
     pchal = sub.add_parser("challenge-peer", help="Create a timed challenge with peer")
     pchal.add_argument("id")
     pchal.add_argument("--user", required=True, help="Peer to challenge")
+    pcu = sub.add_parser("curated", help="List or show curated exercise tracks")
+    pcu.add_argument("name", nargs="?", default=None, help="Track name")
     sub.add_parser("pattern", help="Show all patterns with solved/total")
     pdf = sub.add_parser("diff", help="Diff your answer vs a peer's")
     pdf.add_argument("id")
@@ -1602,6 +1672,8 @@ def build_parser() -> argparse.ArgumentParser:
     pst = sub.add_parser("stats", help="Show progress statistics")
     pst.add_argument("--json", action="store_true", help="JSON output for CI")
     sub.add_parser("migrate", help="Apply progress file migrations")
+    plsp = sub.add_parser("lsp", help="Generate pyrightconfig.json for an exercise")
+    plsp.add_argument("id")
     sub.add_parser("doctor", help="Self-diagnostics for environment and data")
     psh = sub.add_parser("shell", help="REPL with exercise problem.py pre-imported")
     psh.add_argument("id")
@@ -1637,6 +1709,7 @@ def main() -> int:
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,
+        "curated": cmd_curated,
         "pattern": cmd_pattern,
         "diff": cmd_diff,
         "leaderboard": cmd_leaderboard,
@@ -1644,6 +1717,7 @@ def main() -> int:
         "deps": cmd_deps,
         "stats": cmd_stats,
         "migrate": cmd_migrate,
+        "lsp": cmd_lsp,
         "doctor": cmd_doctor,
         "shell": cmd_shell,
         "lint-exercises": cmd_lint_exercises,
