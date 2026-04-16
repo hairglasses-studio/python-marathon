@@ -5,7 +5,7 @@ Standalone pytest-checkable Python exercises designed to be marathoned in order 
 ## The 90-second pitch
 
 ```bash
-cd docs/interview-prep/exercises
+cd exercises
 python marathon.py status          # see where you are
 python marathon.py next             # run the next unsolved exercise
 # edit tier1_fluency/001_fizzbuzz/problem.py until the tests pass
@@ -25,7 +25,7 @@ python marathon.py next             # auto-advance to 002
 | `tier3_canonical/` | 6 | 45 min each | Full 4-gate problems — spreadsheet, crawler, SQL, warm-ups 1/2/3 |
 | `tier4_async/` | 5 | 15-30 min each | asyncio — gather + Semaphore, retry, Queue pipeline, async iterator, tool-call loop |
 
-Tier 3 canonical problems are each full multi-gate exercises (not split by gate). Tier 4 async is new hand-written content filling the async gap flagged in `openai.md` §12.4 — every async exercise was validated by running its own reference solution against its tests.
+Tier 3 canonical problems are each full multi-gate exercises (not split by gate). Tier 4 async is hand-written content filling a gap in the source material — every async exercise was validated by running its own reference solution against its tests.
 
 ## marathon.py commands
 
@@ -61,15 +61,13 @@ Each test file is runnable directly with pytest (`pytest tier1_fluency/001_fizzb
 
 ## Running without marathon.py
 
-Plain pytest works too:
+Plain pytest works on a single exercise directory:
 
 ```bash
 pytest tier1_fluency/001_fizzbuzz/        # Single exercise
-pytest tier1_fluency/                     # All of Tier 1
-pytest                                    # Everything (47 exercises, ~45 will fail until solved)
 ```
 
-Pytest finds `test_problem.py` via `pytest.ini`, and each exercise's directory is auto-added to `sys.path` so `from problem import foo` works without an `__init__.py`.
+**Do not run bare `pytest` from the `exercises/` root** — every test file does `from problem import *`, so they collide when pytest discovers multiple exercise directories at once. Always pass an explicit exercise path, or use `marathon.py run NNN` which handles this for you.
 
 ## Origin
 

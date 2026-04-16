@@ -19,6 +19,9 @@ python-marathon/
     tier2_patterns/       # Interview primitives (11)
     tier3_canonical/      # Full multi-gate problems (6)
     tier4_async/          # asyncio exercises (5, hand-written)
+  .claude/                # Claude Code learning-mode configuration
+    settings.json         # Permission rules (deny solutions, scope edits)
+    commands/             # Slash commands (/status, /next, /run, /hint, /reveal, /reset)
   scripts/
     build_exercises.py    # One-shot notebook → exercise converter
   README.md
@@ -112,6 +115,20 @@ The converter is currently hard-coded against 4 specific notebooks from a privat
 **Reality check:** on a local filesystem, solutions are socially hidden only. `cat .meta/solution.py` always works. The `.meta/` convention + `marathon.py reveal` confirmation gate makes the reveal *intentional*, not *accidental* — that's the goal.
 
 If you're adding exercises to a public repo, **don't check in solutions to the public branch** if you want meaningful hiding. Instead: keep `.meta/solution.py` in a private branch/repo and distribute only the stub + tests.
+
+## Claude Code learning mode
+
+The `.claude/` directory configures Claude Code as an interactive tutor when launched from this repo. The configuration has three layers:
+
+1. **`.claude/settings.json`** — permission rules that deny reading `.meta/solution.py` and `.meta/stub.py`, restrict edits to `exercises/**/problem.py` only, pre-allow `marathon.py` commands, and put `reveal` behind an explicit approval gate.
+
+2. **`.claude/commands/`** — six slash commands (`/status`, `/next`, `/run`, `/hint`, `/reveal`, `/reset`) that wrap `marathon.py` subcommands with tutor-appropriate behavior.
+
+3. **`CLAUDE.md`** — a "Learning Mode" section describing the tutor contract: Socratic-first posture, generate exercise-specific hints from the problem spec (since `.meta/hints.md` is generic boilerplate for exercises 001-026), never reveal solutions unprompted.
+
+The key design constraint: `.meta/hints.md` files for the 26 notebook-sourced exercises contain identical generic boilerplate — they were templated by `build_exercises.py` and never backfilled. Only Tier 4 (027-031) has hand-written substantive hints. The Claude Code `/hint` command synthesizes real hints from `README.md` + `problem.py` + `test_problem.py` instead of relying on the boilerplate.
+
+**If you're adding a non-Claude agent integration** (Codex, Gemini, Copilot): follow the same principle — deny access to `.meta/solution.py`, scope edits to `problem.py`, and instruct the agent to tutor rather than solve. The `.claude/` configuration is Claude-harness-specific, but the philosophy applies to any agent.
 
 ## Sensitivity rules
 

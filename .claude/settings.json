@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./exercises/**/.meta/solution.py)",
+      "Read(./exercises/**/.meta/stub.py)",
+      "Edit(./exercises/**/.meta/**)",
+      "Write(./exercises/**/.meta/**)",
+      "Edit(./exercises/**/test_problem.py)",
+      "Write(./exercises/**/test_problem.py)",
+      "Edit(./exercises/marathon.py)",
+      "Edit(./exercises/conftest.py)",
+      "Edit(./exercises/pytest.ini)"
+    ],
+    "allow": [
+      "Read(./exercises/**/README.md)",
+      "Read(./exercises/**/problem.py)",
+      "Read(./exercises/**/test_problem.py)",
+      "Read(./exercises/**/.meta/hints.md)",
+      "Read(./exercises/**/.meta/notes.md)",
+      "Edit(./exercises/**/problem.py)",
+      "Write(./exercises/**/problem.py)",
+      "Bash(python marathon.py status)",
+      "Bash(python marathon.py next)",
+      "Bash(python marathon.py run:*)",
+      "Bash(python marathon.py list:*)",
+      "Bash(python marathon.py hint:*)",
+      "Bash(python marathon.py reset:*)"
+    ],
+    "ask": [
+      "Bash(python marathon.py reveal:*)"
+    ]
+  }
+}
