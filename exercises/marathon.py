@@ -184,6 +184,11 @@ def _record_run(ex_id: str, passed: bool) -> None:
             streak = 1
         meta["last_active_date"] = today
         meta["streak_days"] = streak
+        # Power token: +1 every 7 consecutive days, awarded once per milestone.
+        if streak > 0 and streak % 7 == 0 and meta.get("last_token_streak") != streak:
+            meta["power_tokens"] = meta.get("power_tokens", 0) + 1
+            meta["last_token_streak"] = streak
+            print(f"  \U0001f3c5 Power token earned! {streak}-day streak. Tokens: {meta['power_tokens']}")
         prog["_meta"] = meta
     prog[ex_id] = entry
     prog["_last_run"] = ex_id
@@ -396,6 +401,9 @@ def cmd_status(args: argparse.Namespace) -> int:
     if xp > 0:
         streak_indicator = " \U0001f525 HOT STREAK (1.5x XP)" if hot_streak else ""
         print(f"XP: {xp}  Level: {level}{streak_indicator}")
+    tokens = meta.get("power_tokens", 0)
+    if tokens > 0:
+        print(f"\U0001f3c5 Power tokens: {tokens}  (spend with --use-token on hint/reveal to bypass the penalty)")
     # Activity heatmap
     heatmap = _render_heatmap(prog)
     if heatmap:
@@ -566,6 +574,15 @@ def cmd_hint(args: argparse.Namespace) -> int:
     prog = load_progress()
     entry = prog.setdefault(args.id, {})
     entry["hints_used"] = max(entry.get("hints_used", 0), args.level)
+    if getattr(args, "use_token", False):
+        meta = prog.setdefault("_meta", {})
+        tokens = meta.get("power_tokens", 0)
+        if tokens > 0:
+            meta["power_tokens"] = tokens - 1
+            entry["used_power_token"] = True
+            print(f"  \U0001f3c5 Power token spent — no XP/SM-2 penalty for this hint. Tokens: {meta['power_tokens']}")
+        else:
+            print("  [no power tokens available — hint will incur the usual XP/SM-2 penalty]")
     save_progress(prog)
     return 0
 
@@ -594,6 +611,15 @@ def cmd_reveal(args: argparse.Namespace) -> int:
     prog = load_progress()
     entry = prog.setdefault(args.id, {})
     entry["revealed"] = True
+    if getattr(args, "use_token", False):
+        meta = prog.setdefault("_meta", {})
+        tokens = meta.get("power_tokens", 0)
+        if tokens > 0:
+            meta["power_tokens"] = tokens - 1
+            entry["used_power_token"] = True
+            print(f"\n  \U0001f3c5 Power token spent — no XP/SM-2 penalty for this reveal. Tokens: {meta['power_tokens']}")
+        else:
+            print("\n  [no power tokens available — reveal will incur the usual XP/SM-2 penalty]")
     save_progress(prog)
     return 0
 
@@ -1038,6 +1064,10 @@ def _sm2_update(entry: dict) -> dict:
     """Compute SM-2 scheduling fields from exercise progress signals."""
     hints = entry.get("hints_used", 0)
     revealed = int(entry.get("revealed", False))
+    # Power token bypasses the hint/reveal penalty for quality synthesis.
+    if entry.get("used_power_token"):
+        hints = 0
+        revealed = 0
     # Synthesize quality rating: 5=perfect, 1=couldn't do it
     quality = max(1, 5 - hints - (revealed * 2))
 
@@ -2012,8 +2042,12 @@ def build_parser() -> argparse.ArgumentParser:
     ph = sub.add_parser("hint", help="Show a hint")
     ph.add_argument("id")
     ph.add_argument("--level", type=int, default=1)
+    ph.add_argument("--use-token", action="store_true",
+                    help="Spend one power token to bypass the XP/SM-2 penalty for this hint")
     prv = sub.add_parser("reveal", help="Reveal the reference solution (gated)")
     prv.add_argument("id")
+    prv.add_argument("--use-token", action="store_true",
+                     help="Spend one power token to bypass the XP/SM-2 penalty for this reveal")
     prs = sub.add_parser("reset", help="Reset an exercise to its original stub")
     prs.add_argument("id")
     pl = sub.add_parser("list", help="List all exercises")

@@ -87,7 +87,7 @@ Each item is shippable in one dev-loop iteration.
 - [ ] **shields.io badge** — CI writes `stats --json` to gist; badge in README
 - [x] **Linter improvements** — checks hints.md sections, notes.md, manifest fields (tags/difficulty/target_minutes/pattern), test functions
 - [x] **Tier certificate** — `marathon.py certificate --tier N [--output FILE]` generates SVG via `xml.etree.ElementTree`
-- [ ] **Power tokens** — streak reward; bypass XP penalty on reveal/hint
+- [x] **Power tokens** — streak reward + `--use-token` flag: earns +1 per 7-day streak milestone (tracked via `_meta.last_token_streak` to prevent double-award), consumable on `hint --use-token` / `reveal --use-token` to bypass the hints/revealed penalty in `_sm2_update` (quality synthesis) and the clean-solve XP bonus. `status` surfaces the running balance.
 - [x] **Kata history sparkline** — `kata_history` array; `kata NNN --history` shows duration bars per attempt
 - [x] **Hot streak XP multiplier** — 1.5x XP if ≥5 solves in <30 min session; shown in status
 - [x] **Structured Socratic hint protocol** — hint.md skill enforces L1=question, L2=directional, L3=code fragment
