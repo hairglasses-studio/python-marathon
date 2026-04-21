@@ -1240,6 +1240,50 @@ def cmd_review(args: argparse.Namespace) -> int:
 
 
 
+def cmd_curve(args: argparse.Namespace) -> int:
+    """Predicted retention curve (SM-2 forgetting sparkline) for an exercise."""
+    import math
+    ex_id = args.id
+    prog = load_progress()
+    entry = prog.get(ex_id)
+    if not isinstance(entry, dict):
+        print(f"No progress for {ex_id}. Solve it first: marathon.py run {ex_id}")
+        return 1
+    if entry.get("status") != "passed":
+        print(f"Exercise {ex_id} not yet passed; no forgetting curve to project.")
+        return 1
+    interval = entry.get("sr_interval", 1)
+    ef = entry.get("sr_ef", 2.5)
+    n = entry.get("sr_n", 0)
+    # Stability heuristic: the SM-2 interval stretched by EF acts as a decay
+    # time constant. Predicted retention = exp(-days / S).
+    stability = max(1.0, interval * max(1.0, ef / 2.5))
+    # Sample retention at 30 days; use eighth-block glyphs for the sparkline.
+    blocks = "▁▂▃▄▅▆▇█"
+    samples = 30
+    sparkline_chars: list[str] = []
+    retention_pct_at_7 = 0.0
+    retention_pct_at_14 = 0.0
+    retention_pct_at_30 = 0.0
+    for day in range(1, samples + 1):
+        r = math.exp(-day / stability)
+        idx = min(len(blocks) - 1, max(0, int(r * len(blocks))))
+        sparkline_chars.append(blocks[idx])
+        if day == 7:
+            retention_pct_at_7 = r * 100
+        if day == 14:
+            retention_pct_at_14 = r * 100
+        if day == 30:
+            retention_pct_at_30 = r * 100
+    sparkline = "".join(sparkline_chars)
+    print()
+    print(f"  Exercise: {ex_id}")
+    print(f"  SM-2 state: interval={interval}d  EF={ef:.2f}  n={n}")
+    print(f"  Predicted retention (next 30d): {sparkline}")
+    print(f"  7d: {retention_pct_at_7:.1f}%   14d: {retention_pct_at_14:.1f}%   30d: {retention_pct_at_30:.1f}%")
+    return 0
+
+
 def cmd_import(args: argparse.Namespace) -> int:
     """Import exercises from Exercism."""
     script = ROOT.parent / "scripts" / "import_exercism.py"
@@ -2078,6 +2122,8 @@ def build_parser() -> argparse.ArgumentParser:
     pv = sub.add_parser("verify", help="Run all reference solutions against tests")
     pv.add_argument("--changed-only", action="store_true", help="Only verify exercises with changed files")
     sub.add_parser("review", help="Suggest exercises to revisit (spaced repetition)")
+    pcu = sub.add_parser("curve", help="Forgetting curve sparkline (SM-2 retention projection)")
+    pcu.add_argument("id")
     pi = sub.add_parser("import", help="Import exercises from Exercism")
     pi.add_argument("--exercism-dir", default="../exercism-python", help="Path to cloned exercism/python")
     pi.add_argument("--slugs", required=True, help="Comma-separated exercise slugs")
@@ -2146,6 +2192,7 @@ def main() -> int:
         "challenge": cmd_challenge,
         "verify": cmd_verify,
         "review": cmd_review,
+        "curve": cmd_curve,
         "import": cmd_import,
         "kata": cmd_kata,
         "challenge-peer": cmd_challenge_peer,

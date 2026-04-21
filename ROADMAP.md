@@ -103,7 +103,7 @@ Each item is shippable in one dev-loop iteration.
 - [ ] **Performance benchmarking** — `marathon.py bench NNN`; `timeit` comparison vs reference; optional `big_O`
 - [ ] **FSRS upgrade** — replace SM-2 with `py-fsrs` for better scheduling; optional dep
 - [ ] **FSRS weight optimizer** — `marathon.py fsrs-optimize`; personal forgetting curve calibration
-- [ ] **Forgetting curve visualization** — `marathon.py curve NNN`; sparkline of predicted retention
+- [x] **Forgetting curve visualization** — `marathon.py curve NNN`: 30-day SM-2 forgetting-curve sparkline (eighth-block glyphs) derived from `sr_interval * max(1, sr_ef/2.5)` as decay stability; prints the SM-2 state plus retention checkpoints at 7d/14d/30d.
 - [ ] **Review session discipline** — `review --session` locks until all due items done
 - [ ] **Anki deck export** — `marathon.py export-anki`; optional `genanki` dep
 - [x] **AST-normalized diff** — `marathon.py diff NNN --user NAME --normalize` renames identifiers to var1..varN via ast.NodeTransformer (builtins + self/cls preserved); falls back to raw diff on parse error
