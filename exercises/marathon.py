@@ -21,6 +21,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import shutil
@@ -1412,6 +1413,79 @@ def cmd_pattern(args: argparse.Namespace) -> int:
     return 0
 
 
+_NORMALIZE_SKIP = frozenset({
+    "True", "False", "None", "self", "cls", "Ellipsis", "NotImplemented",
+    "print", "len", "range", "int", "str", "list", "dict", "set", "tuple",
+    "bool", "float", "bytes", "complex", "frozenset", "bytearray",
+    "sum", "min", "max", "abs", "round", "pow", "divmod",
+    "sorted", "reversed", "enumerate", "zip", "map", "filter",
+    "any", "all", "iter", "next", "open", "input",
+    "type", "isinstance", "issubclass", "hasattr", "getattr", "setattr", "delattr",
+    "super", "property", "classmethod", "staticmethod", "object",
+    "id", "hash", "repr", "format", "chr", "ord", "hex", "oct", "bin",
+    "Exception", "BaseException", "ValueError", "TypeError", "KeyError",
+    "IndexError", "RuntimeError", "NotImplementedError", "StopIteration",
+    "AttributeError", "ZeroDivisionError", "ArithmeticError", "OverflowError",
+    "FileNotFoundError", "OSError", "IOError", "AssertionError",
+})
+
+
+def _normalize_identifiers(source: str) -> str | None:
+    """Rename user-defined identifiers to var1..varN in first-appearance order.
+
+    Returns normalized source on success, or None if the source fails to
+    parse or unparse. Skips Python builtins, common stdlib exception
+    names, and dunder names so the AST shape stays readable.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return None
+
+    mapping: dict[str, str] = {}
+    counter = 0
+
+    def canonical(name: str) -> str:
+        nonlocal counter
+        if name in _NORMALIZE_SKIP or (name.startswith("__") and name.endswith("__")):
+            return name
+        if name not in mapping:
+            counter += 1
+            mapping[name] = f"var{counter}"
+        return mapping[name]
+
+    class Renamer(ast.NodeTransformer):
+        def visit_Name(self, node: ast.Name) -> ast.Name:
+            node.id = canonical(node.id)
+            return node
+
+        def visit_arg(self, node: ast.arg) -> ast.arg:
+            node.arg = canonical(node.arg)
+            return node
+
+        def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.AST:
+            node.name = canonical(node.name)
+            self.generic_visit(node)
+            return node
+
+        def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AST:
+            node.name = canonical(node.name)
+            self.generic_visit(node)
+            return node
+
+        def visit_ClassDef(self, node: ast.ClassDef) -> ast.AST:
+            node.name = canonical(node.name)
+            self.generic_visit(node)
+            return node
+
+    renamed = Renamer().visit(tree)
+    ast.fix_missing_locations(renamed)
+    try:
+        return ast.unparse(renamed)
+    except Exception:
+        return None
+
+
 def cmd_diff(args: argparse.Namespace) -> int:
     """Show a unified diff between your solution and a peer's."""
     import difflib
@@ -1433,16 +1507,30 @@ def cmd_diff(args: argparse.Namespace) -> int:
     if not peer_sol.exists():
         print(f"{peer} hasn't submitted an answer for {ex_id} yet.")
         return 1
-    my_lines = my_sol.read_text().splitlines(keepends=True)
-    peer_lines = peer_sol.read_text().splitlines(keepends=True)
+    my_text = my_sol.read_text()
+    peer_text = peer_sol.read_text()
+    normalized = False
+    if getattr(args, "normalize", False):
+        my_norm = _normalize_identifiers(my_text)
+        peer_norm = _normalize_identifiers(peer_text)
+        if my_norm is None or peer_norm is None:
+            print("[warn] AST normalization failed on at least one solution; falling back to raw diff.", file=sys.stderr)
+        else:
+            my_text = my_norm
+            peer_text = peer_norm
+            normalized = True
+    my_lines = my_text.splitlines(keepends=True)
+    peer_lines = peer_text.splitlines(keepends=True)
+    suffix = " (normalized)" if normalized else ""
     diff = difflib.unified_diff(
         my_lines, peer_lines,
-        fromfile=f"{me}/{ex_id}/solution.py",
-        tofile=f"{peer}/{ex_id}/solution.py",
+        fromfile=f"{me}/{ex_id}/solution.py{suffix}",
+        tofile=f"{peer}/{ex_id}/solution.py{suffix}",
     )
     output = "".join(diff)
     if not output:
-        print(f"Solutions are identical!")
+        msg = "Solutions are structurally identical after renaming identifiers!" if normalized else "Solutions are identical!"
+        print(msg)
     else:
         print(output)
     return 0
@@ -1977,6 +2065,8 @@ def build_parser() -> argparse.ArgumentParser:
     pdf = sub.add_parser("diff", help="Diff your answer vs a peer's")
     pdf.add_argument("id")
     pdf.add_argument("--user", required=True, help="Peer to diff against")
+    pdf.add_argument("--normalize", "-n", action="store_true",
+                     help="Rename identifiers to var1..varN before diffing to highlight structural differences")
     sub.add_parser("leaderboard", help="Show leaderboard from submitted answers")
     sub.add_parser("peer-status", help="Show open peer challenges")
     pdp = sub.add_parser("deps", help="Show optional dependency status")

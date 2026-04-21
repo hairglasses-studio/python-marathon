@@ -106,7 +106,7 @@ Each item is shippable in one dev-loop iteration.
 - [ ] **Forgetting curve visualization** — `marathon.py curve NNN`; sparkline of predicted retention
 - [ ] **Review session discipline** — `review --session` locks until all due items done
 - [ ] **Anki deck export** — `marathon.py export-anki`; optional `genanki` dep
-- [ ] **AST-normalized diff** — normalize variable names in `diff` output
+- [x] **AST-normalized diff** — `marathon.py diff NNN --user NAME --normalize` renames identifiers to var1..varN via ast.NodeTransformer (builtins + self/cls preserved); falls back to raw diff on parse error
 - [ ] **Kyu/Dan rank system** — skill rank separate from XP level
 - [ ] **Property-based testing** — `.meta/test_pbt.py` with Hypothesis; `run --pbt`
 - [ ] **Stage-by-stage test streaming** — custom pytest plugin; print results as they complete
