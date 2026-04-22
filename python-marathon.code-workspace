@@ -93,7 +93,6 @@
 
     // ── Zen mode (Ctrl+K Z for deep study) ──
     "zenMode.hideLineNumbers": false,
-    "zenMode.hideTabs": false,
     "zenMode.centerLayout": true,
     "zenMode.fullScreen": false,
 
